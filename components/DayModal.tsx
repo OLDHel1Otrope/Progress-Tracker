@@ -1,0 +1,164 @@
+"use client";
+
+import { useState } from "react";
+import { Minimize2, Maximize2 } from "lucide-react";
+import GoalItem from "./GoalItem";
+import GoalDetails from "./GoalDetails";
+
+interface DayModalProps {
+  day: number;
+  month: number; // 0-indexed
+  year: number;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+type Goal = {
+  id: string;
+  title: string;
+  completed: boolean;
+  notes?: string;
+  subtasks?: { id: string; title: string; done: boolean }[];
+};
+
+
+export default function DayModal({ day, month, year, isOpen, onClose }: DayModalProps) {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [activeGoalId, setActiveGoalId] = useState<string | null>(null);
+
+  if (!isOpen) return null;
+
+  const updateGoal = (updated: Goal) => {
+    setGoals((prev) =>
+      prev.map((g) => (g.id === updated.id ? updated : g))
+    );
+  };
+
+  const addGoal = (title: string) => {
+    if (!title.trim()) return;
+
+    setGoals((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        title,
+        completed: false,
+      },
+    ]);
+  };
+
+
+  const getOrdinal = (n: number) => {
+    if (n % 100 >= 11 && n % 100 <= 13) return "th";
+    switch (n % 10) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
+  };
+
+  const formattedDate = `${day}${getOrdinal(day)} ${new Date(year, month).toLocaleString("default", {
+    month: "long",
+  })} ${year}`;
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center"
+    onClick={() => { onClose(); setIsFullscreen(false); }}>
+      <div
+        className={`
+    bg-stone-900 p-6 border border-stone-700/40 flex flex-col
+    transition-[width,height,border-radius] duration-300 ease-out
+    animate-[fadeIn_0.25s_ease-out]
+    ${isFullscreen
+            ? "w-screen h-screen rounded-none"
+            : "w-[55vw] h-[75vh] rounded-3xl"
+          }
+  `}
+      onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center mb-4">
+          <h3 className="text-xl font-semibold">{formattedDate}</h3>
+
+          <div className="ml-auto flex gap-2">
+            {isFullscreen ? (
+              <button
+                onClick={() => setIsFullscreen(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-md bg-stone-800 hover:bg-stone-600 transition"
+              >
+                <Minimize2 size={18} />
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsFullscreen(true)}
+                className="w-8 h-8 flex items-center justify-center rounded-md bg-stone-800 hover:bg-stone-600 transition"
+              >
+                <Maximize2 size={18} />
+              </button>
+            )}
+
+            <button
+              onClick={() => { onClose(); setIsFullscreen(false); }}
+              className="w-8 h-8 flex items-center justify-center rounded-md bg-stone-800 hover:bg-stone-600 transition"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="h-full flex flex-row gap-2">
+          <div className="flex-1 h-full overflow-y-auto rounded-xl  p-4 space-y-2">
+            {goals.map((goal) => (
+              <GoalItem
+                key={goal.id}
+                goal={goal}
+                onUpdate={updateGoal}
+                isFullscreen={isFullscreen}
+                onFocus={() => setActiveGoalId(goal.id)}
+                isActive={activeGoalId === goal.id}
+              />
+            ))}
+
+            {/* Empty editable goal */}
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-stone-800/30">
+              <input type="checkbox" disabled className="opacity-40" />
+
+              <input
+                placeholder="Add a new goal…"
+                className="bg-transparent focus:outline-none w-full text-stone-400"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    addGoal(e.currentTarget.value);
+                    e.currentTarget.value = "";
+                  }
+                }}
+              />
+            </div>
+          </div>
+          {isFullscreen && (
+            <div className="w-1/2 h-full overflow-y-auto rounded-xl bg-stone-800/40 p-6">
+              {activeGoalId ? (
+                <GoalDetails
+                  goal={goals.find((g) => g.id === activeGoalId)!}
+                  onUpdate={updateGoal}
+                  isFullscreen={isFullscreen}
+                />
+              ) : (
+                <div className="text-stone-500 italic">
+                  Select a goal to view details
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
