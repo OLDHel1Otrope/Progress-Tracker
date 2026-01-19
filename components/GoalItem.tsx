@@ -5,6 +5,19 @@ import { useState } from "react";
 import { ChevronRight, Fullscreen } from "lucide-react";
 import GoalDetails from "./GoalDetails";
 
+function extractTags(text: string): string[] {
+    return Array.from(
+        new Set(
+            text.match(/#[a-zA-Z0-9_]+/g)?.map(t => t.slice(1)) ?? []
+        )
+    );
+}
+
+function removeTags(text: string): string {
+    return text.replace(/#[a-zA-Z0-9_]+/g, "").replace(/\s+/g, " ").trim();
+}
+
+
 interface Goal {
     id: string;
     title: string;
@@ -26,6 +39,7 @@ export default function GoalItem({
     isActive: boolean;
 }) {
     const [expanded, setExpanded] = useState(false);
+    const [editing, setEditing] = useState(false);
 
     return (
         <div
@@ -33,7 +47,7 @@ export default function GoalItem({
         ${goal.completed ? "bg-stone-700/30" : expanded ? "bg-stone-800/60" : "bg-stone-800/40"}
       `}
         >
-            {/* Header */}
+
             <div className="flex items-center gap-2">
                 <button
                     onClick={() =>
@@ -64,22 +78,64 @@ export default function GoalItem({
                 </button>
 
 
-                <input
-                    value={goal.title}
-                    onChange={(e) =>
-                        onUpdate({ ...goal, title: e.target.value })
-                    }
-                    className={`flex-1 bg-transparent focus:outline-none
-            ${goal.completed ? "line-through text-stone-500" : ""}
-          `}
-                />
+                <div className="flex-1 ml-1">
+                    {editing ? (
+                        <input
+                            value={goal.title}
+                            autoFocus
+                            onChange={(e) =>
+                                onUpdate({ ...goal, title: e.target.value })
+                            }
+                            onBlur={() => setEditing(false)}
+                            className={`w-full bg-transparent focus:outline-none font-bold
+        ${goal.completed ? "line-through text-stone-500" : ""}
+      `}
+                        />
+                    ) : (
+                        <div
+                            onClick={() => setEditing(true)}
+                            className={`font-bold cursor-text
+        ${goal.completed ? "line-through text-stone-500" : ""}
+      `}
+                        >
+                            {removeTags(goal.title) || (
+                                <span className="text-stone-500">Untitled</span>
+                            )}
+                        </div>
+                    )}
+
+
+                    {extractTags(goal.title).length > 0 && (
+                        <div className="mt-1 flex flex-wrap gap-1">
+                            {extractTags(goal.title).map((tag) => (
+                                <button
+                                    key={tag}
+                                    onClick={() => {
+                                        console.log("Clicked tag:", tag);
+                                    }}
+                                    className="
+            px-2 py-[2px] rounded-md text-xs
+            border border-stone-600
+            text-stone-300
+            hover:bg-stone-700/60
+            transition
+          "
+                                >
+                                    #{tag}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+
 
                 <button
                     onClick={() => {
                         if (isFullscreen) {
-                            onFocus(); // open in right pane
+                            onFocus();
                         } else {
-                            setExpanded(!expanded); // inline expand
+                            setExpanded(!expanded);
                         }
                     }}
                     className="text-stone-400 hover:text-stone-200 transition"
@@ -94,7 +150,7 @@ export default function GoalItem({
             </div>
 
             {/* Expanded section */}
-            {expanded&&!isFullscreen && (
+            {expanded && !isFullscreen && (
                 // <div className="mt-3 border-t border-stone-700/40 pt-3 text-sm text-stone-300">
                 //     <div className="italic text-stone-400">
                 //         Notes, subtasks, details…

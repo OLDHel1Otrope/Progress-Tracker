@@ -21,7 +21,6 @@ type Goal = {
   subtasks?: { id: string; title: string; done: boolean }[];
 };
 
-
 export default function DayModal({ day, month, year, isOpen, onClose }: DayModalProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -82,7 +81,6 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
   `}
       onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center mb-4">
           <h3 className="text-xl font-semibold">{formattedDate}</h3>
 
@@ -112,7 +110,7 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
           </div>
         </div>
 
-        {/* Content */}
+
         <div className="h-full flex flex-row gap-2">
           <div className="flex-1 h-full overflow-y-auto rounded-xl  p-4 space-y-2">
             {goals.map((goal) => (
@@ -126,7 +124,6 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
               />
             ))}
 
-            {/* Empty editable goal */}
             <div className="flex items-center gap-2 p-3 rounded-lg bg-stone-800/30">
               <input type="checkbox" disabled className="opacity-40" />
 
