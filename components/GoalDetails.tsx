@@ -1,13 +1,8 @@
 "use client";
 
 import RichTextEditor from "@/components/RichTextEditor";
+import { Goal } from "./GoalItem";
 
-interface Goal {
-  title: string;
-  description?: string;
-  notes?: string;
-  subtasks?: string;
-}
 
 interface GoalDetailsProps {
   goal: Goal;

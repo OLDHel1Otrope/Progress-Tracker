@@ -17,13 +17,14 @@ type Goal = {
   id: string;
   title: string;
   completed: boolean;
+  recurrence_group_id?: string | null;
   notes?: string;
   subtasks?: { id: string; title: string; done: boolean }[];
 };
 
 export default function DayModal({ day, month, year, isOpen, onClose }: DayModalProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [goals, setGoals] = useState<Goal[]>([]);
+  const [goals, setGoals] = useState<Goal[]>(sampleGoals);
   const [activeGoalId, setActiveGoalId] = useState<string | null>(null);
 
   if (!isOpen) return null;
@@ -159,3 +160,91 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
     </div>
   );
 }
+
+let sampleGoals= [
+  {
+    id: "goal-2026-01-24-001",
+    scheduled_date: "2026-01-24",
+    title: "Morning workout #Exercise #Health",
+    recurrence_group_id: "recurr-001",
+    description: {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "Chest + triceps day. Focus on form, not weight.\n\n" },
+            { type: "text", marks: [{ type: "bold" }], text: "Workout plan:\n" },
+            { type: "text", text: "- Bench press\n- Incline dumbbell press\n- Tricep dips\n- Cable pushdowns\n\n" },
+            { type: "text", text: "End with 10 min stretching." }
+          ]
+        }
+      ]
+    },
+    is_completed: true,
+  },
+
+  {
+    id: "goal-2026-01-24-002",
+    scheduled_date: "2026-01-24",
+    title: "DSA practice session #Academic #Coding",
+    recurrence_group_id: "recurr-002",
+    description: {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "Solve problems on:\n" },
+            { type: "text", marks: [{ type: "bold" }], text: "Topics:\n" },
+            { type: "text", text: "- Binary Search\n- Recursion\n- Sliding Window\n\n" },
+            { type: "text", text: "Target: 4 problems minimum.\nFocus on approach, not speed." }
+          ]
+        }
+      ]
+    },
+    is_completed: false,
+  },
+
+  {
+    id: "goal-2026-01-24-003",
+    scheduled_date: "2026-01-24",
+    title: "Read 20 pages #Reading #Focus",
+    recurrence_group_id: null,
+    description: {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "Book: " },
+            { type: "text", marks: [{ type: "italic" }], text: "Deep Work – Cal Newport\n\n" },
+            { type: "text", text: "No phone, no notifications.\nRead with full concentration.\n\nTake short notes after reading." }
+          ]
+        }
+      ]
+    },
+    is_completed: true,
+  },
+
+  {
+    id: "goal-2026-01-24-004",
+    scheduled_date: "2026-01-24",
+    title: "Plan weekly goals #Planning #Life",
+    recurrence_group_id: "recurr-003",
+    description: {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "Plan for upcoming week:\n\n" },
+            { type: "text", text: "- Fitness schedule\n- Study targets\n- Project milestones\n- Rest days\n\n" },
+            { type: "text", text: "Set realistic goals, not idealistic ones." }
+          ]
+        }
+      ]
+    },
+    is_completed: false,
+  }
+];
