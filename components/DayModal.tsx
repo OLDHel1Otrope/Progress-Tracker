@@ -112,8 +112,8 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
         </div>
 
 
-        <div className="h-full flex flex-row gap-2">
-          <div className="flex-1 h-full overflow-y-auto rounded-xl  p-4 space-y-2">
+        <div className="h-full min-h-0 flex flex-row gap-2">
+          <div className="flex-1 h-full overflow-y-auto rounded-xl p-4 space-y-2">
             {goals.map((goal) => (
               <GoalItem
                 key={goal.id}
@@ -130,7 +130,7 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
 
               <input
                 placeholder="Add a new goal…"
-                className="bg-transparent focus:outline-none w-full text-stone-400"
+                className="bg-transparent focus:outline-none w-full text-stone-400 h-12"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     addGoal(e.currentTarget.value);
@@ -141,7 +141,7 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
             </div>
           </div>
           {isFullscreen && (
-            <div className="w-1/2 h-full overflow-y-auto rounded-xl bg-stone-800/40 p-6">
+            <div className="w-3/5 min-h-0 overflow-y-auto rounded-xl bg-stone-800/40 p-6">
               {activeGoalId ? (
                 <GoalDetails
                   goal={goals.find((g) => g.id === activeGoalId)!}

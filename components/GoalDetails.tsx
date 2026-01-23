@@ -16,7 +16,7 @@ export default function GoalDetails({
   isFullscreen,
 }: GoalDetailsProps) {
   return (
-    <div className="flex flex-col gap-6 mt-4 h-full">
+    <div className="flex flex-col gap-6 mt-4 ">
 
       {isFullscreen && (
         <h4 className="text-xl font-semibold text-stone-100">

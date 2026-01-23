@@ -23,7 +23,7 @@ export interface Goal {
     recurrence_group_id: any;
     id: string;
     title: string;
-    completed: boolean;
+    is_completed: boolean;
     description?: string;
     notes?: string;
 }
@@ -50,25 +50,25 @@ export default function GoalItem({
     return (
         <div
             className={`rounded-lg p-3 transition-all duration-200 group
-        ${goal.completed ? "bg-stone-700/30" : expanded ? "bg-stone-800/60" : "bg-stone-800/40"}
+        ${goal.is_completed ? "bg-stone-700/30" : expanded ? "bg-stone-800/60" : "bg-stone-800/40"}
       `}
         >
 
             <div className="flex items-center gap-2">
                 <button
                     onClick={() =>
-                        onUpdate({ ...goal, completed: !goal.completed })
+                        onUpdate({ ...goal, is_completed: !goal.is_completed })
                     }
                     className={`
             w-4 h-4 rounded-[4px] border flex items-center justify-center
             transition-all duration-200
-            ${goal.completed
+            ${goal.is_completed
                             ? "bg-blue-600 border-blue-600"
                             : "border-stone-500 hover:border-stone-300"
                         }
         `}
                 >
-                    {goal.completed && (
+                    {goal.is_completed && (
                         <svg
                             viewBox="0 0 24 24"
                             className="w-3 h-3 text-white"
@@ -94,14 +94,14 @@ export default function GoalItem({
                             }
                             onBlur={() => setEditing(false)}
                             className={`w-full bg-transparent focus:outline-none font-bold
-        ${goal.completed ? "line-through text-stone-500" : ""}
+        ${goal.is_completed ? "line-through text-stone-500" : ""}
       `}
                         />
                     ) : (
                         <div
                             onClick={() => setEditing(true)}
                             className={`font-bold cursor-text flex flex-row gap-2
-        ${goal.completed ? "line-through text-stone-500" : ""}
+        ${goal.is_completed ? "line-through text-stone-500" : ""}
       `}
                         >
                             {removeTags(goal.title) || (
@@ -225,14 +225,21 @@ export default function GoalItem({
             </div>
 
             {/* Expanded section */}
-            {expanded && !isFullscreen && (
-                // <div className="mt-3 border-t border-stone-700/40 pt-3 text-sm text-stone-300">
-                //     <div className="italic text-stone-400">
-                //         Notes, subtasks, details…
-                //     </div>
-                // </div>
-                <GoalDetails goal={goal} onUpdate={onUpdate} isFullscreen={isFullscreen} />
-            )}
+            <div
+                className={`
+    overflow-hidden
+    transition-[max-height,opacity,margin-top] duration-300 ease-out
+    ${expanded && !isFullscreen
+                        ? "max-h-[700px] opacity-100 mt-3"
+                        : "max-h-0 opacity-0 mt-0"}
+  `}
+            >
+                <GoalDetails
+                    goal={goal}
+                    onUpdate={onUpdate}
+                    isFullscreen={isFullscreen}
+                />
+            </div>
             <RecurrenceModal isOpen={showRecurrenceModal} onClose={() => setShowRecurrenceModal(false)} />
         </div>
     );
