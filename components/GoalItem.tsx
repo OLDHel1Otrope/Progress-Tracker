@@ -5,6 +5,10 @@ import { useState } from "react";
 import { ChevronRight, Fullscreen, Plus } from "lucide-react";
 import GoalDetails from "./GoalDetails";
 import RecurrenceModal from "./RecurrenceModal";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { GripVertical } from "lucide-react";
+
 
 function extractTags(text: string): string[] {
     return Array.from(
@@ -46,15 +50,62 @@ export default function GoalItem({
     const [editing, setEditing] = useState(false);
     const [showRecurrenceModal, setShowRecurrenceModal] = useState(false);
 
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: goal.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+
 
     return (
         <div
-            className={`rounded-lg p-3 transition-all duration-200 group
-        ${goal.is_completed ? "bg-stone-700/30" : expanded ? "bg-stone-800/60" : "bg-stone-800/40"}
-      `}
+            ref={setNodeRef}
+            style={{
+                transform: CSS.Transform.toString(transform),
+                transition,
+            }}
+            className={`
+    group rounded-lg p-3
+    flex flex-col
+    transition-colors duration-200
+
+    ${isDragging
+                    ? "opacity-60 bg-stone-700/60"
+                    : goal.is_completed
+                        ? "bg-stone-700/30"
+                        : expanded
+                            ? "bg-stone-800/60"
+                            : "bg-stone-800/40"
+                }
+  `}
         >
 
+
             <div className="flex items-center gap-2">
+
+                <div
+                    {...attributes}
+                    {...listeners}
+                    className="
+    opacity-0 group-hover:opacity-100
+    cursor-grab active:cursor-grabbing
+    text-stone-500 hover:text-stone-300
+    transition-opacity
+    pt-1
+  "
+                >
+                    <GripVertical size={16} />
+                </div>
+
                 <button
                     onClick={() =>
                         onUpdate({ ...goal, is_completed: !goal.is_completed })
@@ -226,7 +277,7 @@ export default function GoalItem({
 
             {/* Expanded section */}
             <div
-                className={`
+                className={` mx-7
     overflow-hidden
     transition-[max-height,opacity,margin-top] duration-300 ease-out
     ${expanded && !isFullscreen

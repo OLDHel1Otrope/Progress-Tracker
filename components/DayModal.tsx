@@ -5,6 +5,20 @@ import { Minimize2, Maximize2 } from "lucide-react";
 import GoalItem from "./GoalItem";
 import GoalDetails from "./GoalDetails";
 
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+
+
 interface DayModalProps {
   day: number;
   month: number; // 0-indexed
@@ -27,7 +41,6 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
   const [goals, setGoals] = useState<Goal[]>(sampleGoals);
   const [activeGoalId, setActiveGoalId] = useState<string | null>(null);
 
-  if (!isOpen) return null;
 
   const updateGoal = (updated: Goal) => {
     setGoals((prev) =>
@@ -48,6 +61,27 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
     ]);
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 6 }, // prevents accidental drags
+    })
+  );
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setGoals((items) => {
+      const oldIndex = items.findIndex((g) => g.id === active.id);
+      const newIndex = items.findIndex((g) => g.id === over.id);
+      return arrayMove(items, oldIndex, newIndex);
+    });
+  };
+
+
+
+
+
 
   const getOrdinal = (n: number) => {
     if (n % 100 >= 11 && n % 100 <= 13) return "th";
@@ -67,9 +101,12 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
     month: "long",
   })} ${year}`;
 
+  if (!isOpen) return null;
+
+
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center"
-    onClick={() => { onClose(); setIsFullscreen(false); }}>
+      onClick={() => { onClose(); setIsFullscreen(false); }}>
       <div
         className={`
     bg-stone-900 p-6 border border-stone-700/40 flex flex-col
@@ -80,7 +117,7 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
             : "w-[55vw] h-[75vh] rounded-3xl"
           }
   `}
-      onClick={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center mb-4">
           <h3 className="text-xl font-semibold">{formattedDate}</h3>
@@ -111,35 +148,60 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
           </div>
         </div>
 
+        <div className="h-full min-h-0 flex flex-row gap-2 overflow-hidden">
 
-        <div className="h-full min-h-0 flex flex-row gap-2">
-          <div className="flex-1 h-full overflow-y-auto rounded-xl p-4 space-y-2">
-            {goals.map((goal) => (
-              <GoalItem
-                key={goal.id}
-                goal={goal}
-                onUpdate={updateGoal}
-                isFullscreen={isFullscreen}
-                onFocus={() => setActiveGoalId(goal.id)}
-                isActive={activeGoalId === goal.id}
-              />
-            ))}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
 
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-stone-800/30">
-              <input type="checkbox" disabled className="opacity-40" />
+            {/* LEFT COLUMN */}
+            <div className="flex-1 min-h-0 flex flex-col">
 
-              <input
-                placeholder="Add a new goal…"
-                className="bg-transparent focus:outline-none w-full text-stone-400 h-12"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    addGoal(e.currentTarget.value);
-                    e.currentTarget.value = "";
-                  }
-                }}
-              />
+              <SortableContext
+                items={goals.map((g) => g.id)}
+                strategy={verticalListSortingStrategy}
+              >
+
+                {/* SCROLL AREA */}
+                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden rounded-xl space-y-2 pr-1">
+
+                  {goals.map((goal) => (
+                    <GoalItem
+                      key={goal.id}
+                      goal={goal}
+                      onUpdate={updateGoal}
+                      isFullscreen={isFullscreen}
+                      onFocus={() => setActiveGoalId(goal.id)}
+                      isActive={activeGoalId === goal.id}
+                    />
+                  ))}
+
+                </div>
+              </SortableContext>
+
+              {/* ADD INPUT (fixed at bottom) */}
+              <div className="mt-2 shrink-0 flex items-center gap-2 p-3 rounded-lg bg-stone-800/30">
+                <input type="checkbox" disabled className="opacity-40" />
+
+                <input
+                  placeholder="Add a new goal…"
+                  className="bg-transparent focus:outline-none w-full text-stone-400 h-12"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      addGoal(e.currentTarget.value);
+                      e.currentTarget.value = "";
+                    }
+                  }}
+                />
+              </div>
+
             </div>
-          </div>
+
+          </DndContext>
+
+          {/* RIGHT PANEL */}
           {isFullscreen && (
             <div className="w-3/5 min-h-0 overflow-y-auto rounded-xl bg-stone-800/40 p-6">
               {activeGoalId ? (
@@ -155,13 +217,15 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
               )}
             </div>
           )}
+
+
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 
-let sampleGoals= [
+let sampleGoals = [
   {
     id: "goal-2026-01-24-001",
     scheduled_date: "2026-01-24",

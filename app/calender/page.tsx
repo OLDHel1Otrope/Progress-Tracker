@@ -140,15 +140,13 @@ export default function CalendarPage() {
         </div>
       </div>
       {/* this is the day modal */}
-      {selectedDay && (
-        <DayModal
-          day={selectedDay}
-          month={month}
-          year={year}
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
-      )}
+      <DayModal
+        day={selectedDay ?? 1}
+        month={month}
+        year={year}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   );
 }
@@ -173,4 +171,4 @@ const goals = [{ date: "", goals: [{ title: "", description: "", completed: fals
 
 const notes = [{ date: "", content: "" }]
 
-const tags = ["", "" ]
+const tags = ["", ""]
