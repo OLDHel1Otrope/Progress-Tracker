@@ -3,20 +3,22 @@ import PageContainer from "@/components/PageContainer";
 import { Calendar } from "lucide-react";
 import { useState } from "react";
 import CalendarPage from "./calender/page";
+import { title } from "process";
 
 const prevP = [
-  { title: "Today", color: "#2a2a2acc" },
-  { title: "Calendar", color: "#242424cc" },
-  { title: "Goals", color: "#1f1f1fcc" },
-  { title: "Statistics", color: "#191919cc" },
-  { title: "Settings", color: "#121212cc" },
+  { title: "Today", color: "#2a2a2af1" },
+  { title: "Calendar", color: "#242424f1" },
+  { title: "Goals", color: "#1f1f1ff1" },
+  { title: "Statistics", color: "#191919f1" },
+  { title: "Settings", color: "#121212f1" },
+  { title: "Notes", color: "#101010f1" },
 ];
 
 const pages = prevP.map((p, i) => ({ ...p, color: prevP[prevP.length - 1 - i].color }));
 
 
 export default function Home() {
-  const [active, setActive] = useState<string | null>(null);
+  const [active, setActive] = useState<string | null>("Calendar");
 
   return (
     <>
@@ -39,7 +41,7 @@ export default function Home() {
                 <h2 className="text-2xl font-semibold">Today's Overview</h2>
                 <p className="mt-2">Your tasks and goals for today will appear here.</p>
               </div>
-            )}  
+            )}
           </>
         </PageContainer>
       ))}

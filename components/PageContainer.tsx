@@ -20,9 +20,9 @@ export default function PageContainer({
             className="fixed left-0 top-0 h-screen"
             style={{
                 width: "1920px",
-                transform: isActive ? "translateX(-60px)" : "translateX(-1920px)",
+                transform: isActive ? `translateX(-${60}px)` : `translateX(-${1850+10*index}px)`,
                 transition: "transform 0.4s ease",
-                zIndex: 10 - index,
+                zIndex: 10 + index,
                 backgroundColor: color,
             }}
         >
