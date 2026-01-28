@@ -4,19 +4,21 @@ import { useEffect, useState, useRef } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
-import {TextStyle} from "@tiptap/extension-text-style";
+import { TextStyle } from "@tiptap/extension-text-style";
 import { Bold, Italic, Underline as UnderlineIcon } from "lucide-react";
 
 interface RichTextEditorProps {
   value?: string;
   onChange?: (html: string) => void;
   placeholder?: string;
+  minimal?: boolean,
 }
 
 export default function RichTextEditor({
   value = "",
   onChange,
   placeholder = "Write something…",
+  minimal = false,
 }: RichTextEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
@@ -83,6 +85,7 @@ export default function RichTextEditor({
             left: menuPos.x,
             top: menuPos.y,
             transform: "translate(-50%, -100%)",
+            background: minimal ? "transparent" : undefined,
           }}
           className="absolute z-50 flex items-center gap-1 rounded-lg
           bg-stone-900 border border-stone-700 shadow-lg px-1 py-1"
@@ -133,7 +136,7 @@ export default function RichTextEditor({
 
       <EditorContent
         editor={editor}
-        className="min-h-[90px] text-base"
+        className="min-h-[60px] text-base"
       />
 
       {!editor.getText() && (
@@ -160,10 +163,9 @@ function ToolbarButton({
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       className={`p-1 rounded-md transition
-        ${
-          active
-            ? "bg-blue-600 text-white"
-            : "text-stone-300 hover:bg-stone-700"
+        ${active
+          ? "bg-blue-600 text-white"
+          : "text-stone-300 hover:bg-stone-700"
         }`}
     >
       {children}

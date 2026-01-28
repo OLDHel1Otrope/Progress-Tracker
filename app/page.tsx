@@ -4,6 +4,7 @@ import { Calendar } from "lucide-react";
 import { useState } from "react";
 import CalendarPage from "./calender/page";
 import { title } from "process";
+import NotesPane from "@/components/NotesPane";
 
 const prevP = [
   { title: "Today", color: "#2a2a2af1" },
@@ -42,6 +43,11 @@ export default function Home() {
                 <p className="mt-2">Your tasks and goals for today will appear here.</p>
               </div>
             )}
+            {p.title=="Notes" && (
+              <div className="p-7 flex flex-row justify-center min-h-0 h-full flex-1">
+              <NotesPane />
+              </div>
+              )}
           </>
         </PageContainer>
       ))}
