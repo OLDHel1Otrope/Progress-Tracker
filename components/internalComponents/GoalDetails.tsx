@@ -1,6 +1,6 @@
 "use client";
 
-import RichTextEditor from "@/components/RichTextEditor";
+import RichTextEditor from "@/components/internalComponents/RichTextEditor";
 import { Goal } from "./GoalItem";
 
 

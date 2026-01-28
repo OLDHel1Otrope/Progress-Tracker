@@ -3,11 +3,11 @@
 
 import { useState } from "react";
 import { ChevronRight, Fullscreen, Plus } from "lucide-react";
-import GoalDetails from "./GoalDetails";
 import RecurrenceModal from "./RecurrenceModal";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
+import GoalDetails from "./GoalDetails";
 
 
 function extractTags(text: string): string[] {
