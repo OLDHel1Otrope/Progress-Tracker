@@ -21,7 +21,7 @@ export default function Home() {
   const [active, setActive] = useState<string | null>("Calendar");
 
   return (
-    <>
+    <div>
       {pages.map((p, i) => (
         <PageContainer
           key={p.title}
@@ -45,6 +45,9 @@ export default function Home() {
           </>
         </PageContainer>
       ))}
-    </>
+      <div className="fixed bottom-4 right-4 text-stone-500 text-sm">
+        &copy; 2026 Progress Tracker
+      </div>
+    </div>
   );
 }

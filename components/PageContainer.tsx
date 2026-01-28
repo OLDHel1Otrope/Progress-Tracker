@@ -20,10 +20,11 @@ export default function PageContainer({
             className="fixed left-0 top-0 h-screen"
             style={{
                 width: "1920px",
-                transform: isActive ? `translateX(-${60}px)` : `translateX(-${1850+10*index}px)`,
-                transition: "transform 0.4s ease",
+                transform: isActive ? `translateX(-${60}px)` : `translateX(-${1850 + 10 * index}px)`,
+                transition: "transform 0.3s ease",
                 zIndex: 10 + index,
                 backgroundColor: color,
+                boxShadow: "2px 4px 8px rgba(0,0,0,0.2)",
             }}
         >
             <div className="h-full p-6 text-white">{children}</div>
@@ -38,9 +39,10 @@ export default function PageContainer({
                     top: `${index * 150}px`,
 
                     right: "-50px",
-                     backgroundColor: color,
+                    backgroundColor: color,
 
                     clipPath: "polygon(0 0, 100% 15%, 100% 85%, 0 100%)",
+
                 }}
             >
                 <span
@@ -48,6 +50,7 @@ export default function PageContainer({
                     style={{
                         writingMode: "vertical-rl",
                         transform: "rotate(180deg)",
+
                     }}
                 >
                     {title}
