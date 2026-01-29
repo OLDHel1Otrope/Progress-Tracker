@@ -5,6 +5,9 @@ import { useState } from "react";
 import CalendarPage from "./calender/page";
 import { title } from "process";
 import NotesPane from "@/components/NotesPane";
+import { sampleGoals } from "@/components/internalComponents/DayModal";
+import GoalItem from "@/components/internalComponents/GoalItem";
+import TodayGoals from "@/components/internalComponents/TodayGoals";
 
 const prevP = [
   { title: "Today", color: "#2a2a2af1" },
@@ -19,10 +22,10 @@ const pages = prevP.map((p, i) => ({ ...p, color: prevP[prevP.length - 1 - i].co
 
 
 export default function Home() {
-  const [active, setActive] = useState<string | null>("Calendar");
+  const [active, setActive] = useState<string | null>("Today");
 
   return (
-    <div>
+    <div className="h-screen flex flex-col">
       {pages.map((p, i) => (
         <PageContainer
           key={p.title}
@@ -36,18 +39,20 @@ export default function Home() {
         >
           <>
             {p.title === "Calendar" && <CalendarPage />}
+
             {p.title === "Today" && (
-              <div className="flex flex-col items-center justify-center h-full text-stone-400">
-                <Calendar size={64} className="mb-4" />
-                <h2 className="text-2xl font-semibold">Today's Overview</h2>
-                <p className="mt-2">Your tasks and goals for today will appear here.</p>
+              <div className="flex flex-1 min-h-0 items-center justify-center h-full">
+                <TodayGoals />
               </div>
             )}
-            {p.title=="Notes" && (
+
+
+            {p.title == "Notes" && (
               <div className="p-7 flex flex-row justify-center min-h-0 h-full flex-1">
-              <NotesPane />
+                <NotesPane />
               </div>
-              )}
+            )}
+            {/* {p.title==="Calendar"} */}
           </>
         </PageContainer>
       ))}

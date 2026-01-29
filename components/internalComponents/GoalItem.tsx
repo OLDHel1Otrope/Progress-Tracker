@@ -30,6 +30,7 @@ export interface Goal {
     is_completed: boolean;
     description?: string;
     notes?: string;
+    isHome?: boolean;
 }
 
 export default function GoalItem({
@@ -38,6 +39,7 @@ export default function GoalItem({
     isFullscreen,
     onFocus,
     isActive,
+    isHome=false,
 
 }: {
     goal: Goal;
@@ -78,6 +80,7 @@ export default function GoalItem({
     flex flex-col
     transition-colors duration-200
 
+
     ${isDragging
                     ? "opacity-60 bg-stone-700/60"
                     : goal.is_completed
@@ -86,6 +89,7 @@ export default function GoalItem({
                             ? "bg-stone-800/60"
                             : "bg-stone-800/40"
                 }
+    ${isHome?"opacity-70 hover:opacity-100 bg-stone-800/10":""}
   `}
         >
 

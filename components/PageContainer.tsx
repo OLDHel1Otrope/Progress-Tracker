@@ -17,7 +17,7 @@ export default function PageContainer({
 }: PageContainerProps) {
     return (
         <div
-            className="fixed left-0 top-0 h-screen"
+            className="fixed left-0 top-0 h-screen min-h-0 h-full flex flex-col"
             style={{
                 width: "1920px",
                 transform: isActive ? `translateX(-${60}px)` : `translateX(-${1850 + 10 * index}px)`,
@@ -27,7 +27,7 @@ export default function PageContainer({
                 boxShadow: "2px 4px 8px rgba(0,0,0,0.2)",
             }}
         >
-            <div className="h-full p-6 text-white">{children}</div>
+            <div className="h-full p-6 text-white min-h-0">{children}</div>
 
             <div
                 onClick={onToggle}

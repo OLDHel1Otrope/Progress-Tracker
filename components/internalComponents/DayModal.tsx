@@ -17,6 +17,7 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
+import GoalList from "./GoalList";
 
 
 interface DayModalProps {
@@ -77,11 +78,6 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
       return arrayMove(items, oldIndex, newIndex);
     });
   };
-
-
-
-
-
 
   const getOrdinal = (n: number) => {
     if (n % 100 >= 11 && n % 100 <= 13) return "th";
@@ -150,56 +146,17 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
 
         <div className="h-full min-h-0 flex flex-row gap-2 overflow-hidden">
 
-          <DndContext
+          <GoalList 
+            goals={goals}
+            updateGoal={updateGoal}
+            isFullscreen={isFullscreen}
+            activeGoalId={activeGoalId}
+            setActiveGoalId={setActiveGoalId}
             sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-
-            {/* LEFT COLUMN */}
-            <div className="flex-1 min-h-0 flex flex-col">
-
-              <SortableContext
-                items={goals.map((g) => g.id)}
-                strategy={verticalListSortingStrategy}
-              >
-
-                {/* SCROLL AREA */}
-                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden rounded-xl space-y-2 pr-1">
-
-                  {goals.map((goal) => (
-                    <GoalItem
-                      key={goal.id}
-                      goal={goal}
-                      onUpdate={updateGoal}
-                      isFullscreen={isFullscreen}
-                      onFocus={() => setActiveGoalId(goal.id)}
-                      isActive={activeGoalId === goal.id}
-                    />
-                  ))}
-
-                </div>
-              </SortableContext>
-
-              {/* ADD INPUT (fixed at bottom) */}
-              <div className="mt-2 shrink-0 flex items-center gap-2 p-3 rounded-lg bg-stone-800/30">
-                <input type="checkbox" disabled className="opacity-40" />
-
-                <input
-                  placeholder="Add a new goal…"
-                  className="bg-transparent focus:outline-none w-full text-stone-400 h-12"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      addGoal(e.currentTarget.value);
-                      e.currentTarget.value = "";
-                    }
-                  }}
-                />
-              </div>
-
-            </div>
-
-          </DndContext>
+            closestCenter={closestCenter}
+            handleDragEnd={handleDragEnd}
+            addGoal={addGoal}
+          />
 
           {/* RIGHT PANEL */}
           {isFullscreen && (
@@ -225,7 +182,7 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
   );
 }
 
-let sampleGoals = [
+export const sampleGoals = [
   {
     id: "goal-2026-01-24-001",
     scheduled_date: "2026-01-24",
