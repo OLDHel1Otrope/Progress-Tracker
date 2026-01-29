@@ -1,16 +1,16 @@
 "use client"
 
 import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
+    DndContext,
+    closestCenter,
+    PointerSensor,
+    useSensor,
+    useSensors,
 } from "@dnd-kit/core";
 import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove,
+    SortableContext,
+    verticalListSortingStrategy,
+    arrayMove,
 } from "@dnd-kit/sortable";
 import GoalItem from "./GoalItem";
 
@@ -38,7 +38,7 @@ export default function GoalList({
     closestCenter,
     handleDragEnd,
     addGoal,
-    isHome=false,
+    isHome = false,
 }: GoalListProps) {
     return (
         <DndContext
@@ -48,7 +48,7 @@ export default function GoalList({
         >
 
             {/* LEFT COLUMN */}
-            <div className="w-full min-h-0 flex flex-col ">
+            <div className={`w-full min-h-0 flex flex-col `}>
 
                 <SortableContext
                     items={goals.map((g) => g.id)}
@@ -56,12 +56,12 @@ export default function GoalList({
                 >
 
                     {/* SCROLL AREA */}
-                    <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden rounded-xl space-y-2 pr-1">
+                    <div className={`flex flex-col ${isHome ? "gap-1" : "gap-2"} min-h-0 overflow-y-auto overflow-x-hidden`}>
 
-                        {goals.map((goal) => (
+                        {goals.map((goal, i) => (
                             <GoalItem
                                 key={goal.id}
-                                goal={goal}
+                                goal={{ ...goal, index: i }}
                                 onUpdate={updateGoal}
                                 isFullscreen={isFullscreen}
                                 onFocus={() => setActiveGoalId(goal.id)}
@@ -74,16 +74,17 @@ export default function GoalList({
                 </SortableContext>
 
                 {/* ADD INPUT (fixed at bottom) */}
-                <div className={`mt-2 shrink-0 flex items-center gap-4 p-1 pl-8 rounded-lg bg-stone-800/${isHome ? "10" : "30"}`}
-                style={{
-                    
-                }}
+                <div className={`${isHome ? "mt-1" : "mt-2"} shrink-0 flex items-center gap-4 p-1 pl-9 bg-stone-800/${isHome && goals.length > 0 ? "20 rounded-b-xl" : "30"}`}
+                    style={{
+
+                    }}
                 >
                     <input type="checkbox" disabled className="opacity-40" />
+                    
 
                     <input
                         placeholder="Add a new goal…"
-                        className="bg-transparent focus:outline-none w-full text-stone-400 h-12"
+                        className="bg-transparent focus:outline-none w-full text-stone-500 h-12 placeholder:text-stone-600 font-bold"
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 addGoal(e.currentTarget.value);

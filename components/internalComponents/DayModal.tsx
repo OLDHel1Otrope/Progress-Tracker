@@ -109,7 +109,7 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
     transition-[width,height,border-radius] duration-300 ease-out
     animate-[fadeIn_0.25s_ease-out]
     ${isFullscreen
-            ? "w-screen h-screen rounded-none"
+            ? "w-screen h-screen rounded-none pl-[170px]"
             : "w-[55vw] h-[75vh] rounded-3xl"
           }
   `}
@@ -160,7 +160,7 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
 
           {/* RIGHT PANEL */}
           {isFullscreen && (
-            <div className="w-3/5 min-h-0 overflow-y-auto rounded-xl bg-stone-800/40 p-6">
+            <div className="w-full min-h-0 overflow-y-auto rounded-xl bg-stone-800/40 p-6">
               {activeGoalId ? (
                 <GoalDetails
                   goal={goals.find((g) => g.id === activeGoalId)!}

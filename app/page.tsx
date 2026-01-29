@@ -56,6 +56,11 @@ export default function Home() {
           </>
         </PageContainer>
       ))}
+      {!active && (
+        <div className="flex-1 h-full flex flex-col items-center justify-center gap-4">
+          <span className="text-stone-300 font-medium">Welcome</span>
+        </div>
+      )}
       <div className="fixed bottom-4 right-4 text-stone-500 text-sm">
         &copy; 2026 Progress Tracker
       </div>

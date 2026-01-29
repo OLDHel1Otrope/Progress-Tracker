@@ -39,7 +39,7 @@ export default function GoalItem({
     isFullscreen,
     onFocus,
     isActive,
-    isHome=false,
+    isHome = false,
 
 }: {
     goal: Goal;
@@ -76,9 +76,10 @@ export default function GoalItem({
                 transition,
             }}
             className={`
-    group rounded-lg p-3
+    group p-3
     flex flex-col
     transition-colors duration-200
+    ${isHome && goal.index === 0 ? "rounded-t-xl" : ""}
 
 
     ${isDragging
@@ -89,7 +90,7 @@ export default function GoalItem({
                             ? "bg-stone-800/60"
                             : "bg-stone-800/40"
                 }
-    ${isHome?"opacity-70 hover:opacity-100 bg-stone-800/10":""}
+    ${isHome ? "opacity-70 hover:opacity-100 bg-stone-800/20" : ""}
   `}
         >
 
