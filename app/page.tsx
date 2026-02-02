@@ -25,7 +25,7 @@ export default function Home() {
   const [active, setActive] = useState<string | null>("Today");
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-full flex flex-col">
       {pages.map((p, i) => (
         <PageContainer
           key={p.title}
@@ -41,10 +41,16 @@ export default function Home() {
             {p.title === "Calendar" && <CalendarPage />}
 
             {p.title === "Today" && (
-              <div className="flex flex-1 min-h-0 items-center justify-center h-full">
-                <TodayGoals />
+              <div className="flex-1 min-h-0 h-full overflow-y-auto">
+
+                {/* Center wrapper */}
+                <div className="min-h-full flex items-center justify-center p-4">
+                  <TodayGoals />
+                </div>
+
               </div>
             )}
+
 
 
             {p.title == "Notes" && (

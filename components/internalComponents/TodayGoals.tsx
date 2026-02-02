@@ -134,7 +134,7 @@ export default function TodayGoals() {
 
 
     return (
-        <div className="w-[800px]  items-center justify-center ">
+        <div className="w-[900px] items-center justify-center">
             <GoalList
                 goals={goals}
                 updateGoalText={updateGoalText}

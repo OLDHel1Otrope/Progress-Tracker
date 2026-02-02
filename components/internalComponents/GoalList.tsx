@@ -49,7 +49,7 @@ export default function GoalList({
         >
 
             {/* LEFT COLUMN */}
-            <div className={`w-full min-h-0 flex flex-col `}>
+            <div className={`w-full min-h-0 flex flex-col`}>
 
                 <SortableContext
                     items={goals.map((g) => g.id)}
@@ -57,7 +57,7 @@ export default function GoalList({
                 >
 
                     {/* SCROLL AREA */}
-                    <div className={`flex flex-col ${isHome ? "gap-1" : "gap-2"} min-h-0 overflow-y-auto overflow-x-hidden`}>
+                    <div className={`flex flex-col ${isHome ? "gap-1" : "gap-2"} min-h-0 overflow-y-auto overflow-x-hidden `}>
 
                         {goals.map((goal, i) => (
                             <GoalItem

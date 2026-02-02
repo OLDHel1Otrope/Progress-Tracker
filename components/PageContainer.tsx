@@ -27,7 +27,7 @@ export default function PageContainer({
                 boxShadow: "2px 4px 8px rgba(0,0,0,0.2)",
             }}
         >
-            <div className="h-full p-6 text-white min-h-0">{children}</div>
+            <div className="flex-1 min-h-0 p-6 text-white overflow-hidden">{children}</div>
 
             <div
                 onClick={onToggle}
