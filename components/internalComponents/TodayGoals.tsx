@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Minimize2, Maximize2 } from "lucide-react";
 import GoalItem, { Goal } from "./GoalItem";
 import GoalDetails from "./GoalDetails";
@@ -28,7 +28,13 @@ import {
     updateGoalApi,
 } from "@/lib/api/goals";
 
+import { useDebounce } from "@/hooks/useDebounce";
+
 export default function TodayGoals() {
+
+    const [editingGoalText, setEditingGoalText] = useState<Goal | null>(null);
+    const debouncedGoal = useDebounce(editingGoalText, 600);
+
     const queryClient = useQueryClient();
 
     const {
@@ -62,9 +68,13 @@ export default function TodayGoals() {
         },
     });
 
-    const updateGoal = (updated: Goal) => {
-        updateGoalMutation.mutate(updated);
+    const updateGoalText = (updated: Goal) => {
+        setEditingGoalText(updated);
     };
+
+    const updateGoalStatus = (updated: Goal) => {
+        updateGoalMutation.mutate(updated);
+    }
 
     const addGoal = (title: string) => {
         if (!title.trim()) return;
@@ -99,6 +109,12 @@ export default function TodayGoals() {
         // saveOrderMutation.mutate(reordered);
     };
 
+    useEffect(() => {
+        if (!debouncedGoal) return;
+
+        updateGoalMutation.mutate(debouncedGoal);
+    }, [debouncedGoal]);
+
     if (isLoading) {
         return (
             <div className="text-stone-400">
@@ -121,7 +137,8 @@ export default function TodayGoals() {
         <div className="w-[800px]  items-center justify-center ">
             <GoalList
                 goals={goals}
-                updateGoal={updateGoal}
+                updateGoalText={updateGoalText}
+                updateGoalStatus={updateGoalStatus}
                 isFullscreen={false}
                 // activeGoalId={activeGoalId}
                 // setActiveGoalId={setActiveGoalId}

@@ -30,7 +30,8 @@ interface GoalListProps {
 
 export default function GoalList({
     goals,
-    updateGoal,
+    updateGoalText,
+    updateGoalStatus,
     isFullscreen,
     activeGoalId,
     setActiveGoalId,
@@ -62,7 +63,8 @@ export default function GoalList({
                             <GoalItem
                                 key={goal.id}
                                 goal={{ ...goal, index: i }}
-                                onUpdate={updateGoal}
+                                updateGoalText={updateGoalText}
+                                updateGoalStatus={updateGoalStatus}
                                 isFullscreen={isFullscreen}
                                 onFocus={() => setActiveGoalId(goal.id)}
                                 isActive={activeGoalId === goal.id}

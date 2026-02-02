@@ -35,7 +35,8 @@ export interface Goal {
 
 export default function GoalItem({
     goal,
-    onUpdate,
+    updateGoalText,
+    updateGoalStatus,
     isFullscreen,
     onFocus,
     isActive,
@@ -43,7 +44,8 @@ export default function GoalItem({
 
 }: {
     goal: Goal;
-    onUpdate: (updated: Goal) => void;
+    updateGoalText: (updated: Goal) => void;
+    updateGoalStatus: (updated: Goal) => void;
     isFullscreen: boolean;
     onFocus: () => void;
     isActive: boolean;
@@ -113,7 +115,7 @@ export default function GoalItem({
 
                 <button
                     onClick={() =>
-                        onUpdate({ ...goal, is_completed: !goal.is_completed })
+                        updateGoalStatus({ ...goal, is_completed: !goal.is_completed })
                     }
                     className={`
             w-4 h-4 rounded-[4px] border flex items-center justify-center
@@ -146,7 +148,7 @@ export default function GoalItem({
                             value={goal.title}
                             autoFocus
                             onChange={(e) =>
-                                onUpdate({ ...goal, title: e.target.value })
+                                updateGoalText({ ...goal, title: e.target.value })
                             }
                             onBlur={() => setEditing(false)}
                             className={`w-full bg-transparent focus:outline-none font-bold
@@ -292,7 +294,7 @@ export default function GoalItem({
             >
                 <GoalDetails
                     goal={goal}
-                    onUpdate={onUpdate}
+                    onUpdate={updateGoalText}
                     isFullscreen={isFullscreen}
                 />
             </div>
