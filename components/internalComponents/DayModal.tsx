@@ -30,16 +30,18 @@ interface DayModalProps {
 
 type Goal = {
   id: string;
+  scheduled_date?: string;
   title: string;
-  completed: boolean;
+  is_completed: boolean;
   recurrence_group_id?: string | null;
+  description?: string;
   notes?: string;
   subtasks?: { id: string; title: string; done: boolean }[];
 };
 
 export default function DayModal({ day, month, year, isOpen, onClose }: DayModalProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [goals, setGoals] = useState<Goal[]>(sampleGoals);
+  const [goals, setGoals] = useState<Goal[]>([]);
   const [activeGoalId, setActiveGoalId] = useState<string | null>(null);
 
 
@@ -203,6 +205,27 @@ export const sampleGoals = [
       ]
     },
     is_completed: true,
+  },
+  {
+    id: "goal-2026-01-24-004W",
+    scheduled_date: "2026-01-24",
+    title: "DSA practice session #Academic #Coding",
+    recurrence_group_id: "recurr-002",
+    description: {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "Solve problems on:\n" },
+            { type: "text", marks: [{ type: "bold" }], text: "Topics:\n" },
+            { type: "text", text: "- Binary Search\n- Recursion\n- Sliding Window\n\n" },
+            { type: "text", text: "Target: 4 problems minimum.\nFocus on approach, not speed." }
+          ]
+        }
+      ]
+    },
+    is_completed: false,    
   },
 
   {

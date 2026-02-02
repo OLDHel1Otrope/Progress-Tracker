@@ -7,27 +7,29 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   const client = await db.connect();
-
+  
   try {
-    const goalId = Number(params.id);
-
-    if (isNaN(goalId)) {
+    const { id: goalId } = await params;
+    
+    if (!goalId) {
       return NextResponse.json(
         { error: "Invalid goal id" },
         { status: 400 }
       );
     }
-
+    
     const body = await req.json();
-
+    
     const {
+      id,
+      day_goal_id,
       title,
       description,
       is_completed,
       date, // YYYY-MM-DD
       recurrence_group_id,
     } = body;
-
+    
     await client.query("BEGIN");
 
 
@@ -36,15 +38,6 @@ export async function PATCH(
 
     let index = 1;
 
-    if (title !== undefined) {
-      fields.push(`title = $${index++}`);
-      values.push(title);
-    }
-
-    if (description !== undefined) {
-      fields.push(`description = $${index++}`);
-      values.push(description);
-    }
 
     if (is_completed !== undefined) {
       fields.push(`is_completed = $${index++}`);
@@ -59,11 +52,37 @@ export async function PATCH(
     if (fields.length > 0) {
       await client.query(
         `
-        UPDATE goals
+        UPDATE day_goals
         SET ${fields.join(", ")}
         WHERE id = $${index}
         `,
-        [...values, goalId]
+        [...values, day_goal_id]
+      );
+    }
+
+    const goalFields: string[] = [];
+    const goalValues: any[] = [];
+
+    index = 1;
+
+    if (title !== undefined) {
+      goalFields.push(`title = $${index++}`);
+      goalValues.push(title);
+    }
+    if (description !== undefined) {
+      goalFields.push(`base_description = $${index++}`);
+      goalValues.push(description);
+    }
+
+
+    if (goalFields.length > 0) {
+      await client.query(
+        `
+        UPDATE goals
+        SET ${goalFields.join(", ")}
+        WHERE id = $${index}
+        `,
+        [...goalValues, id]
       );
     }
 

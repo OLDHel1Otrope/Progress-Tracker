@@ -74,7 +74,7 @@ export default function GoalList({
                 </SortableContext>
 
                 {/* ADD INPUT (fixed at bottom) */}
-                <div className={`${isHome ? "mt-1" : "mt-2"} shrink-0 flex items-center gap-4 p-1 pl-9 bg-stone-800/${isHome && goals.length > 0 ? "20 rounded-b-xl" : "30"}`}
+                <div className={`${isHome ? "mt-1" : "mt-2"} shrink-0 flex items-center gap-4 p-1 pl-9 bg-stone-800/${isHome && goals.length > 0 ? "20 rounded-b-xl" : "30 rounded-xl"}`}
                     style={{
 
                     }}
