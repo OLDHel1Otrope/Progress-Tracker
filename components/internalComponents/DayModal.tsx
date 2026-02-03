@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Minimize2, Maximize2 } from "lucide-react";
 import GoalItem from "./GoalItem";
 import GoalDetails from "./GoalDetails";
@@ -18,6 +18,10 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import GoalList from "./GoalList";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { addGoalApi, fetchGoalsByDate, updateGoalApi } from "@/lib/api/goals";
+import { useDebounce } from "@/hooks/useDebounce";
+import { reorderDayGoals } from "@/lib/api/reorder";
 
 
 interface DayModalProps {
@@ -39,30 +43,123 @@ type Goal = {
   subtasks?: { id: string; title: string; done: boolean }[];
 };
 
+const getOrdinal = (n: number) => {
+  if (n % 100 >= 11 && n % 100 <= 13) return "th";
+  switch (n % 10) {
+    case 1:
+      return "st";
+    case 2:
+      return "nd";
+    case 3:
+      return "rd";
+    default:
+      return "th";
+  }
+};
+
 export default function DayModal({ day, month, year, isOpen, onClose }: DayModalProps) {
+  const queryKey = ["goals", "byDate", year, month, day];
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [goals, setGoals] = useState<Goal[]>([]);
   const [activeGoalId, setActiveGoalId] = useState<string | null>(null);
 
+  const [editingGoalText, setEditingGoalText] = useState<Goal | null>(null);
+  const debouncedGoal = useDebounce(editingGoalText, 600);
 
-  const updateGoal = (updated: Goal) => {
-    setGoals((prev) =>
-      prev.map((g) => (g.id === updated.id ? updated : g))
-    );
+  const formattedDate = `${day}${getOrdinal(day)} ${new Date(year, month).toLocaleString("default", {
+    month: "long",
+  })} ${year}`;
+
+
+  const queryClient = useQueryClient();
+
+  const {
+    data: goals = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["goals", "byDate", year, month, day],
+    queryFn: () => fetchGoalsByDate(`${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`),
+  });
+
+
+  const addGoalMutation = useMutation({
+    mutationFn: ({ title, goal_date }: { title: string; goal_date: string }) => addGoalApi(title, goal_date),
+
+    onSuccess: () => {
+      // Refetch today goals
+      queryClient.invalidateQueries({
+        queryKey: ["goals", "byDate", year, month, day],
+      });
+    },
+  });
+
+  const updateGoalMutation = useMutation({
+    mutationFn: updateGoalApi,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["goals", "byDate", year, month, day],
+      });
+    },
+  });
+
+  const updateGoalText = (updated: Goal) => {
+    setEditingGoalText(updated);
   };
+
+  const updateGoalStatus = (updated: Goal) => {
+    updateGoalMutation.mutate(updated);
+  }
 
   const addGoal = (title: string) => {
     if (!title.trim()) return;
 
-    setGoals((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        title,
-        completed: false,
-      },
-    ]);
+    const today = new Date().toISOString().split('T')[0];
+    addGoalMutation.mutate({ title, goal_date: `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}` });
   };
+
+  const reorderMutation = useMutation({
+    mutationFn: ({
+      day_id,
+      ordered,
+    }: {
+      day_id: string;
+      ordered: Goal[];
+    }) => reorderDayGoals(day_id, ordered),
+
+    onMutate: async ({ ordered }) => {
+      await queryClient.cancelQueries({
+        queryKey
+      });
+
+      const prev = queryClient.getQueryData<Goal[]>(queryKey);
+
+      queryClient.setQueryData<Goal[]>(
+        queryKey,
+        ordered
+      );
+
+      return { prev };
+    },
+
+    onError: (err, _, ctx) => {
+      if (ctx?.prev) {
+        queryClient.setQueryData(
+          queryKey,
+          ctx.prev
+        );
+      }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey,
+      });
+    },
+  });
+
+
+
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -72,32 +169,51 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-    if (!over || active.id === over.id) return;
 
-    setGoals((items) => {
-      const oldIndex = items.findIndex((g) => g.id === active.id);
-      const newIndex = items.findIndex((g) => g.id === over.id);
-      return arrayMove(items, oldIndex, newIndex);
+    if (!over || active.id === over.id) return;
+    if (!goals.length) return;
+
+    const oldIndex = goals.findIndex(
+      (g) => g.id === active.id
+    );
+
+    const newIndex = goals.findIndex(
+      (g) => g.id === over.id
+    );
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(goals, oldIndex, newIndex);
+
+    reorderMutation.mutate({
+      day_id: goals[0].day_id,
+      ordered: reordered.map(g => g.day_goal_id),
     });
   };
 
-  const getOrdinal = (n: number) => {
-    if (n % 100 >= 11 && n % 100 <= 13) return "th";
-    switch (n % 10) {
-      case 1:
-        return "st";
-      case 2:
-        return "nd";
-      case 3:
-        return "rd";
-      default:
-        return "th";
-    }
-  };
 
-  const formattedDate = `${day}${getOrdinal(day)} ${new Date(year, month).toLocaleString("default", {
-    month: "long",
-  })} ${year}`;
+
+  useEffect(() => {
+    if (!debouncedGoal) return;
+
+    updateGoalMutation.mutate(debouncedGoal);
+  }, [debouncedGoal]);
+
+  if (isLoading) {
+    return (
+      <div className="text-stone-400">
+        Loading goals...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-red-400">
+        Failed to load goals
+      </div>
+    );
+  }
 
   if (!isOpen) return null;
 
@@ -148,9 +264,10 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
 
         <div className="h-full min-h-0 flex flex-row gap-2 overflow-hidden">
 
-          <GoalList 
+          <GoalList
             goals={goals}
-            updateGoal={updateGoal}
+            updateGoalText={updateGoalText}
+            updateGoalStatus={updateGoalStatus}
             isFullscreen={isFullscreen}
             activeGoalId={activeGoalId}
             setActiveGoalId={setActiveGoalId}
@@ -166,7 +283,7 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
               {activeGoalId ? (
                 <GoalDetails
                   goal={goals.find((g) => g.id === activeGoalId)!}
-                  onUpdate={updateGoal}
+                  onUpdate={updateGoalText}
                   isFullscreen={isFullscreen}
                 />
               ) : (
@@ -183,112 +300,3 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
     </div >
   );
 }
-
-export const sampleGoals = [
-  {
-    id: "goal-2026-01-24-001",
-    scheduled_date: "2026-01-24",
-    title: "Morning workout #Exercise #Health",
-    recurrence_group_id: "recurr-001",
-    description: {
-      type: "doc",
-      content: [
-        {
-          type: "paragraph",
-          content: [
-            { type: "text", text: "Chest + triceps day. Focus on form, not weight.\n\n" },
-            { type: "text", marks: [{ type: "bold" }], text: "Workout plan:\n" },
-            { type: "text", text: "- Bench press\n- Incline dumbbell press\n- Tricep dips\n- Cable pushdowns\n\n" },
-            { type: "text", text: "End with 10 min stretching." }
-          ]
-        }
-      ]
-    },
-    is_completed: true,
-  },
-  {
-    id: "goal-2026-01-24-004W",
-    scheduled_date: "2026-01-24",
-    title: "DSA practice session #Academic #Coding",
-    recurrence_group_id: "recurr-002",
-    description: {
-      type: "doc",
-      content: [
-        {
-          type: "paragraph",
-          content: [
-            { type: "text", text: "Solve problems on:\n" },
-            { type: "text", marks: [{ type: "bold" }], text: "Topics:\n" },
-            { type: "text", text: "- Binary Search\n- Recursion\n- Sliding Window\n\n" },
-            { type: "text", text: "Target: 4 problems minimum.\nFocus on approach, not speed." }
-          ]
-        }
-      ]
-    },
-    is_completed: false,    
-  },
-
-  {
-    id: "goal-2026-01-24-002",
-    scheduled_date: "2026-01-24",
-    title: "DSA practice session #Academic #Coding",
-    recurrence_group_id: "recurr-002",
-    description: {
-      type: "doc",
-      content: [
-        {
-          type: "paragraph",
-          content: [
-            { type: "text", text: "Solve problems on:\n" },
-            { type: "text", marks: [{ type: "bold" }], text: "Topics:\n" },
-            { type: "text", text: "- Binary Search\n- Recursion\n- Sliding Window\n\n" },
-            { type: "text", text: "Target: 4 problems minimum.\nFocus on approach, not speed." }
-          ]
-        }
-      ]
-    },
-    is_completed: false,
-  },
-
-  {
-    id: "goal-2026-01-24-003",
-    scheduled_date: "2026-01-24",
-    title: "Read 20 pages #Reading #Focus",
-    recurrence_group_id: null,
-    description: {
-      type: "doc",
-      content: [
-        {
-          type: "paragraph",
-          content: [
-            { type: "text", text: "Book: " },
-            { type: "text", marks: [{ type: "italic" }], text: "Deep Work – Cal Newport\n\n" },
-            { type: "text", text: "No phone, no notifications.\nRead with full concentration.\n\nTake short notes after reading." }
-          ]
-        }
-      ]
-    },
-    is_completed: true,
-  },
-
-  {
-    id: "goal-2026-01-24-004",
-    scheduled_date: "2026-01-24",
-    title: "Plan weekly goals #Planning #Life",
-    recurrence_group_id: "recurr-003",
-    description: {
-      type: "doc",
-      content: [
-        {
-          type: "paragraph",
-          content: [
-            { type: "text", text: "Plan for upcoming week:\n\n" },
-            { type: "text", text: "- Fitness schedule\n- Study targets\n- Project milestones\n- Rest days\n\n" },
-            { type: "text", text: "Set realistic goals, not idealistic ones." }
-          ]
-        }
-      ]
-    },
-    is_completed: false,
-  }
-];

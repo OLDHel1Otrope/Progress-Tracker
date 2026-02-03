@@ -18,16 +18,18 @@ export async function GET(req: Request) {
       `
       SELECT
         g.id as id,
-        dg.id as day_goal_id,
         g.title,
         g.base_description as description,
+        dg.id as day_goal_id,
+        dg.position,
         dg.is_completed,
-        dg.created_at AS added_on
+        dg.created_at AS added_on,
+        d.id as day_id
       FROM days d
       JOIN day_goals dg ON dg.day_id = d.id
       JOIN goals g ON g.id = dg.goal_id
       WHERE d.date = $1
-      ORDER BY dg.created_at DESC
+      ORDER BY dg.position ASC
       `,
       [date]
     );

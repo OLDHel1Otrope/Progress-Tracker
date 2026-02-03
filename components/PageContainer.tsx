@@ -31,31 +31,36 @@ export default function PageContainer({
 
             <div
                 onClick={onToggle}
-                className="absolute bg-stone-800 cursor-pointer flex items-center justify-center"
+                className="absolute cursor-pointer"
                 style={{
-                    width: "50px",
+                    width: "35px",
                     height: "190px",
-
                     top: `${index * 150}px`,
-
-                    right: "-50px",
-                    backgroundColor: color,
-
-                    clipPath: "polygon(0 0, 100% 15%, 100% 85%, 0 100%)",
-
+                    right: "-35px",
                 }}
             >
+                <svg
+                    viewBox="0 0 13.22 108.66"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="absolute inset-0 w-full h-full "
+                    style={{ fill: color }}
+                    preserveAspectRatio="none"
+                >
+                    <path d="M0 0 C0 5.03 13 10.06 13 17.1 V91.56 C13 98.6 0 103.63 0 108.66 Z" />
+                </svg>
+
                 <span
-                    className="text-stone-400 text-md font-semibold select-none"
+                    className="absolute inset-0 flex items-center justify-center
+               text-stone-500 text-sm italic font-semibold select-none z-10 mr-1"
                     style={{
                         writingMode: "vertical-rl",
                         transform: "rotate(180deg)",
-
                     }}
                 >
                     {title}
                 </span>
             </div>
+
         </div>
     );
 }

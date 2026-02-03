@@ -12,6 +12,16 @@ export async function fetchTodayGoals(): Promise<Goal[]> {
   return res.json();
 }
 
+export async function fetchGoalsByDate(date: string) {
+  const res = await fetch(`/api/goals?date=${date}`);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch goals");
+  }
+
+  return res.json();
+}
+
 export async function addGoalApi(title: string, goal_date: string) {
   const res = await fetch("/api/goals", {
     method: "POST",

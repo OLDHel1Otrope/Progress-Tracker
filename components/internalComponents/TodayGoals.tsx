@@ -29,6 +29,7 @@ import {
 } from "@/lib/api/goals";
 
 import { useDebounce } from "@/hooks/useDebounce";
+import { reorderDayGoals } from "@/lib/api/reorder";
 
 export default function TodayGoals() {
 
@@ -83,6 +84,51 @@ export default function TodayGoals() {
         addGoalMutation.mutate({ title, goal_date: today });
     };
 
+    const reorderMutation = useMutation({
+        mutationFn: ({
+            day_id,
+            ordered,
+        }: {
+            day_id: string;
+            ordered: Goal[];
+        }) => reorderDayGoals(day_id, ordered),
+
+        onMutate: async ({ ordered }) => {
+            await queryClient.cancelQueries({
+                queryKey: ["goals", "today"],
+            });
+
+            const prev = queryClient.getQueryData<Goal[]>([
+                "goals",
+                "today",
+            ]);
+
+            queryClient.setQueryData<Goal[]>(
+                ["goals", "today"],
+                ordered
+            );
+
+            return { prev };
+        },
+
+        onError: (err, _, ctx) => {
+            if (ctx?.prev) {
+                queryClient.setQueryData(
+                    ["goals", "today"],
+                    ctx.prev
+                );
+            }
+        },
+
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["goals", "today"],
+            });
+        },
+    });
+
+
+
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -94,6 +140,7 @@ export default function TodayGoals() {
         const { active, over } = event;
 
         if (!over || active.id === over.id) return;
+        if (!goals.length) return;
 
         const oldIndex = goals.findIndex(
             (g) => g.id === active.id
@@ -103,11 +150,17 @@ export default function TodayGoals() {
             (g) => g.id === over.id
         );
 
+        if (oldIndex === -1 || newIndex === -1) return;
+
         const reordered = arrayMove(goals, oldIndex, newIndex);
 
-        // OPTIONAL: send order to backend
-        // saveOrderMutation.mutate(reordered);
+        reorderMutation.mutate({
+            day_id: goals[0].day_id,
+            ordered: reordered,
+        });
     };
+
+
 
     useEffect(() => {
         if (!debouncedGoal) return;
@@ -140,8 +193,6 @@ export default function TodayGoals() {
                 updateGoalText={updateGoalText}
                 updateGoalStatus={updateGoalStatus}
                 isFullscreen={false}
-                // activeGoalId={activeGoalId}
-                // setActiveGoalId={setActiveGoalId}
                 sensors={sensors}
                 closestCenter={closestCenter}
                 handleDragEnd={handleDragEnd}

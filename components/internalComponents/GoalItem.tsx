@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronRight, Fullscreen, Plus } from "lucide-react";
 import RecurrenceModal from "./RecurrenceModal";
 import { useSortable } from "@dnd-kit/sortable";
@@ -53,6 +53,7 @@ export default function GoalItem({
     const [expanded, setExpanded] = useState(false);
     const [editing, setEditing] = useState(false);
     const [showRecurrenceModal, setShowRecurrenceModal] = useState(false);
+    const [localTitle, setLocalTitle] = useState(goal.title)
 
     const {
         attributes,
@@ -68,7 +69,9 @@ export default function GoalItem({
         transition,
     };
 
-
+    useEffect(() => {
+        setLocalTitle(goal.title);
+    }, [goal.title])
 
     return (
         <div
@@ -145,11 +148,16 @@ export default function GoalItem({
                 <div className="flex-1 ml-1">
                     {editing ? (
                         <input
-                            value={goal.title}
+                            value={localTitle}
                             autoFocus
-                            onChange={(e) =>
-                                updateGoalText({ ...goal, title: e.target.value })
-                            }
+                            onChange={(e) => {
+                                setLocalTitle(e.target.value);
+
+                                updateGoalText({
+                                    ...goal,
+                                    title: e.target.value,
+                                });
+                            }}
                             onBlur={() => setEditing(false)}
                             className={`w-full bg-transparent focus:outline-none font-bold
         ${goal.is_completed ? "line-through text-stone-500" : ""}
