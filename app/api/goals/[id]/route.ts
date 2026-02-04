@@ -7,19 +7,19 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   const client = await db.connect();
-  
+
   try {
     const { id: goalId } = await params;
-    
+
     if (!goalId) {
       return NextResponse.json(
         { error: "Invalid goal id" },
         { status: 400 }
       );
     }
-    
+
     const body = await req.json();
-    
+
     const {
       id,
       day_goal_id,
@@ -29,7 +29,7 @@ export async function PATCH(
       date, // YYYY-MM-DD
       recurrence_group_id,
     } = body;
-    
+
     await client.query("BEGIN");
 
 
@@ -127,5 +127,65 @@ export async function PATCH(
 
   } finally {
     client.release();
+  }
+}
+
+export async function DELETE(
+  req: Request,
+  context: { params: { id: string } }
+) {
+  let client;
+
+  try {
+    client = await db.connect();
+
+    const params = await context.params;
+    const dayGoalId = params?.id;
+
+    if (!dayGoalId) {
+      return NextResponse.json(
+        { error: "Missing id" },
+        { status: 400 }
+      );
+    }
+
+    await client.query("BEGIN");
+
+    const result = await client.query(
+      `
+      UPDATE day_goals
+      SET archived = true
+      WHERE id = $1
+      RETURNING id
+      `,
+      [dayGoalId]
+    );
+
+    if (result.rowCount === 0) {
+      await client.query("ROLLBACK");
+
+      return NextResponse.json(
+        { error: "Goal not found" },
+        { status: 404 }
+      );
+    }
+
+    await client.query("COMMIT");
+
+    return NextResponse.json({ success: true });
+
+  } catch (err) {
+
+    if (client) await client.query("ROLLBACK");
+
+    console.error(err);
+
+    return NextResponse.json(
+      { error: "Database error" },
+      { status: 500 }
+    );
+
+  } finally {
+    if (client) client.release();
   }
 }

@@ -29,6 +29,7 @@ export async function GET(req: Request) {
       JOIN day_goals dg ON dg.day_id = d.id
       JOIN goals g ON g.id = dg.goal_id
       WHERE d.date = $1
+      AND dg.archived = false
       ORDER BY dg.position ASC
       `,
       [date]
@@ -80,24 +81,23 @@ export async function POST(req: Request) {
     /* 2️⃣ Insert date if not exists */
     const dateRes = await client.query(
       `
-INSERT INTO days (date)
-VALUES ($1)
-ON CONFLICT (date)
-DO UPDATE SET date = EXCLUDED.date
-RETURNING id; 
-  `,
+      INSERT INTO days (date)
+      VALUES ($1)
+      ON CONFLICT (date)
+      DO UPDATE SET date = EXCLUDED.date
+      RETURNING id; 
+      `,
       [goal_date]
     );
 
-    console.log(dateRes)
     const dayId = dateRes.rows[0].id;
 
-    /* 3️⃣ Insert into day_goals */
     const dayGoalRes = await client.query(
       `
       INSERT INTO day_goals
-      (day_id, goal_id, is_completed, created_at)
-      VALUES ($1, $2, false, NOW())
+      (day_id, goal_id, is_completed, created_at, position)
+      VALUES ($1, $2, false, NOW(), COALESCE(
+    (SELECT MAX(position) + 1 FROM day_goals WHERE day_id = $1 AND archived = false),1))
       RETURNING *
       `,
       [dayId, goalId]
@@ -122,4 +122,3 @@ RETURNING id;
     client.release();
   }
 }
-

@@ -8,6 +8,7 @@ import NotesPane from "@/components/NotesPane";
 import { sampleGoals } from "@/components/internalComponents/DayModal";
 import GoalItem from "@/components/internalComponents/GoalItem";
 import TodayGoals from "@/components/internalComponents/TodayGoals";
+import CenteredGrid from "@/components/internalComponents/CenterGrid";
 
 const prevP = [
   { title: "Today", color: "#2a2a2af1" },
@@ -23,6 +24,13 @@ const pages = prevP.map((p, i) => ({ ...p, color: prevP[prevP.length - 1 - i].co
 
 export default function Home() {
   const [active, setActive] = useState<string | null>("Today");
+
+  const images = [
+    "/img/i1.png",
+    "/img/i2.png",
+    "/img/ik.png",
+    "/img/i4.png",
+  ];
 
   return (
     <div className="h-full flex flex-col">
@@ -63,13 +71,14 @@ export default function Home() {
         </PageContainer>
       ))}
       {!active && (
-        <div className="flex-1 h-full flex flex-col items-center justify-center gap-4">
-          <span className="text-stone-300 font-medium">Welcome</span>
-        </div>
+        <>
+          <CenteredGrid images={images} />;
+          <div className="fixed bottom-4 right-4 text-stone-500 text-sm">
+            &copy; 2026 Progress Tracker
+          </div>
+        </>
       )}
-      <div className="fixed bottom-4 right-4 text-stone-500 text-sm">
-        &copy; 2026 Progress Tracker
-      </div>
+
     </div>
   );
 }

@@ -38,7 +38,7 @@ CREATE TABLE day_goals (
 
   is_completed BOOLEAN DEFAULT false,
   notes TEXT,
-  position INT,
+  position INT NOT NULL,
 
   created_at TIMESTAMP DEFAULT now(),
 

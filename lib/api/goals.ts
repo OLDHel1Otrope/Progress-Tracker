@@ -53,3 +53,13 @@ export async function updateGoalApi(goal: Goal) {
 
   return res.json();
 }
+
+export async function deleteGoalApi(id: string) {
+  const res = await fetch(`/api/goals/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) {
+    throw new Error("Failed to delete goal");
+  }
+  return res.json();
+}
