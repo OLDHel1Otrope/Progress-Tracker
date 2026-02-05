@@ -372,15 +372,15 @@ export default function GoalItem({
                             className="
           fixed
           z-[9999]
-
           w-40
-          bg-stone-900
-          border border-stone-700
-          rounded-md
-          shadow-xl
-
           origin-top-right
           animate-menu-in
+            rounded-2xl
+            bg-gradient-to-br from-stone-800/90 to-stone-900/90
+            border border-stone-700/30
+            backdrop-blur-xl
+            shadow-[0_20px_40px_rgba(0,0,0,0.6)]
+            overflow-hidden
         "
                         >
                             <MenuItem onClick={() => setEditing(true)}>

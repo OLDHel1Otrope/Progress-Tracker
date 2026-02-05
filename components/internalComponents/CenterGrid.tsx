@@ -1,6 +1,6 @@
 "use client";
 
-import { Cross, Soup } from "lucide-react";
+import { ChevronsRight, Cross, Snail, Soup } from "lucide-react";
 import Image from "next/image";
 
 interface CenteredGridProps {
@@ -11,7 +11,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
     return (
         <div
             className="
-        min-h-screen
+        h-[95vh]
         w-full
         flex
         items-center
@@ -84,6 +84,25 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
             "
                 >
                     <Soup size={116} strokeWidth={1.5} />
+                </div>
+                <div
+                    key={"t"}
+                    className="
+              w-80
+              h-48
+              rounded-xl
+              overflow-hidden
+              bg-stone-900/30
+              shadow-lg
+              hover:scale-105
+              hover:bg-stone-700/50
+              transition-transform
+              border border-stone-700/30 backdrop-blur-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]
+              flex flex-row items-center justify-center
+            "
+                >
+                    <ChevronsRight size={90} strokeWidth={1.5}/>
+                    <Snail size={90} strokeWidth={1.5} />
                 </div>
             </div>
         </div>

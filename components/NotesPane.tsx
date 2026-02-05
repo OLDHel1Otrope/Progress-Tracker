@@ -61,59 +61,96 @@ export default function NotesPane() {
 
 
     return (
-        <div className="w-full max-w-6xl h-full min-h-0 flex flex-col gap-2">
+        <div className="w-full h-full min-h-0 flex flex-col gap-2 overflow-scroll overflow-x-hidden pl-20">
             <div
                 className="
-            w-full max-w-6xl
-            bg-gradient-to-br from-stone-800/80 to-stone-900/80
-        rounded-3xl p-6
-        border border-stone-700/30
-        backdrop-blur-lg
-        shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]
-        text-stone-300
-        flex flex-col
-        "
+    w-full max-w-6xl
+    border border-stone-700
+    rounded-lg
+    px-6 py-5
+    shadow-sm
+    transition
+    hover:shadow-md
+    font-serif
+    text-stone-800
+    relative
+    overflow-hidden
+    flex flex-col gap-4
+  "
             >
+                {/* Subtle paper grain */}
+                <div className="absolute inset-0 opacity-[0.03] bg-[url('/noise.png')] pointer-events-none" />
+
                 {/* Header */}
-                <h2 className="text-xl font-semibold text-stone-200">
-                    Add notes
+                <h2
+                    className="
+      text-md
+      font-bold
+      uppercase
+      tracking-widest
+      text-stone-500
+      border-b
+      border-stone-600
+      pb-2
+    "
+                >
+                    Add Note
                 </h2>
 
-                {/* Add Note */}
-                <div className="space-y-3 gap-2">
-
+                {/* Form */}
+                <div className="space-y-4">
+                    {/* Title Input */}
                     <input
                         value={newTitle}
                         onChange={(e) => setNewTitle(e.target.value)}
                         placeholder="Title"
                         className="
-      w-full py-2 
-      bg-stone-800/70
-      text-stone-200 placeholder:text-stone-500
-      text-xl
-    "
-                    />
-                    <RichTextEditor
-                        value={newNote}
-                        onChange={setNewNote}
-                        placeholder="Write a new note..."
+        w-full
+        bg-transparent
+        border-b
+        border-stone-600
+        py-2
+        text-2xl
+        font-bold
+        text-stone-300
+        placeholder:text-stone-400
+        focus:outline-none
+        focus:border-stone-500
+        transition
+      "
                     />
 
-                    <div className="flex justify-end">
+                    {/* Editor */}
+                    <div className="leading-relaxed text-[17px] text-stone-700">
+                        <RichTextEditor
+                            value={newNote}
+                            onChange={setNewNote}
+                            placeholder="Write a new note..."
+                        />
+                    </div>
+
+                    {/* Footer */}
+                    <div className="flex justify-end pt-2">
                         <button
                             onClick={handleAddNote}
                             className="
-                        px-4 py-2 rounded-lg
-                        bg-stone-700 hover:bg-stone-600
-                        transition text-sm
-                        "
+          px-5 py-2
+          rounded-md
+          border border-stone-400
+          text-sm
+          font-medium
+          text-stone-300
+          hover:bg-stone-700
+          transition
+        "
                         >
                             Add Note
                         </button>
                     </div>
                 </div>
             </div>
-            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-2">
+
+            <div className="flex-1 min-h-0 max-w-6xl flex flex-col gap-2">
                 {notes.map((note) => (
                     <NoteCard
                         key={note.id}

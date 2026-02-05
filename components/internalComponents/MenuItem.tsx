@@ -5,7 +5,7 @@ export default function MenuItem({ children, onClick, danger, disabled }: any) {
             onClick={onClick}
             className={`
         w-full px-3 py-2 text-left text-sm
-        transition-colors
+        transition-colors 
 
         ${disabled ? "opacity-50 cursor-not-allowed" : ""}
 

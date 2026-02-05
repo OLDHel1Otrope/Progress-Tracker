@@ -3,55 +3,73 @@ import { useState } from "react";
 import RichTextEditor from "./RichTextEditor";
 
 interface NoteCardProps {
-    note: {
-        id: string;
-        title: string;
-        content: string;
-        createdAt: string;
-    };
-    onUpdate: (id: string, content: string) => void;
+  note: {
+    id: string;
+    title: string;
+    content: string;
+    createdAt: string;
+  };
+  onUpdate: (id: string, content: string) => void;
 }
 
 export function NoteCard({ note, onUpdate }: NoteCardProps) {
-    const [value, setValue] = useState(note.content);
+  const [value, setValue] = useState(note.content);
 
-    return (
-        <div
-            className="
-        bg-stone-800/60
-        border border-stone-700/40
-        rounded-xl
-        p-4
+  return (
+    <div
+      className="
+        rounded-lg
+        px-6 py-5
+        shadow-sm
         transition
-        hover:bg-stone-800/80
-        flex flex-col gap-2
+        hover:shadow-md
+        flex flex-col gap-4
+        font-serif
+        text-stone-800
+        relative
+      "
+    >
+      {/* Subtle paper grain */}
+      <div className="absolute inset-0 opacity-[0.03] bg-[url('/noise.png')] pointer-events-none" />
+
+      {/* Date */}
+      <div
+        className="
+          text-xs
+          uppercase
+          tracking-widest
+          text-stone-500
+          font-medium
         "
-        // w-full max-w-6xl bg-gradient-to-br from-stone-800/80 to-stone-900/80 rounded-3xl p-6 border border-stone-700/30 backdrop-blur-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.5)] text-stone-300
-        >
-            {/* Title */}
-            <div className="w-max px-2 py-[2px] rounded-md text-xs
-            border border-stone-600
-            text-stone-300
-            hover:bg-stone-700/60
-            mb-0 font-bold italic">
-                {new Date(note.createdAt).toLocaleString()}
-            </div>
-            <div className="text-2xl text-stone-200 truncate font-bold mb-2">
-                {note.title || "Untitled"}
-            </div>
+      >
+        {new Date(note.createdAt).toLocaleDateString()}
+      </div>
 
+      {/* Title */}
+      <h2
+        className="
+          text-3xl
+          font-bold
+          leading-snug
+          text-stone-300
+          border-b
+          border-stone-600
+          pb-2
+        "
+      >
+        {note.title || "Untitled"}
+      </h2>
 
-            {/* Editor */}
-            <RichTextEditor
-                value={value}
-                onChange={(v) => {
-                    setValue(v);
-                    onUpdate(note.id, v);
-                }}
-            // minimal
-            />
-
-            {/* Footer */}
-        </div>
-    );
+      {/* Content */}
+      <div className="leading-relaxed text-[17px] text-stone-700">
+        <RichTextEditor
+          value={value}
+          onChange={(v) => {
+            setValue(v);
+            onUpdate(note.id, v);
+          }}
+        />
+      </div>
+    </div>
+  );
 }

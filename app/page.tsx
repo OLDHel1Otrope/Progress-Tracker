@@ -1,14 +1,12 @@
 "use client";
 import PageContainer from "@/components/PageContainer";
-import { Calendar } from "lucide-react";
 import { useState } from "react";
 import CalendarPage from "./calender/page";
-import { title } from "process";
 import NotesPane from "@/components/NotesPane";
-import { sampleGoals } from "@/components/internalComponents/DayModal";
-import GoalItem from "@/components/internalComponents/GoalItem";
 import TodayGoals from "@/components/internalComponents/TodayGoals";
 import CenteredGrid from "@/components/internalComponents/CenterGrid";
+import UserHeader from "@/components/internalComponents/UserHeader";
+import { useAuth } from "@/contexts/authContext";
 
 const prevP = [
   { title: "Today", color: "#2a2a2af1" },
@@ -24,17 +22,18 @@ const pages = prevP.map((p, i) => ({ ...p, color: prevP[prevP.length - 1 - i].co
 
 export default function Home() {
   const [active, setActive] = useState<string | null>("Today");
-
+  const {loggedIn} = useAuth();
   const images = [
     "/img/i1.png",
     "/img/i2.png",
     "/img/ik.png",
     "/img/i4.png",
   ];
+  
 
   return (
     <div className="h-full flex flex-col">
-      {pages.map((p, i) => (
+      {loggedIn && pages.map((p, i) => (
         <PageContainer
           key={p.title}
           title={p.title}
@@ -70,12 +69,20 @@ export default function Home() {
           </>
         </PageContainer>
       ))}
-      {!active && (
+      <UserHeader />
+      <div className="fixed bottom-4 right-4 text-stone-500 text-xs italic">
+        {/* &copy; 2026 Progress Tracker */}
+        Made with🧡
+      </div>
+      {!active && loggedIn && (
         <>
+          {/* <div className="fixed top-4 right-4 text-stone-500 text-sm flex flex-row gap-2">
+            <CircleUserRound />
+            <span className="font-bold">
+              Swapnil Singh
+            </span>
+          </div> */}
           <CenteredGrid images={images} />;
-          <div className="fixed bottom-4 right-4 text-stone-500 text-sm">
-            &copy; 2026 Progress Tracker
-          </div>
         </>
       )}
 
