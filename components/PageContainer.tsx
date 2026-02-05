@@ -18,9 +18,13 @@ export default function PageContainer({
     return (
         <div
             className="fixed left-0 top-0 h-screen min-h-0 h-full flex flex-col"
-            style={{
-                width: "1920px",
-                transform: isActive ? `translateX(-${60}px)` : `translateX(-${1850 + 10 * index}px)`,
+             style={{
+                width: "100vw",
+
+                transform: isActive
+                    ? "translateX(-2vw)" // small visible edge when open
+                    : `translateX(calc(-96.7vw - ${ 0.4*index}vw))`,
+
                 transition: "transform 0.3s ease",
                 zIndex: 10 + index,
                 backgroundColor: color,

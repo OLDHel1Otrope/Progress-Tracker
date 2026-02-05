@@ -71,3 +71,10 @@ body {
 .animate-menu-in {
   animation: menuIn 0.15s ease-out forwards;
 }
+
+
+html {
+  -webkit-font-smoothing: antialiased; /* Chrome, Safari */
+  -moz-osx-font-smoothing: grayscale;  /* Firefox on Mac */
+  text-rendering: optimizeLegibility;
+}

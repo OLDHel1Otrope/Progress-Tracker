@@ -60,7 +60,7 @@ export default function CalendarPage() {
   return (
     <>
       <div className="p-7 flex justify-center">
-        <div className="w-full max-w-6xl bg-gradient-to-br from-stone-800/80 to-stone-900/80 rounded-3xl p-6 border border-stone-700/30 backdrop-blur-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.5)] text-stone-300">        {/* Header */}
+        <div className="w-full max-w-6xl bg-gradient-to-br from-stone-900/70 to-stone-900/80 rounded-3xl p-6 border border-stone-700/30 backdrop-blur-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.5)] text-stone-300">        {/* Header */}
           <div className="mb-6">
             <div className="flex items-center gap-2">
               <h2 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-300">

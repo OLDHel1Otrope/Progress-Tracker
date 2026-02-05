@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { CircleUserRound, LogOut, ScanFace, User } from "lucide-react";
+import { CircleUserRound, Earth, Link, LogOut, ScanFace, User } from "lucide-react";
 import { useAuth } from "@/contexts/authContext";
 
 export default function UserMenu() {
@@ -81,6 +81,18 @@ export default function UserMenu() {
                         <User size={16} className="text-stone-400" />
                         Profile
                     </button>
+
+
+
+                    <button
+                        onClick={() => window.location.href = "/space"}
+                        className="w-full flex items-center gap-2 px-4 py-3 text-left
+             text-stone-200 hover:bg-stone-700/40 transition"
+                    >
+                        <Earth size={16} className="text-stone-400" />
+                        Space
+                    </button>
+
 
                     <div className="h-px bg-stone-700/40" />
 

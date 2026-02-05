@@ -124,7 +124,7 @@ export default function RichTextEditor({
             }
             defaultValue=""
           >
-            <option value="" disabled>
+            <option value="" >
               Size
             </option>
             <option value="12px">Small</option>

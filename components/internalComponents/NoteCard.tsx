@@ -32,18 +32,6 @@ export function NoteCard({ note, onUpdate }: NoteCardProps) {
       {/* Subtle paper grain */}
       <div className="absolute inset-0 opacity-[0.03] bg-[url('/noise.png')] pointer-events-none" />
 
-      {/* Date */}
-      <div
-        className="
-          text-xs
-          uppercase
-          tracking-widest
-          text-stone-500
-          font-medium
-        "
-      >
-        {new Date(note.createdAt).toLocaleDateString()}
-      </div>
 
       {/* Title */}
       <h2
@@ -59,6 +47,24 @@ export function NoteCard({ note, onUpdate }: NoteCardProps) {
       >
         {note.title || "Untitled"}
       </h2>
+      {/* Date */}
+      <div
+        className="
+          text-xs
+          uppercase
+          tracking-widest
+          text-stone-500
+          font-medium
+        "
+      >
+        {new Date(note.createdAt).toLocaleDateString("en-US", {
+          month: "long",
+          day: "2-digit",
+          year: "numeric",
+        })
+        }
+      </div>
+
 
       {/* Content */}
       <div className="leading-relaxed text-[17px] text-stone-700">
