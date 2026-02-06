@@ -1,9 +1,10 @@
 "use client";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Html, OrbitControls, Stars } from "@react-three/drei";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
+import { starData } from "@/lib/sampleGalaxyData";
 
 
 type Vector3 = [number, number, number];
@@ -38,7 +39,7 @@ export default function Galaxy() {
                 speed={1}
             /> */}
 
-            <GalaxyCluster count={1} setFocus={setFocus} />
+            <GalaxyCluster setFocus={setFocus} starData={starData} />
 
             <CameraController target={focus} />
 
@@ -58,18 +59,10 @@ export default function Galaxy() {
     );
 }
 
-function GalaxyCluster({ count, setFocus }: { count: number; setFocus: (pos: Vector3) => void }) {
-    const stars = useMemo(() => {
-        return Array.from({ length: count }).map(() => ({
-            position: randomVec3(20),
-            planets: Math.floor(Math.random() * 8) + 1,
-            size: Math.random() * 0.01 + 0.05,
-        }));
-    }, [count]);
-
+function GalaxyCluster({ setFocus, starData }: { setFocus: (pos: Vector3) => void; starData: any[] }) {
     return (
         <>
-            {stars.map((star, i) => (
+            {starData.map((star, i) => (
                 <StarSystem key={i} {...star} setFocus={setFocus} />
             ))}
         </>
@@ -79,31 +72,29 @@ function GalaxyCluster({ count, setFocus }: { count: number; setFocus: (pos: Vec
 
 function StarSystem({
     position,
-    planets,
     size,
     setFocus,
+    children
 }: {
     position: Vector3;
-    planets: number;
     size: number;
     setFocus: (pos: Vector3) => void;
+    children?: any[];
 }) {
     return (
         <group position={position}>
-            {/* Star */}
             <Star size={size} onClick={setFocus} />
-
-
-            {/* Planets */}
-            {Array.from({ length: planets }).map((_, i) => (
+            {children && children.map((planet: any, i: number) => (
                 <PlanetOrbit
-                    orbitRadius={1.5 + i * 1.2}
-                    orbitSpeed={0.5 + Math.random() * 0.001}
-                    orbitPhase={Math.random() * Math.PI * 2}
-                    orbitInclination={(Math.random() - 0.5) * 0.5}
-                    size={0.01 + Math.random() * 0.001}
+                    key={i}
+                    orbitRadius={planet.orbitRadius || 1.5 + i * 1.2}
+                    orbitSpeed={planet.orbitSpeed || 0.5 + Math.random() * 0.001}
+                    orbitPhase={planet.orbitPhase || Math.random() * Math.PI * 2}
+                    orbitInclination={planet.orbitInclination || (Math.random() - 0.5) * 0.5}
+                    size={planet.size || 0.01 + Math.random() * 0.001}
                 />
-            ))}
+            ))
+            }
         </group>
     );
 }
@@ -153,7 +144,7 @@ function PlanetOrbit({
 
             {/* Planet */}
             <mesh ref={planetRef}>
-                <sphereGeometry args={[size, 32, 32]} />
+                <Planet size={size} />
                 <meshStandardMaterial
                     color={randomPlanetColor()}
                     roughness={0.6}
@@ -162,16 +153,6 @@ function PlanetOrbit({
             </mesh>
         </group>
     );
-}
-
-
-
-function randomVec3(range: number): Vector3 {
-    return [
-        (Math.random() - 0.5) * range,
-        (Math.random() - 0.5) * range * 0.4,
-        (Math.random() - 0.5) * range,
-    ];
 }
 
 function randomPlanetColor() {
@@ -208,6 +189,7 @@ function Star({
             }}
         >
             <sphereGeometry args={[size, 16, 16]} />
+            {/* <Planet size={size}/> */}
             <meshStandardMaterial color="#ffffff" emissive="#ffffff" />
 
             <Html
@@ -254,8 +236,6 @@ function Planet({ size }: { size: number }) {
         </mesh>
     );
 }
-
-
 
 function CameraController({ target }: { target: Vector3 | null }) {
     const { camera } = useThree();
