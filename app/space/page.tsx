@@ -1,7 +1,9 @@
+import Galaxy from "@/components/internalComponents/galaxyComponents/Galaxy";
+
 export default function SpacePage() {
     return (
-        <div>
-            <p>Welcome to Space</p>
+        <div className="w-full h-screen">
+            <Galaxy />
         </div>
     );
 }
