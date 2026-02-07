@@ -30,7 +30,7 @@ export const starData = [
                 size: 0.01057343112726715
             },
             {
-                orbitRadius: 5.1,
+                orbitRadius: 3.5,
                 orbitSpeed: 0.5002248287522659,
                 orbitPhase: 4.036581955091213,
                 orbitInclination: -0.1784331484049298,
@@ -39,3 +39,5 @@ export const starData = [
         ]
     }
 ]
+
+export const galaxyCenter = (stars: typeof starData) => stars.reduce((sum, star) => sum.map((coord, i) => coord + star.position[i]), [0, 0, 0]).map(coord => coord / stars.length);

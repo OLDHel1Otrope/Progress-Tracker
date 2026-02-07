@@ -1,17 +1,96 @@
 "use client";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Html, OrbitControls, Stars } from "@react-three/drei";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { starData } from "@/lib/sampleGalaxyData";
+import { TransformControls } from "@react-three/drei";
 
 
 type Vector3 = [number, number, number];
 
-export default function Galaxy() {
-    const [focus, setFocus] = useState<Vector3 | null>(null);
+type Star = {
+    size: number;
+    description?: string;
+}
 
+type GalaxyProps = {
+    unplacedStars: any[];
+    setUnplacedStars: (stars: any[]) => void;
+    placingStar: THREE.Mesh | null;
+    setPlacingStar: (star: THREE.Mesh | null) => void;
+    placingPlanet: THREE.Mesh | null;
+    setPlacingPlanet: (planet: THREE.Mesh | null) => void;
+}
+
+export default function Galaxy({ unplacedStars, setUnplacedStars, placingStar, setPlacingStar, placingPlanet, setPlacingPlanet }: GalaxyProps) {
+    const [focus, setFocus] = useState<Vector3 | null>(null);
+    const [stars, setStars] = useState<any[]>(starData);
+    const [isPlacing, setIsPlacing] = useState(false);
+
+    // const isPlacing = useMemo(() => !!placingStar || !!placingPlanet, [placingStar, placingPlanet]);
+    const [ghostStar, setGhostStar] = useState<THREE.Mesh | null>(null);
+    const [placingStarSize] = useState(0.08);
+
+
+    //this function generates a star mesh into the placingStar state, which will then be moved to the galaxy when confirmed
+    function startPlacingStar() {
+        const mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(0.08, 16, 16),
+            new THREE.MeshStandardMaterial({
+                color: "#ffffff",
+                transparent: true,
+                opacity: 0.6,
+            })
+        );
+
+        mesh.position.set(0, 0, 0);
+
+        setPlacingStar(mesh);
+        setIsPlacing(true);
+    }
+
+    //funcion to confirm the star placement
+    function confirmPlacement() {
+        if (!placingStar) return;
+
+        const pos = placingStar.position;
+
+        setStars(prev => [...prev, {
+            x: pos.x,
+            y: pos.y,
+            z: pos.z,
+        }]);
+        setPlacingStar(null);
+        setIsPlacing(false);
+    }
+
+
+    // why is this running
+    useEffect(() => {
+        if (!placingStar) return;
+
+        const mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(placingStar?.size, 16, 16),
+            new THREE.MeshStandardMaterial({
+                color: "#fff",
+                transparent: true,
+                opacity: 0.6,
+                emissive: "#ffffff",
+                emissiveIntensity: 0.5,
+            })
+        );
+
+        mesh.position.set(0, 0, 0);
+
+        setGhostStar(mesh);
+    }, [placingStar, placingStarSize]);
+
+
+
+
+    // escape to remove focus
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
             if (e.key === "Escape") setFocus(null);
@@ -39,9 +118,9 @@ export default function Galaxy() {
                 speed={1}
             /> */}
 
-            <GalaxyCluster setFocus={setFocus} starData={starData} />
+            <GalaxyCluster setFocus={setFocus} starData={stars} />
 
-            <CameraController target={focus} />
+            <CameraController target={focus} isPlacing={!!placingStar} />
 
             <EffectComposer>
                 <Bloom
@@ -55,6 +134,33 @@ export default function Galaxy() {
                     darkness={0.6}
                 />
             </EffectComposer>
+
+            {placingStar && (
+                <TransformControls
+                    object={placingStar}
+                    mode="translate"
+                />
+            )}
+            {placingStar && <primitive object={placingStar} />}
+
+            {isPlacing && (
+                <div className="fixed bottom-24 left-5 z-50 flex gap-2">
+                    <button
+                        onClick={confirmPlacement}
+                        className="px-4 py-2 rounded-md bg-green-600/80"
+                    >
+                        Confirm
+                    </button>
+
+                    <button
+                        onClick={() => setIsPlacing(false)}
+                        className="px-4 py-2 rounded-md bg-red-600/80"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            )}
+
         </Canvas>
     );
 }
@@ -237,7 +343,7 @@ function Planet({ size }: { size: number }) {
     );
 }
 
-function CameraController({ target }: { target: Vector3 | null }) {
+function CameraController({ target, isPlacing }: { target: Vector3 | null; isPlacing: boolean }) {
     const { camera } = useThree();
     const controls = useRef<any>(null);
 
@@ -266,6 +372,7 @@ function CameraController({ target }: { target: Vector3 | null }) {
 
     return (
         <OrbitControls
+            enabled={!isPlacing}
             ref={controls}
             enableRotate
             enablePan={true}

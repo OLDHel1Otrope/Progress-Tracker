@@ -72,7 +72,7 @@ export default function Home() {
       <UserHeader />
       <div className="fixed bottom-4 right-4 text-stone-500 text-xs italic">
         {/* &copy; 2026 Progress Tracker */}
-        Made with🧡
+        Made with 💖
       </div>
       {!active && loggedIn && (
         <>
