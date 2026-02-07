@@ -187,7 +187,7 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
 
     reorderMutation.mutate({
       day_id: goals[0].day_id,
-      ordered: reordered.map(g => g.day_goal_id),
+      ordered: reordered,
     });
   };
 

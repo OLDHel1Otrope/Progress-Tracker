@@ -58,8 +58,6 @@ export default function Home() {
               </div>
             )}
 
-
-
             {p.title == "Notes" && (
               <div className="p-7 flex flex-row justify-center min-h-0 h-full flex-1">
                 <NotesPane />

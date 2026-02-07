@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,6 +7,10 @@
 
 .font-serif-news {
   font-family: 'Merriweather', serif;
+}
+
+.font-pixelify {
+  font-family: 'Orbitron', sans-serif;
 }
 
 

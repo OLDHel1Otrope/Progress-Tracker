@@ -2,7 +2,8 @@
 import Galaxy from "@/components/internalComponents/galaxyComponents/Galaxy";
 import { useState } from "react";
 import PlacementDock from "@/components/internalComponents/galaxyComponents/PlacementDock";
-import { GalaxyNavigator } from "@/components/internalComponents/galaxyComponents/GlaxyNavigator";
+import { GalaxyMenu } from "@/components/internalComponents/galaxyComponents/GalaxyList";
+
 
 export default function SpacePage() {
     const [unplacedStars, setUnplacedStars] = useState<any[]>([
@@ -23,6 +24,7 @@ export default function SpacePage() {
                 placingPlanet={placingPlanet}
                 setPlacingPlanet={setPlacingPlanet}
             />
+            <GalaxyMenu/>
             <PlacementDock
                 stars={unplacedStars}
                 setPlacingStar={setPlacingStar}

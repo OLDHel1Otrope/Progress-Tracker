@@ -30,7 +30,7 @@ export function NoteCard({ note, onUpdate }: NoteCardProps) {
       "
     >
       {/* Subtle paper grain */}
-      <div className="absolute inset-0 opacity-[0.03] bg-[url('/noise.png')] pointer-events-none" />
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" />
 
 
       {/* Title */}

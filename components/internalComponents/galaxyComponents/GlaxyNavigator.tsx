@@ -1,45 +1,50 @@
 "use client"
-
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Minus, Plus, RotateCcw, RotateCw } from "lucide-react"
 
 export const GalaxyNavigator = () => {
     return (
-        <div className="  z-50 
-                w-[70px] h-[70px] rounded-full  backdrop-blur-xl
-        border border-stone-700/40
-         bg-gradient-to-br from-stone-800/30 to-stone-900/30
-                 shadow-[0_10px_40px_rgba(0,0,0,0.6)]
-                             hover:bg-stone-700/10
-                grid grid-cols-3 grid-rows-3 gap-0">
-            <div className=" col-start-2 row-start-1 rounded-sm flex items-center justify-center" ><ChevronUp /></div>
-            <div className=" col-start-1 row-start-2  rounded-sm flex items-center justify-center" ><ChevronLeft /></div>
-            <div className=" col-start-2 row-start-2 grid grid-cols-3 grid-rows-3 flex items-center justify-center" ></div>
-            <div className=" col-start-3 row-start-2  rounded-sm flex items-center justify-center" ><ChevronRight /></div>
-            <div className=" col-start-2 row-start-3  rounded-sm flex items-center justify-center" ><ChevronDown /></div>
+        <div className="relative z-50 h-[120px] w-[120px]">
+            {/* Circular container */}
+            <div className="absolute inset-0 rounded-full border border-stone-700/40 bg-gradient-to-br from-stone-800/30 to-stone-900/30 shadow-[0_10px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl hover:bg-stone-700/10" />
+            
+            {/* Navigator grid */}
+            <div className="relative grid h-full w-full grid-cols-[1fr_2fr_1fr] grid-rows-[1fr_2fr_1fr] gap-1 p-2">
+                {/* Top */}
+                <button className="col-start-2 row-start-1 flex items-center justify-center rounded-full hover:bg-stone-700/20 transition-colors">
+                    <ChevronUp size={20} />
+                </button>
+                
+                {/* Left */}
+                <button className="col-start-1 row-start-2 flex items-center justify-center rounded-md hover:bg-stone-700/20 transition-colors">
+                    <ChevronLeft size={20} />
+                </button>
+                
+                {/* Center 3x3 grid */}
+                <div className="col-start-2 row-start-2 grid grid-cols-3 grid-rows-3 w-14 gap-0.5 rounded-full border border-stone-600/30 bg-stone-800/20 p-0.5">
+                    <button className="col-start-2 row-start-1 flex items-center justify-center hover:bg-stone-700/30 rounded transition-colors">
+                        <Plus size={16} />
+                    </button>
+                    <button className="col-start-1 row-start-2 flex items-center justify-center hover:bg-stone-700/30 rounded transition-colors">
+                        <RotateCcw size={16} />
+                    </button>
+                    <button className="col-start-3 row-start-2 flex items-center justify-center hover:bg-stone-700/30 rounded transition-colors">
+                        <RotateCw size={16} />
+                    </button>
+                    <button className="col-start-2 row-start-3 flex items-center justify-center hover:bg-stone-700/30 rounded transition-colors">
+                        <Minus size={16} />
+                    </button>
+                </div>
+                
+                {/* Right */}
+                <button className="col-start-3 row-start-2 flex items-center justify-center rounded-md hover:bg-stone-700/20 transition-colors">
+                    <ChevronRight size={20} />
+                </button>
+                
+                {/* Bottom */}
+                <button className="col-start-2 row-start-3 flex items-center justify-center rounded-md hover:bg-stone-700/20 transition-colors">
+                    <ChevronDown size={20} />
+                </button>
+            </div>
         </div>
-
     )
-}
-
-function NavButton({
-    children,
-    small = false,
-}: {
-    children: React.ReactNode;
-    small?: boolean;
-}) {
-    return (
-        <button
-            className={`
-        flex items-center justify-center
-        rounded-md
-        transition
-        hover:bg-stone-600/40
-        active:scale-95
-        ${small ? "w-6 h-6" : "w-8 h-8"}
-      `}
-        >
-            {children}
-        </button>
-    );
 }
