@@ -1,3 +1,47 @@
+export interface StarData {
+    id: string;
+    name?: string;
+    description?: string;
+    position: [number, number, number];
+    planets: number;
+    size: number;
+    children?: PlanetData[];
+}
+
+export interface PlanetData {
+    id: string;
+    name?: string;
+    description?: string;
+    orbitRadius: number;
+    orbitSpeed: number;
+    orbitPhase: number;
+    orbitInclination: number;
+    size: number;
+}
+
+type StarLoose = Partial<Omit<StarData, "id" | "size">> & {
+    id: string;
+    size: number;
+};
+
+type PlanetLoose = Partial<Omit<PlanetData, "id" | "size">> & {
+    id: string;
+    size: number;
+    parentId: string;
+};
+
+export type UnplacedItem =
+  | {
+      type: "star";
+      details: StarLoose;
+    }
+  | {
+      type: "planet";
+      details: PlanetLoose;
+    };
+
+
+
 export const starData = [
     {
         position: [

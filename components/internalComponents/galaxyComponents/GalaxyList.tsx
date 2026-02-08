@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
 import { ChevronDown, Star, Circle, Sparkles, Menu, X, PlaneTakeoff } from "lucide-react";
+import { useAuth } from "@/contexts/authContext";
 
 export const dummySpaceData = {
+
     stars: [
         { id: "star-1", name: "Proxima Centauri", size: 0.154, temperature: 3042, luminosity: 0.0017 },
         { id: "star-2", name: "Sirius A", size: 1.711, temperature: 9940, luminosity: 25.4 },
@@ -26,6 +28,8 @@ export const dummySpaceData = {
 
 export function GalaxyMenu() {
     const [open, setOpen] = useState(false);
+    const { user } = useAuth();
+
 
     const allObjects = [
         ...dummySpaceData.stars.map((s) => ({ ...s, type: "star" as const })),
@@ -40,7 +44,7 @@ export function GalaxyMenu() {
                     onClick={() => setOpen(!open)}
                     className="flex items-center gap-2 rounded-full border border-stone-700/40 bg-gradient-to-br from-stone-800/30 to-stone-900/30 px-4 py-2.5 shadow-[0_10px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-all hover:bg-stone-700/20"
                 >
-                    <span className="text-sm font-pixelify">Galaxy</span>
+                    <span className="text-sm font-pixelify">{user?.name || "Your "}Galaxy</span>
                     {open ? <X size={16} /> : <Menu size={16} />}
                 </button>
             </div>

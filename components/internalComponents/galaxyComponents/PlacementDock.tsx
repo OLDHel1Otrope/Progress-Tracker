@@ -1,8 +1,9 @@
 "use client";
-
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Codesandbox } from "lucide-react";
 import { GalaxyNavigator } from "./GlaxyNavigator";
+import * as THREE from "three";
+import { UnplacedItem } from "@/lib/sampleGalaxyData";
 
 type Item = {
     id?: string;
@@ -11,14 +12,18 @@ type Item = {
 
 export default function PlacementDock({
     stars,
-    setPlacingStar,
     planets,
-    setPlacingPlanet,
+    setUnplacedItem,
+    confirmPlacement,
+    unplacedItem,
+    newStarPosition
 }: {
     stars: Item[];
-    setPlacingStar: (star: Item | null) => void;
     planets: Item[];
-    setPlacingPlanet: (planet: Item | null) => void;
+    setUnplacedItem: (item: UnplacedItem) => void;
+    confirmPlacement: () => void;
+    unplacedItem: UnplacedItem | null;
+    newStarPosition: number[]
 }) {
     const [open, setOpen] = useState(false);
 
@@ -63,11 +68,14 @@ export default function PlacementDock({
                                         size={item.size}
                                         type={item.type}
                                         index={i}
+                                        isPlacing={unplacedItem?.details?.id == item.id}
+                                        confirmPlacement={confirmPlacement}
+                                        newStarPosition={newStarPosition}
                                         setPlacing={() => {
                                             if (item.type === "star") {
-                                                setPlacingStar(item);
+                                                setUnplacedItem({ type: "star", details: item });
                                             } else {
-                                                setPlacingPlanet(item);
+                                                // setPlacingPlanet(item);
                                             }
                                         }}
                                     />
@@ -87,12 +95,18 @@ function ItemCard({
     type,
     index,
     setPlacing,
+    isPlacing,
+    confirmPlacement,
+    newStarPosition
 }: {
     title: string;
     size?: number;
     type: "star" | "planet";
     index: number;
+    isPlacing: boolean;
+    confirmPlacement: () => void;
     setPlacing?: () => void;
+    newStarPosition?: number[];
 }) {
     const getIcon = () => {
         if (type === "star") {
@@ -113,38 +127,86 @@ function ItemCard({
     };
 
     return (
-        <button
-            onClick={setPlacing}
-            className="group w-full rounded-xl border border-stone-700/30 shadow-[inset_0_0_10px_rgba(0,0,0,0.4)] bg-stone-800/20 text-left transition-all hover:border-stone-600/50 hover:bg-stone-700/30 hover:shadow-lg"
+        <div
+            className={`group w-full rounded-xl border shadow-[inset_0_0_10px_rgba(0,0,0,0.4)] bg-stone-800/20 text-left transition-all ${
+                isPlacing 
+                    ? "border-stone-500/50 bg-stone-700/40 shadow-[0_0_20px_rgba(255,255,255,0.1)]" 
+                    : "border-stone-700/30 hover:border-stone-600/50 hover:bg-stone-700/30 hover:shadow-lg"
+            }`}
             style={{
                 animation: `fadeIn 0.3s ease-out ${index * 0.05}s both`,
             }}
         >
-            <div className="flex items-center gap-4 h-14">
-                <div className="h-full w-16 bg-stone-800 shadow-[inset_0_0_10px_rgba(0,0,0,0.4)] rounded-l-xl flex-shrink-0 flex items-center justify-center">
-                    {getIcon()}
-                </div>
-
-                <div className="min-w-0 w-full justify-between flex flex-col py-2 pr-4">
-                    <div className="flex flex-row justify-between gap-2">
-                        <h4 className="text-sm font-medium text-stone-100 truncate">
-                            {title}
-                        </h4>
-                        <span
-                            className={`flex-shrink-0 rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-wide ${getTypeColor()}`}
-                        >
-                            {type[0]}
-                        </span>
+            <button
+                onClick={isPlacing ? undefined : setPlacing}
+                className="w-full"
+                disabled={isPlacing}
+            >
+                <div className="flex items-center gap-4 h-14 border rounded-xl border-stone-600/20">
+                    <div className="h-full w-16 bg-stone-800 shadow-[inset_0_0_10px_rgba(0,0,0,0.4)] rounded-l-xl flex-shrink-0 flex items-center justify-center">
+                        {getIcon()}
                     </div>
 
-                    {size && (
-                        <div className="text-[10px] text-stone-400">
-                            Size: {size.toFixed(3)}
+                    <div className="min-w-0 w-full justify-between flex flex-col py-2 pr-4">
+                        <div className="flex flex-row justify-between gap-2">
+                            <h4 className="text-sm font-medium text-stone-100 truncate">
+                                {title}
+                            </h4>
+                            <span
+                                className={`flex-shrink-0 rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-wide ${getTypeColor()}`}
+                            >
+                                {type[0]}
+                            </span>
                         </div>
-                    )}
+
+                        {size && (
+                            <div className="flex flex-row text-[10px] text-stone-400">
+                                Size: {size.toFixed(3)}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </button>
+
+            <div
+                className={`grid transition-all duration-300 ease-in-out ${
+                    isPlacing ? "grid-rows-[1fr] opacity-100 mt-1" : "grid-rows-[0fr] opacity-0"
+                }`}
+            >
+                <div className="overflow-hidden">
+                    <div className="px-4 pb-3 pt-1   space-y-2">
+                        {/* Position display */}
+                        <div className="grid grid-cols-3 gap-2 text-[10px]">
+                            <div className="bg-stone-800/50 rounded-md px-2 py-1.5 shadow-[inset_0_0_5px_rgba(0,0,0,0.3)]">
+                                <div className="text-stone-500 uppercase">X</div>
+                                <div className="text-stone-300 font-medium">
+                                    {newStarPosition?.[0]?.toFixed(2) ?? "0.00"}
+                                </div>
+                            </div>
+                            <div className="bg-stone-800/50 rounded-md px-2 py-1.5 shadow-[inset_0_0_5px_rgba(0,0,0,0.3)]">
+                                <div className="text-stone-500 uppercase">Y</div>
+                                <div className="text-stone-300 font-medium">
+                                    {newStarPosition?.[1]?.toFixed(2) ?? "0.00"}
+                                </div>
+                            </div>
+                            <div className="bg-stone-800/50 rounded-md px-2 py-1.5 shadow-[inset_0_0_5px_rgba(0,0,0,0.3)]">
+                                <div className="text-stone-500 uppercase">Z</div>
+                                <div className="text-stone-300 font-medium">
+                                    {newStarPosition?.[2]?.toFixed(2) ?? "0.00"}
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={confirmPlacement}
+                            className="w-full bg-stone-700/50 hover:bg-stone-600/60 border border-stone-600/40 rounded-lg px-3 py-2 text-[11px] uppercase tracking-wide transition-all shadow-[inset_0_0_10px_rgba(0,0,0,0.2)] hover:shadow-[inset_0_0_15px_rgba(0,0,0,0.3)]"
+                        >
+                            Confirm Placement
+                        </button>
+                    </div>
                 </div>
             </div>
-        </button>
+        </div>
     );
 }
 

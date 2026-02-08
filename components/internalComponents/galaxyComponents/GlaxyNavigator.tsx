@@ -1,7 +1,8 @@
 "use client"
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Minus, Plus, RotateCcw, RotateCw } from "lucide-react"
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ChevronUp, Minus, Plus } from "lucide-react"
 
 export const GalaxyNavigator = () => {
+    //bind each key to perform its designed action
     return (
         <div className="relative z-50 h-[120px] w-[120px]">
             {/* Circular container */}
@@ -25,10 +26,10 @@ export const GalaxyNavigator = () => {
                         <Plus size={16} />
                     </button>
                     <button className="col-start-1 row-start-2 flex items-center justify-center hover:bg-stone-700/30 rounded transition-colors">
-                        <RotateCcw size={16} />
+                        <ChevronsLeft size={16} />
                     </button>
                     <button className="col-start-3 row-start-2 flex items-center justify-center hover:bg-stone-700/30 rounded transition-colors">
-                        <RotateCw size={16} />
+                        <ChevronsRight size={16} />
                     </button>
                     <button className="col-start-2 row-start-3 flex items-center justify-center hover:bg-stone-700/30 rounded transition-colors">
                         <Minus size={16} />
