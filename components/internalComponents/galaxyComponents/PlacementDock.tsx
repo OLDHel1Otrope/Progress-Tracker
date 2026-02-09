@@ -16,14 +16,16 @@ export default function PlacementDock({
     setUnplacedItem,
     confirmPlacement,
     unplacedItem,
-    newStarPosition
+    newStarPosition,
+    orbitControlsRef
 }: {
     stars: Item[];
     planets: Item[];
     setUnplacedItem: (item: UnplacedItem) => void;
     confirmPlacement: () => void;
     unplacedItem: UnplacedItem | null;
-    newStarPosition: number[]
+    newStarPosition: number[];
+    orbitControlsRef: any
 }) {
     const [open, setOpen] = useState(false);
 
@@ -35,7 +37,7 @@ export default function PlacementDock({
     return (
         <div className="fixed bottom-5 right-5 z-50 w-80 text-stone-300 gap-3 flex flex-col transition-all duration-200 font-pixelify">
             <div className="flex flex-row justify-end">
-                <GalaxyNavigator />
+                <GalaxyNavigator orbitControlsRef={orbitControlsRef}/>
             </div>
 
             <div className="bg-gradient-to-br from-stone-900/10 to-stone-900/30 backdrop-blur-xl border border-stone-700/40 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.6)] overflow-hidden">
@@ -128,11 +130,10 @@ function ItemCard({
 
     return (
         <div
-            className={`group w-full rounded-xl border shadow-[inset_0_0_10px_rgba(0,0,0,0.4)] bg-stone-800/20 text-left transition-all ${
-                isPlacing 
-                    ? "border-stone-500/50 bg-stone-700/40 shadow-[0_0_20px_rgba(255,255,255,0.1)]" 
+            className={`group w-full rounded-xl border shadow-[inset_0_0_10px_rgba(0,0,0,0.4)] bg-stone-800/20 text-left transition-all ${isPlacing
+                    ? "border-stone-500/50 bg-stone-700/40 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
                     : "border-stone-700/30 hover:border-stone-600/50 hover:bg-stone-700/30 hover:shadow-lg"
-            }`}
+                }`}
             style={{
                 animation: `fadeIn 0.3s ease-out ${index * 0.05}s both`,
             }}
@@ -169,9 +170,8 @@ function ItemCard({
             </button>
 
             <div
-                className={`grid transition-all duration-300 ease-in-out ${
-                    isPlacing ? "grid-rows-[1fr] opacity-100 mt-1" : "grid-rows-[0fr] opacity-0"
-                }`}
+                className={`grid transition-all duration-300 ease-in-out ${isPlacing ? "grid-rows-[1fr] opacity-100 mt-1" : "grid-rows-[0fr] opacity-0"
+                    }`}
             >
                 <div className="overflow-hidden">
                     <div className="px-4 pb-3 pt-1   space-y-2">

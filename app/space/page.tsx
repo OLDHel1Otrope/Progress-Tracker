@@ -1,15 +1,14 @@
 "use client";
 import Galaxy from "@/components/internalComponents/galaxyComponents/Galaxy";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import PlacementDock from "@/components/internalComponents/galaxyComponents/PlacementDock";
 import { GalaxyMenu } from "@/components/internalComponents/galaxyComponents/GalaxyList";
-import { Vector3 } from "three";
 import { starData, UnplacedItem } from "@/lib/sampleGalaxyData";
-import * as THREE from "three";
 
 export default function SpacePage() {
     const [stars, setStars] = useState<any[]>(starData);
     const [newStarPosition, setNewStarPosition] = useState<number[]>([0, 0, 0])
+    const orbitControlsRef = useRef(null);
 
     const [unplacedStars, setUnplacedStars] = useState<any[]>([
         { size: 0.05728905311847514, id: "star-1" },
@@ -53,10 +52,11 @@ export default function SpacePage() {
                 galaxyData={stars}
                 unplacedItem={unplacedItem}
                 setNewStarPosition={setNewStarPosition}
-                cameraProps={{}}
+                orbitControlsRef={orbitControlsRef}
             />
             <GalaxyMenu />
             <PlacementDock
+                orbitControlsRef={orbitControlsRef}
                 stars={unplacedStars}
                 planets={unplacedPlanets}
                 unplacedItem={unplacedItem}

@@ -1,36 +1,28 @@
 "use client";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { TransformControls } from "@react-three/drei";
 import { GalaxyCluster } from "./Bodies";
 import { StarData, UnplacedItem } from "@/lib/sampleGalaxyData";
 
-
-type Star = {
-    size: number;
-    description?: string;
-}
-
-
 type GalaxyProps = {
     unplacedItem: UnplacedItem | null;
-    cameraProps: {}
     galaxyData: StarData[];
-    setNewStarPosition: (position: number[]) => void
+    setNewStarPosition: (position: number[]) => void;
+    orbitControlsRef: any
 }
 
-
-export default function Galaxy({ unplacedItem, galaxyData, setNewStarPosition }: GalaxyProps) {
+export default function Galaxy({ unplacedItem, galaxyData, setNewStarPosition, orbitControlsRef }: GalaxyProps) {
     const [focus, setFocus] = useState<THREE.Vector3 | null>(null);
 
     const placingStar = useMemo(() => unplacedItem?.type === "star", [unplacedItem?.type]);
     const placingPlanet = useMemo(() => unplacedItem?.type === "planet", [unplacedItem?.type]);
 
     const transformRef = useRef(null)
-    const orbitControlsRef = useRef(null);
+    // const orbitControlsRef = useRef(null);
 
     const celestialGhost = useMemo(() => {
         if (!unplacedItem) return null;
@@ -65,7 +57,9 @@ export default function Galaxy({ unplacedItem, galaxyData, setNewStarPosition }:
 
     return (
         <Canvas camera={{ position: [0, 0, 10], fov: 40, }}
-            onPointerMissed={() => setFocus(null)}>
+            onPointerMissed={() => setFocus(null)}
+        // onScroll={() => setFocus(null)}
+        >
             <color attach="background" args={["#05070d"]} />
 
             <ambientLight intensity={0.4} />
@@ -81,7 +75,7 @@ export default function Galaxy({ unplacedItem, galaxyData, setNewStarPosition }:
 
             <GalaxyCluster setFocus={setFocus} starData={galaxyData} />
 
-            <CameraController target={focus} ref={orbitControlsRef} />
+            <CameraController target={focus} ref={orbitControlsRef} onClearFocus={() => setFocus(null)} />
 
             <EffectComposer>
                 <Bloom
@@ -134,15 +128,128 @@ export default function Galaxy({ unplacedItem, galaxyData, setNewStarPosition }:
     );
 }
 
-
-
-function CameraController({ target, ref }: { target: THREE.Vector3 | null; ref: any }) {
+function CameraController({ target, ref, onClearFocus }: {
+    target: THREE.Vector3 | null;
+    ref: any;
+    onClearFocus: () => void
+}) {
     const { camera } = useThree();
+    const orbitControlsRef = useRef(null); // Separate ref for OrbitControls
     const targetPosition = useRef(new THREE.Vector3());
     const cameraTarget = useRef(new THREE.Vector3());
+    const userInteracting = useRef(false);
+
+    useImperativeHandle(ref, () => ({
+        get enabled() {
+            return orbitControlsRef.current?.enabled ?? true;
+        },
+        set enabled(value: boolean) {
+            if (orbitControlsRef.current) {
+                orbitControlsRef.current.enabled = value;
+            }
+        },
+        moveUp: () => {
+            const upVector = new THREE.Vector3(0, 1, 0);
+            camera.position.addScaledVector(upVector, 1);
+            if (orbitControlsRef.current) {
+                orbitControlsRef.current.target.addScaledVector(upVector, 1);
+                orbitControlsRef.current.update();
+            }
+        },
+        moveDown: () => {
+            const upVector = new THREE.Vector3(0, 1, 0);
+            camera.position.addScaledVector(upVector, -1);
+            if (orbitControlsRef.current) {
+                orbitControlsRef.current.target.addScaledVector(upVector, -1);
+                orbitControlsRef.current.update();
+            }
+        },
+        moveLeft: () => {
+            // Move camera left relative to view direction
+            const direction = new THREE.Vector3();
+            camera.getWorldDirection(direction);
+            const left = new THREE.Vector3();
+            left.crossVectors(new THREE.Vector3(0, 1, 0), direction).normalize();
+
+            camera.position.addScaledVector(left, 1);
+            if (orbitControlsRef.current) {
+                orbitControlsRef.current.target.addScaledVector(left, 1);
+                orbitControlsRef.current.update();
+            }
+        },
+        moveRight: () => {
+            const direction = new THREE.Vector3();
+            camera.getWorldDirection(direction);
+            const right = new THREE.Vector3();
+            right.crossVectors(direction, new THREE.Vector3(0, 1, 0)).normalize();
+
+            camera.position.addScaledVector(right, 1);
+            if (orbitControlsRef.current) {
+                orbitControlsRef.current.target.addScaledVector(right, 1);
+                orbitControlsRef.current.update();
+            }
+        },
+        moveForward: () => {
+            const direction = new THREE.Vector3();
+            camera.getWorldDirection(direction);
+            camera.position.addScaledVector(direction, 1);
+            if (orbitControlsRef.current) {
+                orbitControlsRef.current.target.addScaledVector(direction, 1);
+                orbitControlsRef.current.update();
+            }
+        },
+        moveBackward: () => {
+            const direction = new THREE.Vector3();
+            camera.getWorldDirection(direction);
+            camera.position.addScaledVector(direction, -1);
+            if (orbitControlsRef.current) {
+                orbitControlsRef.current.target.addScaledVector(direction, -1);
+                orbitControlsRef.current.update();
+            }
+        },
+        rotateLeft: () => {
+            if (orbitControlsRef.current) {
+                // Rotating around the target
+                const offset = new THREE.Vector3();
+                offset.copy(camera.position).sub(orbitControlsRef.current.target);
+
+                const angle = 0.1; // rotation amount
+                const newOffset = offset.clone();
+                newOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+
+                camera.position.copy(orbitControlsRef.current.target).add(newOffset);
+                orbitControlsRef.current.update();
+            }
+        },
+        rotateRight: () => {
+            if (orbitControlsRef.current) {
+                const offset = new THREE.Vector3();
+                offset.copy(camera.position).sub(orbitControlsRef.current.target);
+
+                const angle = -0.1;
+                const newOffset = offset.clone();
+                newOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+
+                camera.position.copy(orbitControlsRef.current.target).add(newOffset);
+                orbitControlsRef.current.update();
+            }
+        },
+        zoomIn: () => {
+            const direction = new THREE.Vector3();
+            camera.getWorldDirection(direction);
+            camera.position.addScaledVector(direction, 1);
+            if (orbitControlsRef.current) orbitControlsRef.current.update();
+        },
+        zoomOut: () => {
+            const direction = new THREE.Vector3();
+            camera.getWorldDirection(direction);
+            camera.position.addScaledVector(direction, -1);
+            if (orbitControlsRef.current) orbitControlsRef.current.update();
+        },
+    }));
 
     useFrame(() => {
-        if (!target || !ref.current) return;
+        if (!target || !orbitControlsRef.current) return;
 
         const focus = new THREE.Vector3(...target);
 
@@ -153,21 +260,29 @@ function CameraController({ target, ref }: { target: THREE.Vector3 | null; ref: 
         );
 
         camera.position.lerp(targetPosition.current, 0.08);
-
         cameraTarget.current.lerp(focus, 0.08);
-        ref.current.target.copy(cameraTarget.current);
-
-        ref.current.update();
+        orbitControlsRef.current.target.copy(cameraTarget.current);
+        orbitControlsRef.current.update();
     });
 
     return (
         <OrbitControls
-            ref={ref}
+            ref={orbitControlsRef} 
             enableRotate
             enablePan={true}
             enableZoom={true}
             enableDamping
             dampingFactor={0.1}
+            // if the user interacts, remove it from the target
+            onStart={() => {
+                userInteracting.current = true;
+                if (target) {
+                    onClearFocus();
+                }
+            }}
+            onEnd={() => {
+                userInteracting.current = false;
+            }}
         />
     );
 }
