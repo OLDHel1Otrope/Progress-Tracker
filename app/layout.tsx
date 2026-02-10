@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${ubuntu.variable}`}>
-      <body className="font-ubuntu antialiased bg-stone-950 text-stone-100">
+      <body className="font-ubuntu antialiased bg-[#060605] text-stone-100">
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
             {children}

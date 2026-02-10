@@ -2,6 +2,7 @@
 
 import { ChevronsRight, Cross, Snail, Soup } from "lucide-react";
 import Image from "next/image";
+import { DayCounterWidget } from "./widgets/DayCounterWidget";
 
 interface CenteredGridProps {
     images: string[];
@@ -30,6 +31,11 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
           p-6
         "
             >
+                <div
+                    key="day-counter" className="  w-full    row-span-2 col-span-2"
+                >
+                    <DayCounterWidget targetDate={"2025-12-06T06:15:23.123Z"} toFrom={true} />
+                </div>
                 {images.map((src, index) => (
                     <div
                         key={index}
@@ -75,7 +81,6 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
               rounded-xl
               overflow-hidden
               bg-stone-900/30
-              shadow-lg
               hover:scale-105
               hover:bg-stone-700/50
               transition-transform
@@ -93,7 +98,6 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
               rounded-xl
               overflow-hidden
               bg-stone-900/30
-              shadow-lg
               hover:scale-105
               hover:bg-stone-700/50
               transition-transform
@@ -101,9 +105,10 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
               flex flex-row items-center justify-center
             "
                 >
-                    <ChevronsRight size={90} strokeWidth={1.5}/>
+                    <ChevronsRight size={90} strokeWidth={1.5} />
                     <Snail size={90} strokeWidth={1.5} />
                 </div>
+
             </div>
         </div>
     );

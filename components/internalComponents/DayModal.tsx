@@ -293,8 +293,6 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
               )}
             </div>
           )}
-
-
         </div>
       </div>
     </div >
