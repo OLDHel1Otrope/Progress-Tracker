@@ -19,12 +19,12 @@ const prevPs = [
 ];
 
 const prevP = [
-  { title: "Today", color: "#231f1c" },      // stone-850
-  { title: "Calendar", color: "#1e1a17" },   // stone-870
-  { title: "Goals", color: "#1a1714" },      // stone-890
-  { title: "Statistics", color: "#171411" },  // stone-910
-  { title: "Settings", color: "#13100d" },   // stone-930
-  { title: "Notes", color: "#0c0a09" },      // stone-950
+  { title: "Today", color: "#231f1c61" },      // stone-850
+  { title: "Calendar", color: "#1e1a1761" },   // stone-870
+  { title: "Goals", color: "#1a171461" },      // stone-890
+  { title: "Statistics", color: "#17141161" },  // stone-910
+  { title: "Settings", color: "#13100d61" },   // stone-930
+  { title: "Notes", color: "#0c0a0961" },      // stone-950
 ];
 
 const pages = prevP.map((p, i) => ({ ...p, color: prevP[prevP.length - 1 - i].color }));
@@ -35,9 +35,10 @@ export default function Home() {
   const { loggedIn } = useAuth();
   const images = [
     "/img/i1.png",
-    "/img/i2.png",
+    "/img/in.png",
     "/img/ik.png",
     "/img/i4.png",
+    "/img/in2.png",
   ];
 
 
@@ -59,10 +60,10 @@ export default function Home() {
             {p.title === "Settings" && <SettingsPane />}
 
             {p.title === "Today" && (
-              <div className="flex-1 min-h-0 h-full overflow-y-auto">
+              <div className="flex-1 min-h-0 h-full overflow-y-auto ">
 
                 {/* Center wrapper */}
-                <div className="min-h-full flex items-center justify-center p-4">
+                <div className="min-h-full flex items-center justify-center p-4 ">
                   <TodayGoals />
                 </div>
 

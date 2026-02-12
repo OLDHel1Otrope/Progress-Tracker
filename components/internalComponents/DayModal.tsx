@@ -219,7 +219,7 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
 
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center"
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center pointer-events-auto"
       onClick={() => { onClose(); setIsFullscreen(false); }}>
       <div
         className={`

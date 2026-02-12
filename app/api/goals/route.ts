@@ -24,6 +24,8 @@ export async function GET(req: Request) {
         dg.position,
         dg.is_completed,
         dg.created_at AS added_on,
+        dg.equadrant as equadrant,
+        dg.eposition as eposition,
         d.id as day_id
       FROM days d
       JOIN day_goals dg ON dg.day_id = d.id

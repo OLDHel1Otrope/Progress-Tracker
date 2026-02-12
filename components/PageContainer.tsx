@@ -17,7 +17,7 @@ export default function PageContainer({
 }: PageContainerProps) {
     return (
         <div
-            className="fixed left-0 top-0 h-screen min-h-0 h-full flex flex-col"
+            className="fixed left-0 top-0 h-screen min-h-0 h-full flex flex-col pointer pointer-events-none"
              style={{
                 width: "100vw",
 
@@ -35,7 +35,7 @@ export default function PageContainer({
 
             <div
                 onClick={onToggle}
-                className="absolute cursor-pointer"
+                className="absolute cursor-pointer pointer-events-auto"
                 style={{
                     width: "35px",
                     height: "190px",

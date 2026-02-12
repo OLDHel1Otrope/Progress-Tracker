@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsRight, Cross, Snail, Soup } from "lucide-react";
+import { ChevronsRight, Cross, PlusIcon, Snail, Soup } from "lucide-react";
 import Image from "next/image";
 import { DayCounterWidget } from "./widgets/DayCounterWidget";
 
@@ -36,6 +36,26 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                 >
                     <DayCounterWidget targetDate={"2025-12-06T06:15:23.123Z"} toFrom={true} />
                 </div>
+
+                <div
+                    key={"t"}
+                    className="
+              w-80
+              h-48
+              rounded-xl
+              overflow-hidden
+              bg-stone-900/30
+              hover:scale-105
+              hover:bg-stone-700/50
+              transition-transform
+              border border-stone-700/30 backdrop-blur-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]
+              flex flex-row items-center justify-center
+            "
+                >
+                    <ChevronsRight size={90} strokeWidth={1.5} />
+                    <Snail size={90} strokeWidth={1.5} />
+                </div>
+
                 {images.map((src, index) => (
                     <div
                         key={index}
@@ -91,7 +111,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                     <Soup size={116} strokeWidth={1.5} />
                 </div>
                 <div
-                    key={"t"}
+                    key={"tk"}
                     className="
               w-80
               h-48
@@ -105,8 +125,8 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
               flex flex-row items-center justify-center
             "
                 >
-                    <ChevronsRight size={90} strokeWidth={1.5} />
-                    <Snail size={90} strokeWidth={1.5} />
+                    <PlusIcon size={90} strokeWidth={1.5} />
+                    {/* <Snail size={90} strokeWidth={1.5} /> */}
                 </div>
 
             </div>

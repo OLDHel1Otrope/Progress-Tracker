@@ -30,8 +30,11 @@ import {
 
 import { useDebounce } from "@/hooks/useDebounce";
 import { reorderDayGoals } from "@/lib/api/reorder";
+import EisenhowerMatrix from "./EisenhowerMatrix";
 
 export default function TodayGoals() {
+
+    const [eisenHower, setEisenHower] = useState(true)
 
     const [editingGoalText, setEditingGoalText] = useState<Goal | null>(null);
     const debouncedGoal = useDebounce(editingGoalText, 600);
@@ -187,18 +190,41 @@ export default function TodayGoals() {
 
 
     return (
-        <div className="w-[900px] items-center justify-center">
-            <GoalList
-                goals={goals}
-                updateGoalText={updateGoalText}
-                updateGoalStatus={updateGoalStatus}
-                isFullscreen={false}
-                sensors={sensors}
-                closestCenter={closestCenter}
-                handleDragEnd={handleDragEnd}
-                addGoal={addGoal}
-                isHome={true}
-            />
-        </div>
+        <>
+            {!eisenHower ? (
+                <div className="w-[900px] flex flex-col items-center justify-center pointer-events-auto">
+                    <GoalList
+                        goals={goals}
+                        updateGoalText={updateGoalText}
+                        updateGoalStatus={updateGoalStatus}
+                        isFullscreen={false}
+                        sensors={sensors}
+                        closestCenter={closestCenter}
+                        handleDragEnd={handleDragEnd}
+                        addGoal={addGoal}
+                        isHome={true}
+                    />
+                    <button
+                        onClick={() => setEisenHower(p => !p)}
+                        className="mt-2 px-2 py-2 bg-stone-800/40 hover:bg-stone-700/40 border border-stone-700/30 rounded-xl text-stone-600 text-xs italic transition-colors pointer-events-auto"
+                    >
+                        Switch to Eisenhower Matrix
+                    </button>
+                </div>
+            ) : (
+                <div className="w-11/12 flex flex-col items-center justify-center">
+                    <EisenhowerMatrix
+                        goalsUC={goals}
+                    />
+                    <button
+                        onClick={() => setEisenHower(p => !p)}
+                        className="mt-0 px-2 py-2 bg-stone-800/40 hover:bg-stone-700/40 border border-stone-700/30 rounded-xl text-stone-600 text-xs italic transition-colors pointer-events-auto"
+                    >
+                        Switch to List View
+                    </button>
+                </div>
+            )}
+
+        </>
     );
 }

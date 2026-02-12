@@ -50,7 +50,7 @@ export const DayCounterWidget = ({
                     </div> */}
 
                     {/* Main number */}
-                    <div className="relative pr-4 text-[clamp(80px,20vw,260px)] font-extrabold italic font-pixelify bg-gradient-to-br from-stone-100 via-stone-300 to-stone-400 bg-clip-text text-transparent">
+                    <div className="relative pr-8 text-[clamp(80px,20vw,260px)] font-extrabold italic font-pixelify bg-gradient-to-br from-stone-100 via-stone-300 to-stone-400 bg-clip-text text-transparent">
                         {displayDays}
                     </div>
                 </div>

@@ -142,7 +142,6 @@ export default function GoalItem({
     cursor-grab active:cursor-grabbing
     text-stone-500 hover:text-stone-300
     transition-opacity
-    pt-1
   "
                 >
                     <GripVertical size={16} />
@@ -177,7 +176,7 @@ export default function GoalItem({
                 </button>
 
 
-                <div className="flex-1 ml-1">
+                <div className="flex-1 ml-1 pt-2">
                     {editing ? (
                         <input
                             value={localTitle}
