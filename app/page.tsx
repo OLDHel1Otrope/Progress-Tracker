@@ -75,7 +75,6 @@ export default function Home() {
                 <NotesPane />
               </div>
             )}
-            {/* {p.title==="Calendar"} */}
           </>
         </PageContainer>
       ))}
@@ -86,12 +85,6 @@ export default function Home() {
       </div>
       {!active && loggedIn && (
         <>
-          {/* <div className="fixed top-4 right-4 text-stone-500 text-sm flex flex-row gap-2">
-            <CircleUserRound />
-            <span className="font-bold">
-              Swapnil Singh
-            </span>
-          </div> */}
           <CenteredGrid images={images} />;
         </>
       )}

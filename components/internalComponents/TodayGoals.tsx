@@ -34,7 +34,7 @@ import EisenhowerMatrix from "./EisenhowerMatrix";
 
 export default function TodayGoals() {
 
-    const [eisenHower, setEisenHower] = useState(true)
+    const [eisenHower, setEisenHower] = useState(false)
 
     const [editingGoalText, setEditingGoalText] = useState<Goal | null>(null);
     const debouncedGoal = useDebounce(editingGoalText, 600);

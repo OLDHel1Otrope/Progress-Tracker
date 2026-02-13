@@ -220,7 +220,7 @@ export default function EisenhowerMatrix({ goalsUC }: { goalsUC: any[] }) {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
         >
-            <div className="flex gap-0.5 w-[85vw] h-[85vh] p-6 ml-16 pointer-events-auto">
+            <div className="flex gap-0.5 w-[85vw] h-[85vh] p-6 pb-2 ml-16 pointer-events-auto">
                 <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-0.5">
                     <MatrixQuadrant
                         id="urgent-important"
@@ -292,7 +292,7 @@ function MatrixQuadrant({
     return (
         <div
             ref={setNodeRef}
-            className={` ${!isList ? " bg-gradient-to-br from-stone-800/20 to-stone-900/30" : " bg-none border-none"}  overflow-hidden flex flex-col 
+            className={` ${!isList ? " bg-gradient-to-br backdrop-blur-xl from-stone-800/20 to-stone-900/30" : " bg-none border-none"}  overflow-hidden flex flex-col 
                 ${isOver ? "border-stone-500/50" : ""}
                 ${id == "urgent-important" ? "rounded-tl-2xl" : ""}
                 ${id == "urgent-not-important" ? "rounded-bl-2xl" : ""}

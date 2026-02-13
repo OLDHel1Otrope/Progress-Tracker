@@ -176,7 +176,7 @@ export default function GoalItem({
                 </button>
 
 
-                <div className="flex-1 ml-1 pt-2">
+                <div className="flex-1 ml-1 pt-0">
                     {editing ? (
                         <input
                             value={localTitle}
@@ -249,6 +249,23 @@ export default function GoalItem({
                             >
                                 {goal.recurrence_group_id.charAt(0).toUpperCase() + goal.recurrence_group_id.slice(1)}
                             </button>)}
+                        {goal?.equadrant == 0 && (
+                            <button
+                                key={"important"}
+                                onClick={() => {
+                                    console.log("Clicked important tag");
+                                }}
+                                className="
+            px-2 py-[2px] rounded-md text-xs
+            border border-stone-600
+            text-stone-300
+            hover:bg-stone-700/60
+            transition
+          "
+                            >
+                                {"P1"}
+                            </button>
+                        )}
 
                         {extractTags(goal.title).length > 0 && (
                             <>

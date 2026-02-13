@@ -57,7 +57,7 @@ export default function GoalList({
                 >
 
                     {/* SCROLL AREA */}
-                    <div className={`flex flex-col ${isHome ? "gap-1" : "gap-2"} min-h-0 overflow-y-auto overflow-x-hidden `}>
+                    <div className={`flex flex-col ${isHome ? "gap-0.5" : "gap-2"} min-h-0 overflow-y-auto overflow-x-hidden `}>
 
                         {goals.map((goal, i) => (
                             <GoalItem
@@ -76,7 +76,7 @@ export default function GoalList({
                 </SortableContext>
 
                 {/* ADD INPUT (fixed at bottom) */}
-                <div className={`${isHome ? "mt-1" : "mt-2"} shrink-0 flex items-center gap-4 p-1 pl-9 bg-stone-800/${isHome && goals.length > 0 ? "20 rounded-b-xl" : "30 rounded-xl"}`}
+                <div className={`${isHome ? "mt-0.5" : "mt-2"} shrink-0 flex items-center gap-4 p-1 pl-9 bg-stone-800/${isHome && goals.length > 0 ? "20 rounded-b-xl" : "30 rounded-xl"}`}
                     style={{
 
                     }}
