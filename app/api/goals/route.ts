@@ -16,23 +16,23 @@ export async function GET(req: Request) {
 
     const result = await db.query(
       `
-      SELECT
-        g.id as id,
-        g.title,
-        g.base_description as description,
-        dg.id as day_goal_id,
-        dg.position,
-        dg.is_completed,
-        dg.created_at AS added_on,
-        dg.equadrant as equadrant,
-        dg.eposition as eposition,
-        d.id as day_id
-      FROM days d
-      JOIN day_goals dg ON dg.day_id = d.id
-      JOIN goals g ON g.id = dg.goal_id
-      WHERE d.date = $1
-      AND dg.archived = false
-      ORDER BY dg.position ASC
+        SELECT
+          g.id AS id,
+          g.title,
+          g.base_description AS description,
+          dg.id AS day_goal_id,
+          dg.position,
+          dg.is_completed,
+          dg.created_at AS added_on,
+          dg.equadrant,
+          dg.eposition,
+          dg.goal_date
+        FROM day_goals dg
+        JOIN goals g ON g.id = dg.goal_id
+        WHERE
+          dg.goal_date = $1
+          AND dg.archived_at IS null
+        ORDER BY dg.position ASC
       `,
       [date]
     );
@@ -68,7 +68,6 @@ export async function POST(req: Request) {
 
     await client.query("BEGIN");
 
-    /* 1️⃣ Insert goal */
     const goalRes = await client.query(
       `
       INSERT INTO goals (title, created_at)
@@ -80,29 +79,16 @@ export async function POST(req: Request) {
 
     const goalId = goalRes.rows[0].id;
 
-    /* 2️⃣ Insert date if not exists */
-    const dateRes = await client.query(
-      `
-      INSERT INTO days (date)
-      VALUES ($1)
-      ON CONFLICT (date)
-      DO UPDATE SET date = EXCLUDED.date
-      RETURNING id; 
-      `,
-      [goal_date]
-    );
-
-    const dayId = dateRes.rows[0].id;
 
     const dayGoalRes = await client.query(
       `
       INSERT INTO day_goals
-      (day_id, goal_id, is_completed, created_at, position)
+      (goal_date, goal_id, is_completed, created_at, position)
       VALUES ($1, $2, false, NOW(), COALESCE(
-    (SELECT MAX(position) + 1 FROM day_goals WHERE day_id = $1 AND archived = false),1))
+    (SELECT MAX(position) + 1 FROM day_goals WHERE goal_date = $1 AND archived_at IS null),1))
       RETURNING *
       `,
-      [dayId, goalId]
+      [goal_date, goalId]
     );
 
     await client.query("COMMIT");

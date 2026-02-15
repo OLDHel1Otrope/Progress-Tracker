@@ -6,9 +6,9 @@ export async function PATCH(req: Request) {
 
     try {
         const body = await req.json();
-        const { day_id, ordered_ids } = body;
+        const { goal_date, ordered_ids } = body;
 
-        if (!day_id || !Array.isArray(ordered_ids)) {
+        if (!goal_date || !Array.isArray(ordered_ids)) {
             return NextResponse.json({ error: "Invalid params" }, { status: 400 });
         }
 
@@ -17,43 +17,56 @@ export async function PATCH(req: Request) {
         /* Lock rows */
         await client.query(
             `
-  SELECT id
-  FROM day_goals
-  WHERE day_id = $1
-    AND archived = false
-  FOR UPDATE
+                SELECT id
+                FROM day_goals
+                WHERE goal_date = $1
+                    AND archived_at IS NULL
+                FOR UPDATE
   `,
-            [day_id]
+            [goal_date]
         );
 
         /* Phase 1: move out of range */
         await client.query(
             `
-  UPDATE day_goals
-  SET position = position + 1000000
-  WHERE day_id = $1
-    AND archived = false
+            UPDATE day_goals
+            SET position = position + 1000000
+            WHERE goal_date = $1
+                AND archived_at IS NULL
   `,
-            [day_id]
+            [goal_date]
         );
 
         /* Phase 2: apply new order */
-        await client.query(
-            `
-  WITH new_order AS (
-    SELECT
-      unnest($2::uuid[]) AS id,
-      generate_series(1, array_length($2, 1)) AS pos
-  )
-  UPDATE day_goals dg
-  SET position = no.pos
-  FROM new_order no
-  WHERE dg.id = no.id
-    AND dg.day_id = $1
-    AND dg.archived = false
-  `,
-            [day_id, ordered_ids]
+        //         await client.query(
+        //             `
+        //             WITH new_order AS (
+        //                 SELECT
+        //                 unnest($2::uuid[]) AS id,
+        //                 generate_series(1, array_length($2, 1)) AS pos
+        //             )
+        //             UPDATE day_goals dg
+        //             SET position = no.pos
+        //             FROM new_order no
+        //             WHERE dg.id = no.id
+        //                 AND dg.goal_date = $1
+        //                 AND dg.archived_at IS NULL
+        //   `,
+        //             [goal_date, ordered_ids]
+        //         );
+
+        const updatePromises = ordered_ids.map((id, index) =>
+            client.query(
+                `
+        UPDATE day_goals
+        SET position = $1
+        WHERE id = $2
+        `,
+                [index + 1, id]
+            )
         );
+        
+        await Promise.all(updatePromises);
 
         await client.query("COMMIT");
 

@@ -49,6 +49,11 @@ export async function PATCH(
       values.push(recurrence_group_id);
     }
 
+    if (date !== undefined) {
+      fields.push(`goal_date = $${index++}`);
+      values.push(date);
+    }
+
     if (fields.length > 0) {
       await client.query(
         `
@@ -83,31 +88,6 @@ export async function PATCH(
         WHERE id = $${index}
         `,
         [...goalValues, id]
-      );
-    }
-
-
-    if (date !== undefined) {
-
-      const dayResult = await client.query(
-        `
-        INSERT INTO days (day)
-        VALUES ($1)
-        ON CONFLICT (day) DO UPDATE SET day = EXCLUDED.day
-        RETURNING id
-        `,
-        [date]
-      );
-
-      const newDayId = dayResult.rows[0].id;
-
-      await client.query(
-        `
-        UPDATE day_goals
-        SET day_id = $1
-        WHERE goal_id = $2
-        `,
-        [newDayId, goalId]
       );
     }
 

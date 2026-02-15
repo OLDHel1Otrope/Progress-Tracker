@@ -20,35 +20,23 @@ CREATE TABLE goals (
   created_at TIMESTAMP DEFAULT now()
 );
 
--- days
-CREATE TABLE days (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  date DATE NOT NULL,
-  created_at TIMESTAMP DEFAULT now(),
-  UNIQUE(user_id, date)
-);
-
 -- day_goals
 CREATE TABLE day_goals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  day_id UUID REFERENCES days(id) ON DELETE CASCADE,
   goal_id UUID REFERENCES goals(id) ON DELETE CASCADE,
-
   is_completed BOOLEAN DEFAULT false,
   notes TEXT,
   position INT NOT NULL,
-
   created_at TIMESTAMP DEFAULT now(),
-
-  UNIQUE(day_id, goal_id)
+  goal_date DATE NOT NULL,
+  archived_at TIMESTAMP,
+  UNIQUE(goal_date, goal_id)
 );
 
 -- subtasks
 CREATE TABLE subtasks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  day_goal_id UUID REFERENCES day_goals(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   done BOOLEAN DEFAULT false,
   position INT

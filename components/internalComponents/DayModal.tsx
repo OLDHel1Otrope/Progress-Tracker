@@ -120,12 +120,12 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
 
   const reorderMutation = useMutation({
     mutationFn: ({
-      day_id,
+      goal_date,
       ordered,
     }: {
-      day_id: string;
+      goal_date: string;
       ordered: Goal[];
-    }) => reorderDayGoals(day_id, ordered),
+    }) => reorderDayGoals(goal_date, ordered),
 
     onMutate: async ({ ordered }) => {
       await queryClient.cancelQueries({
@@ -186,7 +186,7 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
     const reordered = arrayMove(goals, oldIndex, newIndex);
 
     reorderMutation.mutate({
-      day_id: goals[0].day_id,
+      goal_date: goals[0].goal_date,
       ordered: reordered,
     });
   };
