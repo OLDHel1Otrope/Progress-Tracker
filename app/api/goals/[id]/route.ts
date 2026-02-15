@@ -26,7 +26,7 @@ export async function PATCH(
       title,
       description,
       is_completed,
-      date, // YYYY-MM-DD
+      goal_date, // YYYY-MM-DD
       recurrence_group_id,
     } = body;
 
@@ -49,9 +49,9 @@ export async function PATCH(
       values.push(recurrence_group_id);
     }
 
-    if (date !== undefined) {
+    if (goal_date !== undefined) {
       fields.push(`goal_date = $${index++}`);
-      values.push(date);
+      values.push(goal_date);
     }
 
     if (fields.length > 0) {
@@ -134,7 +134,7 @@ export async function DELETE(
     const result = await client.query(
       `
       UPDATE day_goals
-      SET archived = true
+      SET archived_at = NOW()
       WHERE id = $1
       RETURNING id
       `,

@@ -407,6 +407,17 @@ export default function GoalItem({
                                 Mark Complete
                             </MenuItem>
 
+                            <MenuItem onClick={() => {
+                                const nextDay = new Date(goal.goal_date);
+                                nextDay.setDate(nextDay.getDate() + 2);
+                                updateGoalStatus({
+                                    ...goal,
+                                    goal_date: nextDay.toISOString()
+                                });
+                            }}>
+                                Move to next day
+                            </MenuItem>
+
                             <MenuItem
                                 danger
                                 disabled={deleteGoalMutation.isPending}

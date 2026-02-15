@@ -37,6 +37,8 @@ export async function GET(req: Request) {
       [date]
     );
 
+    console.log(result.rows)
+
     return NextResponse.json(result.rows);
 
   } catch (err) {
