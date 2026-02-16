@@ -30,6 +30,10 @@ export async function PATCH(
       recurrence_group_id,
     } = body;
 
+    const dateToStore = goal_date
+      ? new Date(goal_date).toISOString().split('T')[0]
+      : undefined;
+
     await client.query("BEGIN");
 
 
@@ -49,9 +53,9 @@ export async function PATCH(
       values.push(recurrence_group_id);
     }
 
-    if (goal_date !== undefined) {
+    if (dateToStore !== undefined) {
       fields.push(`goal_date = $${index++}`);
-      values.push(goal_date);
+      values.push(dateToStore);
     }
 
     if (fields.length > 0) {

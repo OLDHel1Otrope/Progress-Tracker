@@ -409,7 +409,7 @@ export default function GoalItem({
 
                             <MenuItem onClick={() => {
                                 const nextDay = new Date(goal.goal_date);
-                                nextDay.setDate(nextDay.getDate() + 2);
+                                nextDay.setDate(nextDay.getDate() + 1);
                                 updateGoalStatus({
                                     ...goal,
                                     goal_date: nextDay.toISOString()

@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import { Pool, types } from "pg";
 
 const pool = new Pool({
   host: process.env.DB_HOST,
@@ -8,6 +8,7 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
 });
 
+types.setTypeParser(1082, (val) => val);
 
 declare global {
   var pgPool: Pool | undefined;
