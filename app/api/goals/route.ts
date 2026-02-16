@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
-
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -20,19 +19,17 @@ export async function GET(req: Request) {
           g.id AS id,
           g.title,
           g.base_description AS description,
-          dg.id AS day_goal_id,
-          dg.position,
-          dg.is_completed,
-          dg.created_at AS added_on,
-          dg.equadrant,
-          dg.eposition,
-          dg.goal_date
-        FROM day_goals dg
-        JOIN goals g ON g.id = dg.goal_id
+          g.position,
+          g.is_completed,
+          g.created_at AS added_on,
+          g.equadrant,
+          g.eposition,
+          g.goal_date
+        FROM goals g
         WHERE
-          dg.goal_date = $1
-          AND dg.archived_at IS null
-        ORDER BY dg.position ASC
+          g.goal_date = $1
+          AND g.archived_at IS NULL
+        ORDER BY g.position ASC
       `,
       [date]
     );
@@ -50,9 +47,7 @@ export async function GET(req: Request) {
   }
 }
 
-/**
- * CREATE goal
- */
+
 export async function POST(req: Request) {
   const client = await db.connect(); // get transaction client
 
@@ -69,27 +64,16 @@ export async function POST(req: Request) {
 
     await client.query("BEGIN");
 
-    const goalRes = await client.query(
-      `
-      INSERT INTO goals (title, created_at)
-      VALUES ($1, NOW())
-      RETURNING id
-      `,
-      [title]
-    );
-
-    const goalId = goalRes.rows[0].id;
-
 
     const dayGoalRes = await client.query(
       `
-      INSERT INTO day_goals
-      (goal_date, goal_id, is_completed, created_at, position)
+      INSERT INTO goals
+      (goal_date, title, is_completed, created_at, position)
       VALUES ($1, $2, false, NOW(), COALESCE(
-    (SELECT MAX(position) + 1 FROM day_goals WHERE goal_date = $1 AND archived_at IS null),1))
+      (SELECT MAX(position) + 1 FROM goals WHERE goal_date = $1 AND archived_at IS null),1))
       RETURNING *
       `,
-      [goal_date, goalId]
+      [goal_date, title]
     );
 
     await client.query("COMMIT");

@@ -1,4 +1,4 @@
-export async function reorderDayGoals(goal_date: string, newOrder: { day_goal_id: string }[]) {
+export async function reorderDayGoals(goal_date: string, newOrder: { id: string }[]) {
     const res = await fetch("/api/goals/reorder", {
         method: "PATCH",
         headers: {
@@ -6,7 +6,7 @@ export async function reorderDayGoals(goal_date: string, newOrder: { day_goal_id
         },
         body: JSON.stringify({
             goal_date:goal_date,
-            ordered_ids: newOrder.map(g => g.day_goal_id),
+            ordered_ids: newOrder.map(g => g.id),
         }),
     });
     return res.json();

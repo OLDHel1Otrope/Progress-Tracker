@@ -38,7 +38,7 @@ function getCalendarDays(month: number, year: number) {
 }
 
 export default function CalendarPage() {
-    const today = new Date();
+  const today = new Date();
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);

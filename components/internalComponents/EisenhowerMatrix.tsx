@@ -23,7 +23,7 @@ import { reorderEisenHower } from "@/lib/api/quadrants";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type Goal = {
-    day_goal_id: string;
+    id: string;
     title: string;
 };
 
@@ -62,11 +62,11 @@ export default function EisenhowerMatrix({ goalsUC }: { goalsUC: any[] }) {
                     if (!old) return old;
 
                     const updatesMap = new Map(
-                        updates.map(([day_goal_id, quadrant, position]) => [day_goal_id, { quadrant, position }])
+                        updates.map(([id, quadrant, position]) => [id, { quadrant, position }])
                     );
 
                     return old.map(goal => {
-                        const update = updatesMap.get(goal.day_goal_id);
+                        const update = updatesMap.get(goal.id);
                         if (update) {
                             return { ...goal, ...update };
                         }
@@ -140,8 +140,8 @@ export default function EisenhowerMatrix({ goalsUC }: { goalsUC: any[] }) {
         if (activeContainer !== overContainer) {
             const activeItems = [...goals[activeContainer]];
             const overItems = [...goals[overContainer]];
-            const activeIndex = activeItems.findIndex((item) => item.day_goal_id === active.id);
-            const overIndex = overItems.findIndex((item) => item.day_goal_id === over.id);
+            const activeIndex = activeItems.findIndex((item) => item.id === active.id);
+            const overIndex = overItems.findIndex((item) => item.id === over.id);
             const [movedItem] = activeItems.splice(activeIndex, 1);
 
             if (overIndex >= 0) {
@@ -151,20 +151,20 @@ export default function EisenhowerMatrix({ goalsUC }: { goalsUC: any[] }) {
             }
 
             activeItems.forEach((item, index) => {
-                updates.push([item.day_goal_id, quadrantToNumber(activeContainer), index]);
+                updates.push([item.id, quadrantToNumber(activeContainer), index]);
             });
 
             overItems.forEach((item, index) => {
-                updates.push([item.day_goal_id, quadrantToNumber(overContainer), index]);
+                updates.push([item.id, quadrantToNumber(overContainer), index]);
             });
         } else {
             const items = [...goals[activeContainer]];
-            const activeIndex = items.findIndex((item) => item.day_goal_id === active.id); // Changed
-            const overIndex = items.findIndex((item) => item.day_goal_id === over.id); // Changed
+            const activeIndex = items.findIndex((item) => item.id === active.id); // Changed
+            const overIndex = items.findIndex((item) => item.id === over.id); // Changed
             const reordered = arrayMove(items, activeIndex, overIndex);
 
             reordered.forEach((item, index) => {
-                updates.push([item.day_goal_id, quadrantToNumber(activeContainer), index]);
+                updates.push([item.id, quadrantToNumber(activeContainer), index]);
             });
         }
 
@@ -175,16 +175,16 @@ export default function EisenhowerMatrix({ goalsUC }: { goalsUC: any[] }) {
                 const activeItems = next[activeContainer];
                 const overItems = next[overContainer];
 
-                const fromIndex = activeItems.findIndex(i => i.day_goal_id === active.id); // Changed
-                const toIndex = overItems.findIndex(i => i.day_goal_id === over.id); // Changed
+                const fromIndex = activeItems.findIndex(i => i.id === active.id); // Changed
+                const toIndex = overItems.findIndex(i => i.id === over.id); // Changed
 
                 const [moved] = activeItems.splice(fromIndex, 1);
 
                 overItems.splice(toIndex >= 0 ? toIndex : overItems.length, 0, moved);
             } else {
                 const items = next[activeContainer];
-                const from = items.findIndex(i => i.day_goal_id === active.id); // Changed
-                const to = items.findIndex(i => i.day_goal_id === over.id); // Changed
+                const from = items.findIndex(i => i.id === active.id); // Changed
+                const to = items.findIndex(i => i.id === over.id); // Changed
                 next[activeContainer] = arrayMove(items, from, to);
             }
 
@@ -203,14 +203,14 @@ export default function EisenhowerMatrix({ goalsUC }: { goalsUC: any[] }) {
         }
 
         return Object.keys(goals).find((key) =>
-            goals[key as MatrixQuadrant].some((item) => item.day_goal_id === id)
+            goals[key as MatrixQuadrant].some((item) => item.id === id)
         ) as MatrixQuadrant | undefined;
     };
 
     const activeGoal = activeId
         ? Object.values(goals)
             .flat()
-            .find((goal) => goal.day_goal_id === activeId)
+            .find((goal) => goal.id === activeId)
         : null;
 
     return (
@@ -304,10 +304,10 @@ function MatrixQuadrant({
                 </div>
             )}
 
-            <SortableContext items={goals.map((g) => g.day_goal_id)} strategy={verticalListSortingStrategy}>
+            <SortableContext items={goals.map((g) => g.id)} strategy={verticalListSortingStrategy}>
                 <div className={`flex flex-col gap-0.5 p-3 overflow-y-auto ${isList ? "max-h-[calc(100vh-120px)]" : "flex-1"}`}>
                     {goals.map((goal) => (
-                        <GoalCard key={goal.day_goal_id} goal={goal} />
+                        <GoalCard key={goal.id} goal={goal} />
                     ))}
                 </div>
             </SortableContext>
@@ -317,7 +317,7 @@ function MatrixQuadrant({
 
 function GoalCard({ goal }: { goal: Goal }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-        id: goal.day_goal_id,
+        id: goal.id,
     });
 
     const style = {

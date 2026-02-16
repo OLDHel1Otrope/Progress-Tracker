@@ -78,9 +78,9 @@ export default function Home() {
           </>
         </PageContainer>
       ))}
+          <UserHeader />
       {!active && loggedIn && (
         <>
-          <UserHeader />
           <CenteredGrid images={images} />;
           <div className="fixed bottom-4 right-4 text-stone-500 text-xs italic">
             {/* &copy; 2026 Progress Tracker */}

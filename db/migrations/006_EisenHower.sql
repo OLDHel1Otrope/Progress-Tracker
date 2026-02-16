@@ -1,3 +1,0 @@
-ALTER TABLE day_goals
-ADD COLUMN EQuadrant INTEGER,
-ADD COLUMN Eposition INTEGER;

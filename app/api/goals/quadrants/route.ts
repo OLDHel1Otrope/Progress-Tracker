@@ -11,12 +11,9 @@ export async function PUT(req: NextRequest) {
       console.log(`Updating goal ${id}: quadrant=${quadrant}, position=${position}`);
       
       const result = await db.query(
-        'UPDATE day_goals SET equadrant = $1, eposition = $2 WHERE id = $3 RETURNING *',
+        'UPDATE goals SET equadrant = $1, eposition = $2 WHERE id = $3 RETURNING *',
         [quadrant, position, id]
       );
-      
-      console.log(`Rows affected for ${id}:`, result.rowCount);
-      console.log(`Updated data:`, result.rows);
       
       return result;
     });

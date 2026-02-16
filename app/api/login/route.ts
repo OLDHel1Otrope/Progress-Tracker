@@ -35,6 +35,9 @@ export async function POST(req: Request) {
       user.password_hash
     );
 
+    console.log(passphrase)
+    console.log(user.password_hash)
+
     if (!ok) {
       return NextResponse.json(
         { error: "Invalid passphrase" },

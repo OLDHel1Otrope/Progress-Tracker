@@ -26,7 +26,6 @@ function removeTags(text: string): string {
 
 
 export interface Goal {
-    day_goal_id: string;
     recurrence_group_id: any;
     id: string;
     title: string;
@@ -422,7 +421,7 @@ export default function GoalItem({
                                 danger
                                 disabled={deleteGoalMutation.isPending}
                                 onClick={() => {
-                                    deleteGoalMutation.mutate(goal.day_goal_id);
+                                    deleteGoalMutation.mutate(goal.id);
                                 }}
                             >
                                 {deleteGoalMutation.isPending ? "Deleting..." : "Delete"}

@@ -18,7 +18,7 @@ export async function PATCH(req: Request) {
         await client.query(
             `
                 SELECT id
-                FROM day_goals
+                FROM goals
                 WHERE goal_date = $1
                     AND archived_at IS NULL
                 FOR UPDATE
@@ -29,7 +29,7 @@ export async function PATCH(req: Request) {
         /* Phase 1: move out of range */
         await client.query(
             `
-            UPDATE day_goals
+            UPDATE goals
             SET position = position + 1000000
             WHERE goal_date = $1
                 AND archived_at IS NULL
@@ -37,28 +37,10 @@ export async function PATCH(req: Request) {
             [goal_date]
         );
 
-        /* Phase 2: apply new order */
-        //         await client.query(
-        //             `
-        //             WITH new_order AS (
-        //                 SELECT
-        //                 unnest($2::uuid[]) AS id,
-        //                 generate_series(1, array_length($2, 1)) AS pos
-        //             )
-        //             UPDATE day_goals dg
-        //             SET position = no.pos
-        //             FROM new_order no
-        //             WHERE dg.id = no.id
-        //                 AND dg.goal_date = $1
-        //                 AND dg.archived_at IS NULL
-        //   `,
-        //             [goal_date, ordered_ids]
-        //         );
-
         const updatePromises = ordered_ids.map((id, index) =>
             client.query(
                 `
-        UPDATE day_goals
+        UPDATE goals
         SET position = $1
         WHERE id = $2
         `,

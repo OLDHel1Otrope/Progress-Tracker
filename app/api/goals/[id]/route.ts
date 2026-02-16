@@ -22,7 +22,6 @@ export async function PATCH(
 
     const {
       id,
-      day_goal_id,
       title,
       description,
       is_completed,
@@ -58,40 +57,23 @@ export async function PATCH(
       values.push(dateToStore);
     }
 
+    if (title !== undefined) {
+      fields.push(`title = $${index++}`);
+      values.push(title);
+    }
+    if (description !== undefined) {
+      fields.push(`base_description = $${index++}`);
+      values.push(description);
+    }
+
     if (fields.length > 0) {
       await client.query(
         `
-        UPDATE day_goals
+        UPDATE goals
         SET ${fields.join(", ")}
         WHERE id = $${index}
         `,
-        [...values, day_goal_id]
-      );
-    }
-
-    const goalFields: string[] = [];
-    const goalValues: any[] = [];
-
-    index = 1;
-
-    if (title !== undefined) {
-      goalFields.push(`title = $${index++}`);
-      goalValues.push(title);
-    }
-    if (description !== undefined) {
-      goalFields.push(`base_description = $${index++}`);
-      goalValues.push(description);
-    }
-
-
-    if (goalFields.length > 0) {
-      await client.query(
-        `
-        UPDATE goals
-        SET ${goalFields.join(", ")}
-        WHERE id = $${index}
-        `,
-        [...goalValues, id]
+        [...values, id]
       );
     }
 
@@ -137,7 +119,7 @@ export async function DELETE(
 
     const result = await client.query(
       `
-      UPDATE day_goals
+      UPDATE goals
       SET archived_at = NOW()
       WHERE id = $1
       RETURNING id
