@@ -4,6 +4,7 @@ import { useState } from "react";
 import { NoteCard } from "./internalComponents/NoteCard";
 import RichTextEditor from "./internalComponents/RichTextEditor";
 import { Plus } from "lucide-react";
+import { NoteRenderer } from "./internalComponents/noteComponents/NoteRenderer";
 
 type Note = {
     id: string;
@@ -64,8 +65,8 @@ export default function NotesPane() {
 
 
     return (
-        <div className="w-full h-full min-h-0 flex flex-col gap-2 overflow-scroll overflow-x-hidden pl-20">
-            {!addNote ? (
+        <div className="w-full h-full min-h-0 flex flex-col gap-2 overflow-scroll overflow-x-hidden ml-28 pointer-events-auto">
+            {/* {!addNote ? (
                 <button
                     onClick={() => setAddNote(true)}
                     className="
@@ -74,7 +75,6 @@ export default function NotesPane() {
       rounded-lg
       px-6 py-10
       flex flex-col items-center justify-center gap-3
-      font-serif
       text-stone-600
       transition
       hover:border-stone-600
@@ -115,17 +115,13 @@ export default function NotesPane() {
     shadow-sm
     transition
     hover:shadow-md
-    font-serif
     text-stone-800
     relative
     overflow-hidden
     flex flex-col gap-4
   "
                 >
-                    {/* Subtle paper grain */}
-                    <div className="absolute inset-0 opacity-[0.03] bg-[url('/noise.png')] pointer-events-none" />
 
-                    {/* Header */}
                     <h2
                         className="
       text-md
@@ -141,9 +137,7 @@ export default function NotesPane() {
                         Add Note
                     </h2>
 
-                    {/* Form */}
                     <div className="space-y-4">
-                        {/* Title Input */}
                         <input
                             value={newTitle}
                             onChange={(e) => setNewTitle(e.target.value)}
@@ -164,7 +158,6 @@ export default function NotesPane() {
       "
                         />
 
-                        {/* Editor */}
                         <div className="leading-relaxed text-[17px] text-stone-700">
                             <RichTextEditor
                                 value={newNote}
@@ -173,7 +166,6 @@ export default function NotesPane() {
                             />
                         </div>
 
-                        {/* Footer */}
                         <div className="flex justify-end pt-2">
                             <button
                                 onClick={handleAddNote}
@@ -193,8 +185,8 @@ export default function NotesPane() {
                         </div>
                     </div>
                 </div>
-            </>)}
-            <div className="flex-1 min-h-0 max-w-6xl flex flex-col gap-1">
+            </>)} */}
+            {/* <div className="flex-1 min-h-0 max-w-6xl flex flex-col gap-1">
                 {notes.map((note) => (
                     <NoteCard
                         key={note.id}
@@ -202,7 +194,8 @@ export default function NotesPane() {
                         onUpdate={updateNote}
                     />
                 ))}
-            </div>
+            </div> */}
+                        <NoteRenderer initialBlocks={sampleNoteData} />
         </div>
     );
 }
@@ -218,6 +211,36 @@ function generateTitleFromContent(html: string) {
 
     return words.join(" ") + (words.length >= 4 ? "…" : "");
 }
+
+
+const sampleNoteData = [
+    {
+        id: "n1",
+        type: "todo",
+        data: "This is the first sample todo",
+        checked: false,
+    },
+    {
+        id: "n2",
+        type: "dropdown",
+        data: "This is the first dropdown",
+        isOpen: true,
+        children: [
+            {
+                id: "n3",
+                type: "todo",
+                data: "This is the child todo",
+                checked: false,
+            },
+            {
+                id: "n4",
+                type: "todo",
+                data: "This is the second child todo",
+                checked: false,
+            },
+        ]
+    }
+];
 
 
 const SampleNotes: Note[] = [

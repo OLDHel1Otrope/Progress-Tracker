@@ -13,7 +13,7 @@ export const DayCounterWidget = ({
     if (isNaN(setDate.getTime())) {
         return (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-stone-800/20 to-stone-900/30 backdrop-blur-xl border border-stone-700/20 rounded-2xl">
-                <div className="text-red-500/80 font-pixelify text-sm">Invalid date</div>
+                <div className="text-stone-500/80 font-pixelify text-sm">Invalid date</div>
             </div>
         );
     }
@@ -62,11 +62,11 @@ export const DayCounterWidget = ({
 
                     {/* Text */}
                     <div className="relative px-4 py-1.5 font-semibold text-[clamp(8px,1.5vw,14px)] text-stone-300 italic tracking-wide text-center">
-                       {displayDays} DAYS {toFrom ? 'SINCE' : 'UNTIL'} {setDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase()}
+                        {displayDays} DAYS {toFrom ? 'SINCE' : 'UNTIL'} {setDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase()}
                     </div>
                 </div>
 
-                {/* Racing checkered flag accent */}
+                {/* Racing checkestone flag accent */}
                 <div className="absolute top-4 right-4 w-8 h-8 opacity-10">
                     <div className="grid grid-cols-4 grid-rows-4 w-full h-full transform rotate-12">
                         {[...Array(16)].map((_, i) => (
@@ -81,21 +81,3 @@ export const DayCounterWidget = ({
         </div>
     );
 };
-
-// export const PomodoroTimer = () => {
-//     return (
-//         <div>render the countdown here</div>
-//     )
-// }
-
-// export const ArticleShortcutWidget = () => {
-//     return (
-//         <div>render the note image, and click to go to article edit directly</div>
-//     )
-// }
-
-// export const ProgressDisplayWidget = () => {
-//     return (
-//         <div>show some beautiful ui</div>
-//     )
-// }

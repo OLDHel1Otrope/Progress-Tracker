@@ -3,6 +3,7 @@
 import { ChevronsRight, Cross, PlusIcon, Snail, Soup } from "lucide-react";
 import Image from "next/image";
 import { DayCounterWidget } from "./widgets/DayCounterWidget";
+import { PomodoroTimer } from "./widgets/PomodoroCounter";
 
 interface CenteredGridProps {
     images: string[];
@@ -36,6 +37,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                 >
                     <DayCounterWidget targetDate={"2025-12-06T06:15:23.123Z"} toFrom={true} />
                 </div>
+
 
                 <div
                     key={"t"}
@@ -93,6 +95,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                     </div>
 
                 ))}
+
                 <div
                     key={"s"}
                     className="
@@ -109,6 +112,11 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
             "
                 >
                     <Soup size={116} strokeWidth={1.5} />
+                </div>
+                <div
+                    key="countdown" className=""
+                >
+                    <PomodoroTimer />
                 </div>
                 <div
                     key={"tk"}

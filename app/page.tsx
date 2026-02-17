@@ -36,8 +36,8 @@ export default function Home() {
   const images = [
     "/img/i1.png",
     "/img/in.png",
-    "/img/ik.png",
-    "/img/i4.png",
+    // "/img/ik.png",
+    // "/img/i4.png",
     "/img/in2.png",
   ];
 

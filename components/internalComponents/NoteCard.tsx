@@ -24,7 +24,6 @@ export function NoteCard({ note, onUpdate }: NoteCardProps) {
         transition
         hover:shadow-md
         flex flex-col gap-4
-        font-serif
         text-stone-800
         relative
       "

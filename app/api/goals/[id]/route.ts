@@ -27,13 +27,38 @@ export async function PATCH(
       is_completed,
       goal_date, // YYYY-MM-DD
       recurrence_group_id,
+      position,
+      equadrant
     } = body;
+
+    if (goalId != id) {
+      return NextResponse.json(
+        { error: "Invalid attempt." },
+        { status: 401 }
+      );
+    }
 
     const dateToStore = goal_date
       ? new Date(goal_date).toISOString().split('T')[0]
       : undefined;
 
     await client.query("BEGIN");
+
+    let newPosition;
+    let newEPosition;
+    if (dateToStore) {
+      newPosition = await client.query(
+        `SELECT COUNT(*) FROM goals WHERE goal_date = $1`,
+        [dateToStore]
+      );
+    }
+
+    if (equadrant) {
+      newEPosition = await client.query(
+        `SELECT COUNT(*) FROM goals WHERE goal_date = $1 AND equadrant= $2`,
+        [dateToStore, equadrant]
+      );
+    }
 
 
     const fields: string[] = [];
@@ -64,6 +89,16 @@ export async function PATCH(
     if (description !== undefined) {
       fields.push(`base_description = $${index++}`);
       values.push(description);
+    }
+
+    if (position !== undefined) {
+      fields.push(`position = $${index++}`);
+      values.push(newPosition?.rows[0].count || null);
+    }
+
+    if (equadrant !== undefined) {
+      fields.push(`eposition = $${index++}`);
+      values.push(newEPosition?.rows[0].count || null);
     }
 
     if (fields.length > 0) {

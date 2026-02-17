@@ -95,3 +95,5 @@ export async function POST(req: Request) {
     client.release();
   }
 }
+//find yesterdays incompleted goals, make its position next days highest position, keep equadrant same, make eposition the next days highest position
+const cron="update goals "
