@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Block, BlockType } from './types/types';
 import { Todo } from './ToDo';
 import { BulletedText } from './BulletedText';
@@ -8,6 +9,7 @@ import { NumberedText } from './NumberedText';
 import { Paragraph } from './Paragraph';
 import { Heading } from './Heading';
 import { Link } from './Link';
+import { fetchNotes, updateNotes } from '@/lib/api/notes';
 
 
 const BLOCK_TYPES: { type: BlockType; label: string; description: string }[] = [
@@ -76,7 +78,7 @@ const SlashMenu = ({ query, onSelect, onClose }: SlashMenuProps) => {
                             e.preventDefault();
                             onSelect(item.type);
                         }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-stone-800/60 transition-colors"
+                        className="w-full flex items-center gap-2.5 px-3 py-1 text-left hover:bg-stone-800/60 transition-colors"
                     >
                         <div>
                             <div className="text-sm text-stone-300 font-medium">{item.label}</div>
@@ -92,7 +94,6 @@ const SlashMenu = ({ query, onSelect, onClose }: SlashMenuProps) => {
 interface BlockWrapperProps {
     children: React.ReactNode;
     onDelete?: () => void;
-    showHandle?: boolean;
 }
 
 const BlockWrapper = ({ children, onDelete }: BlockWrapperProps) => {
@@ -158,7 +159,6 @@ const BlockRenderer = ({
     const [slashQuery, setSlashQuery] = useState('');
 
     const handleChange = (updated: Partial<Block>) => {
-        // Detect slash command
         if ('data' in updated && typeof updated.data === 'string') {
             const text = updated.data;
             const slashIdx = text.lastIndexOf('/');
@@ -249,24 +249,59 @@ const BlockRenderer = ({
     );
 };
 
-interface NoteRendererProps {
-    initialBlocks?: Block[];
-    onChange?: (blocks: Block[]) => void;
-}
-
-export const NoteRenderer = ({ initialBlocks, onChange }: NoteRendererProps) => {
-    const [blocks, setBlocks] = useState<Block[]>(
-        initialBlocks && initialBlocks.length > 0
-            ? initialBlocks
-            : [makeBlock('paragraph')]
-    );
-    console.log(blocks)
+// ─── NoteRenderer with React Query ────────────────────────────────────────────
+export const NoteRenderer = () => {
+    const queryClient = useQueryClient();
     const [lastInsertedId, setLastInsertedId] = useState<string | null>(null);
+
+    const { data: serverBlocks, isLoading } = useQuery({
+        queryKey: ['notes'],
+        queryFn: fetchNotes,
+    });
+
+    const [blocks, setBlocks] = useState<Block[]>([makeBlock('paragraph')]);
+
+    useEffect(() => {
+        if (serverBlocks) {
+            setBlocks(serverBlocks);
+        }
+    }, [serverBlocks]);
+
+    const saveMutation = useMutation({
+        mutationFn: updateNotes,
+        onMutate: async (newBlocks) => {
+            await queryClient.cancelQueries({ queryKey: ['notes'] });
+
+            const previousBlocks = queryClient.getQueryData<Block[]>(['notes']);
+
+            queryClient.setQueryData(['notes'], newBlocks);
+
+            return { previousBlocks };
+        },
+        onError: (err, newBlocks, context) => {
+            if (context?.previousBlocks) {
+                queryClient.setQueryData(['notes'], context.previousBlocks);
+                setBlocks(context.previousBlocks);
+            }
+            console.error('Failed to save notes:', err);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['notes'] });
+        },
+    });
+
+    const debounceTimeoutRef = useRef<NodeJS.Timeout>();
+    const debouncedSave = useCallback((blocksToSave: Block[]) => {
+        clearTimeout(debounceTimeoutRef.current);
+        debounceTimeoutRef.current = setTimeout(() => {
+            saveMutation.mutate(blocksToSave);
+        }, 1000);
+    }, [saveMutation]);
 
     const updateBlocks = useCallback((newBlocks: Block[]) => {
         setBlocks(newBlocks);
-        onChange?.(newBlocks);
-    }, [onChange]);
+        debouncedSave(newBlocks);
+    }, [debouncedSave]);
 
     const updateBlockById = (list: Block[], id: string, updated: Partial<Block>): Block[] =>
         list.map((b) => {
@@ -318,16 +353,6 @@ export const NoteRenderer = ({ initialBlocks, onChange }: NoteRendererProps) => 
         });
     };
 
-    const getNumberedCounter = (list: Block[], targetId: string): number => {
-        let counter = 0;
-        for (const b of list) {
-            if (b.type === 'numberedText') counter++;
-            else counter = 0;
-            if (b.id === targetId) return counter;
-        }
-        return 1;
-    };
-
     const renderBlocks = (list: Block[], parentId?: string): React.ReactNode => {
         let numberedRun = 0;
 
@@ -351,15 +376,92 @@ export const NoteRenderer = ({ initialBlocks, onChange }: NoteRendererProps) => 
                     onDeleteBlock={handleDelete}
                     onInlineCode={handleInlineCode}
                     renderBlocks={renderBlocks}
-                    autoFocusId={lastInsertedId}
+                    autoFocusId={lastInsertedId || undefined}
                 />
             );
         });
     };
 
+    if (isLoading) {
+        return (
+            <div className="w-full pl-8 pr-4 py-2 space-y-3">
+                {[...Array(5)].map((_, i) => (
+                    <div
+                        key={i}
+                        className="relative rounded-md p-1 pl-2 animate-pulse"
+                        style={{ animationDelay: `${i * 100}ms` }}
+                    >
+                        <div className="flex items-start gap-2">
+                            <div className="mt-[3px] w-4 h-4 rounded bg-stone-800/40" />
+
+                            <div className="flex-1 space-y-2">
+                                <div
+                                    className="h-5 rounded bg-gradient-to-r from-stone-800/20 via-stone-700/40 to-stone-800/20 bg-[length:200%_100%] animate-shimmer"
+                                    style={{ width: `${60 + Math.random() * 30}%` }}
+                                />
+                                {Math.random() > 0.5 && (
+                                    <div
+                                        className="h-5 rounded bg-gradient-to-r from-stone-800/20 via-stone-700/40 to-stone-800/20 bg-[length:200%_100%] animate-shimmer"
+                                        style={{
+                                            width: `${40 + Math.random() * 40}%`,
+                                            animationDelay: '0.2s'
+                                        }}
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+
+                <style jsx>{`
+                    @keyframes shimmer {
+                        0% {
+                            background-position: 200% 0;
+                        }
+                        100% {
+                            background-position: -200% 0;
+                        }
+                    }
+                    .animate-shimmer {
+                        animation: shimmer 2s ease-in-out infinite;
+                    }
+                `}</style>
+            </div>
+        );
+    }
+
     return (
-        <div className="w-full pl-8 pr-4 py-2 space-y-0.5">
-            {renderBlocks(blocks)}
+        <div className="relative">
+            {/* Save indicator */}
+            <div className="fixed bottom-4 right-8 text-xs text-stone-600 z-50">
+                {saveMutation.isPending ? (
+                    <span className="flex items-center gap-1">
+                        <span className="animate-pulse">●</span> Saving...
+                    </span>
+                ) : saveMutation.isError ? (
+                    <span className="text-red-500">Failed to save</span>
+                ) : saveMutation.isSuccess ? (
+                    <span>Saved</span>
+                ) : null}
+            </div>
+
+            <div className="w-full pl-8 pr-4 py-2 space-y-0.5">
+                {renderBlocks(blocks)}
+            </div>
         </div>
     );
 };
+
+
+//we will store notes as json blocks, as a row, this will contain the following columns: id, data, isOpen, type, language, parentId
+//this structure will help us in minimizing the data operations in the server side, only changes will be received,
+//we are blindly trusting the client to locally maintain the correct data
+//also this approach is better since failure points are less because we arnt sending the entire page all the time
+
+//create a query to get all the notes here, this will have all the notes,
+//as soon as the data is received add it to the local state
+
+
+//create a mutation in which we will send a single note updates, before its successful, update the local state
+//if unsuccessfull revert the local state
+//abandoning this approach

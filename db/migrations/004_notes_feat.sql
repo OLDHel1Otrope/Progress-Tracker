@@ -1,0 +1,8 @@
+ALTER TABLE notes 
+ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW(),
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
+ALTER TABLE notes
+ADD CONSTRAINT notes_user_id_unique UNIQUE (user_id);
+
+CREATE INDEX IF NOT EXISTS idx_notes_user_id ON notes(user_id);
