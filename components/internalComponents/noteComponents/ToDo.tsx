@@ -37,7 +37,7 @@ export const Todo = ({ block, onChange, onEnter, onBackspaceEmpty, onInlineCode 
                 onInlineCode={onInlineCode}
                 placeholder="To-do..."
                 className={`
-                    flex-1 text-sm leading-6
+                    flex-1 text-base leading-6
                     ${block.checked ? 'line-through text-stone-600' : 'text-stone-300'}
                 `}
             />

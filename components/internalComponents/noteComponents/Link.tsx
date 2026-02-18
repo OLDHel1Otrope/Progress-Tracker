@@ -14,7 +14,6 @@ export const Link = ({ block, onChange, onEnter, onBackspaceEmpty }: LinkProps) 
 
     return (
         <div className="flex items-center gap-1.5 py-0.5 w-full group">
-            {/* Link icon */}
             <span className="flex-shrink-0 text-stone-500 mt-[2px]">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path d="M5.5 8.5L8.5 5.5M6 3.5L7.5 2C8.6 0.9 10.4 0.9 11.5 2C12.6 3.1 12.6 4.9 11.5 6L10 7.5M7.5 10.5L6 12C4.9 13.1 3.1 13.1 2 12C0.9 10.9 0.9 9.1 2 8L3.5 6.5"
@@ -22,7 +21,6 @@ export const Link = ({ block, onChange, onEnter, onBackspaceEmpty }: LinkProps) 
                 </svg>
             </span>
 
-            {/* Display text */}
             <EditableText
                 value={block.data}
                 onChange={(val) => onChange({ data: val })}
@@ -30,13 +28,12 @@ export const Link = ({ block, onChange, onEnter, onBackspaceEmpty }: LinkProps) 
                 onBackspaceEmpty={onBackspaceEmpty}
                 placeholder="Link text..."
                 className={`
-                    text-sm leading-6 text-stone-400 underline underline-offset-2
+                    text-base leading-6 text-stone-400 underline underline-offset-2
                     decoration-stone-600 hover:text-stone-200 hover:decoration-stone-400
                     transition-colors cursor-pointer
                 `}
             />
 
-            {/* URL editing */}
             {isEditingUrl ? (
                 <input
                     type="text"
@@ -63,7 +60,6 @@ export const Link = ({ block, onChange, onEnter, onBackspaceEmpty }: LinkProps) 
                 </button>
             )}
 
-            {/* Open link */}
             {block.url && !isEditingUrl && (
                 <a
                     href={block.url}

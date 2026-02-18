@@ -233,7 +233,7 @@ const BlockRenderer = ({
     }
 
     return (
-        <div className="relative rounded-md hover:bg-stone-900 p-0.5 pl-2 font-ubuntu">
+        <div className="relative rounded-md hover:bg-stone-900 p-1 pl-2 font-ubuntu">
             <BlockWrapper onDelete={() => onDeleteBlock(block.id)}>
                 {content}
             </BlockWrapper>
@@ -260,6 +260,7 @@ export const NoteRenderer = ({ initialBlocks, onChange }: NoteRendererProps) => 
             ? initialBlocks
             : [makeBlock('paragraph')]
     );
+    console.log(blocks)
     const [lastInsertedId, setLastInsertedId] = useState<string | null>(null);
 
     const updateBlocks = useCallback((newBlocks: Block[]) => {

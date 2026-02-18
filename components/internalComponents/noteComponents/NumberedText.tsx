@@ -7,7 +7,7 @@ interface NumberedTextProps {
     onEnter?: () => void;
     onBackspaceEmpty?: () => void;
     onInlineCode?: (text: string) => void;
-    number: number; // computed and passed in by NoteRenderer
+    number: number;
 }
 
 export const NumberedText = ({
@@ -30,7 +30,7 @@ export const NumberedText = ({
                 onBackspaceEmpty={onBackspaceEmpty}
                 onInlineCode={onInlineCode}
                 placeholder="List item..."
-                className="flex-1 text-sm leading-6 text-stone-300"
+                className="flex-1 text-base leading-6 text-stone-300"
             />
         </div>
     );

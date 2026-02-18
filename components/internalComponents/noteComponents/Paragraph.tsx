@@ -20,7 +20,7 @@ export const Paragraph = ({ block, onChange, onEnter, onBackspaceEmpty, onInline
                 onBackspaceEmpty={onBackspaceEmpty}
                 onInlineCode={onInlineCode}
                 placeholder="Type '/' for commands..."
-                className="block w-full text-sm leading-6 text-stone-300"
+                className="block w-full text-base leading-6 text-stone-300"
                 autoFocus={autoFocus}
             />
         </div>

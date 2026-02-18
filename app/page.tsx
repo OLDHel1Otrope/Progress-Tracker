@@ -1,6 +1,6 @@
 "use client";
 import PageContainer from "@/components/PageContainer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CalendarPage from "./calender/page";
 import NotesPane from "@/components/NotesPane";
 import TodayGoals from "@/components/internalComponents/TodayGoals";
@@ -29,9 +29,17 @@ const prevP = [
 
 const pages = prevP.map((p, i) => ({ ...p, color: prevP[prevP.length - 1 - i].color }));
 
+const getInitialTab = () => {
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('tab') || 'Today';
+  }
+  return 'Today';
+};
+
 
 export default function Home() {
-  const [active, setActive] = useState<string | null>("Today");
+  const [active, setActive] = useState<string | null>(getInitialTab());
   const { loggedIn } = useAuth();
   const images = [
     "/img/i1.png",
@@ -40,6 +48,28 @@ export default function Home() {
     // "/img/i4.png",
     "/img/in2.png",
   ];
+
+  useEffect(() => {
+    if (active) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', active);
+      window.history.pushState({}, '', url);
+    }
+  }, [active]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab') || 'Today';
+      setActive(tab);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
 
   return (
@@ -78,7 +108,7 @@ export default function Home() {
           </>
         </PageContainer>
       ))}
-          <UserHeader />
+      <UserHeader />
       {!active && loggedIn && (
         <>
           <CenteredGrid images={images} />;

@@ -39,10 +39,7 @@ export const CodeSnippet = ({ block, onChange }: CodeSnippetProps) => {
                     {copied ? 'Copied!' : 'Copy'}
                 </button>
             </div>
-
-            {/* Code area */}
             <div className="relative">
-                {/* Line numbers */}
                 <div className="absolute left-0 top-0 bottom-0 w-10 flex flex-col items-end pr-2 pt-3 pb-3 pointer-events-none select-none">
                     {(block.data || '').split('\n').map((_, i) => (
                         <div key={i} className="text-[11px] leading-5 text-stone-700">

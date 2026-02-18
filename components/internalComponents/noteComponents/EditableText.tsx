@@ -78,6 +78,7 @@ export const EditableText = ({
                 empty:before:content-[attr(data-placeholder)]
                 empty:before:text-stone-600
                 empty:before:pointer-events-none
+                font-semibold
                 ${className}
             `}
         />
