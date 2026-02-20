@@ -249,7 +249,6 @@ const BlockRenderer = ({
     );
 };
 
-// ─── NoteRenderer with React Query ────────────────────────────────────────────
 export const NoteRenderer = () => {
     const queryClient = useQueryClient();
     const [lastInsertedId, setLastInsertedId] = useState<string | null>(null);

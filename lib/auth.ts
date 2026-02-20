@@ -3,9 +3,6 @@ import { db } from "@/lib/db";
 
 const COOKIE_NAME = "session_id";
 
-// ------------------------
-// Set session
-// ------------------------
 export async function setSession(userId: string) {
   const cookieStore = await cookies();
 
@@ -17,18 +14,13 @@ export async function setSession(userId: string) {
   });
 }
 
-// ------------------------
-// Clear session
-// ------------------------
+
 export async function clearSession() {
   const cookieStore = await cookies();
 
   cookieStore.delete(COOKIE_NAME);
 }
 
-// ------------------------
-// Get current user
-// ------------------------
 export async function getSessionUser() {
   const cookieStore = await cookies();
 

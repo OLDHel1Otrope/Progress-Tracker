@@ -126,7 +126,7 @@ export default function GoalItem({
                             ? "bg-stone-800/60"
                             : "bg-stone-800/40"
                 }
-    ${isHome ? "opacity-70 hover:opacity-100 bg-stone-800/20" : ""}
+    ${isHome ? " bg-stone-800/20 hover:bg-stone-500/20" : ""}
   `}
         >
 

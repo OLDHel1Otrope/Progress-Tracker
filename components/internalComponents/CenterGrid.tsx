@@ -58,6 +58,29 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                     <Snail size={90} strokeWidth={1.5} />
                 </div>
 
+                                <div
+                    key={"s"}
+                    className="
+              w-80
+              h-48
+              rounded-xl
+              overflow-hidden
+              bg-stone-900/30
+              hover:scale-105
+              hover:bg-stone-700/50
+              transition-transform
+              border border-stone-700/30 backdrop-blur-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]
+              flex flex-col items-center justify-center
+            "
+                >
+                    <Soup size={116} strokeWidth={1.5} />
+                </div>
+                                <div
+                    key="countdown" className="col-span-3 w-full"
+                >
+                    <PomodoroTimer />
+                </div>
+
                 {images.map((src, index) => (
                     <div
                         key={index}
@@ -96,29 +119,9 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
 
                 ))}
 
-                <div
-                    key={"s"}
-                    className="
-              w-80
-              h-48
-              rounded-xl
-              overflow-hidden
-              bg-stone-900/30
-              hover:scale-105
-              hover:bg-stone-700/50
-              transition-transform
-              border border-stone-700/30 backdrop-blur-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]
-              flex flex-col items-center justify-center
-            "
-                >
-                    <Soup size={116} strokeWidth={1.5} />
-                </div>
-                <div
-                    key="countdown" className=""
-                >
-                    <PomodoroTimer />
-                </div>
-                <div
+
+
+                {/* <div
                     key={"tk"}
                     className="
               w-80
@@ -134,8 +137,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
             "
                 >
                     <PlusIcon size={90} strokeWidth={1.5} />
-                    {/* <Snail size={90} strokeWidth={1.5} /> */}
-                </div>
+                </div> */}
 
             </div>
         </div>

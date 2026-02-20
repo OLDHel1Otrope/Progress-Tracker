@@ -76,7 +76,7 @@ export const PomodoroTimer = () => {
 
     return (
         <div
-            className="relative w-80 h-48 bg-gradient-to-br from-stone-800/20 to-stone-900/30 backdrop-blur-xl border border-stone-700/20 rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.6)]"
+            className="relative w-full h-48 bg-gradient-to-br from-stone-800/20 to-stone-900/30 backdrop-blur-xl border border-stone-700/20 rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.6)]"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -119,13 +119,13 @@ export const PomodoroTimer = () => {
                     ) : (
                         <div className="relative">
                             {/* Time display with racing style */}
-                            <div className="text-[clamp(40px,8vw,42px)] font-extrabold italic font-pixelify bg-gradient-to-br from-stone-100 via-stone-300 to-stone-400 bg-clip-text text-transparent tracking-wider">
+                            <div className="text-[clamp(40px,8vw,42px)] pr-4 font-extrabold italic font-pixelify bg-gradient-to-br from-stone-100 via-stone-300 to-stone-400 bg-clip-text text-transparent tracking-wider">
                                 {String(displayMinutes).padStart(2, '0')}
                                 <span className="text-stone-400/60">:</span>
                                 {String(displaySeconds).padStart(2, '0')}
-                                <span className="text-[0.4em] text-stone-500/60">
+                                {/* <span className="text-[0.4em] text-stone-500/60">
                                     .{String(displayMs).padStart(2, '0')}
-                                </span>
+                                </span> */}
                             </div>
                         </div>
                     )}
