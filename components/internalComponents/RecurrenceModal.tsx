@@ -175,7 +175,7 @@ export default function RecurrenceModal({
       <div
         onClick={(e) => e.stopPropagation()}
         className="
-          w-full max-w-[75vw]
+          sm:w-full sm:max-w-[75vw] w-full max-w-[90vw]
           h-full max-h-[95vh]
           bg-gradient-to-br from-stone-800 to-stone-900
           border border-stone-700/50
@@ -200,11 +200,11 @@ export default function RecurrenceModal({
         </div>
 
         {/* Body - Scrollable */}
-        <div className="flex-1 overflow-y-auto px-8 py-6">
-          <div className="flex flex-row gap-8 w-full h-full">
+        <div className="flex-1 overflow-y-auto px-2 sm:px-8 py-6">
+          <div className="flex flex-col sm:flex-row gap-8 w-full h-full">
 
             {/* Left Column - Settings */}
-            <div className="space-y-6 w-1/3">
+            <div className="space-y-6 sm:w-1/3">
 
               {/* Group Name */}
               <div className="space-y-2">
@@ -243,7 +243,7 @@ export default function RecurrenceModal({
             </div>
 
             {/* Right Column - Goals for each date */}
-            <div className="space-y-4 w-2/3 overflow-auto">
+            <div className="space-y-4 sm:w-2/3 w-full sm:overflow-auto">
               <div className="flex items-center justify-between">
                 <label className="block text-sm font-medium text-stone-400 tracking-wide">
                   Goals for Each Date ({sortedGoalsData.length})

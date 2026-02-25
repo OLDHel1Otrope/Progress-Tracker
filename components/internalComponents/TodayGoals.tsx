@@ -32,7 +32,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { reorderDayGoals } from "@/lib/api/reorder";
 import EisenhowerMatrix from "./EisenhowerMatrix";
 
-export default function TodayGoals() {
+export default function TodayGoals({ home = false }: { home: boolean }) {
 
     const [eisenHower, setEisenHower] = useState(false)
 
@@ -192,9 +192,11 @@ export default function TodayGoals() {
 
     return (
         <>
-            {!eisenHower ? (
-                <div className="w-[900px] flex flex-col items-center justify-center pointer-events-auto">
-                    <GoalList
+            {!eisenHower || home ? (
+                <div
+                    className={`flex flex-col items-center justify-center pointer-events-auto ${home ? "w-full" : "w-[900px]"
+                        }`}
+                >                    <GoalList
                         goals={goals}
                         updateGoalText={updateGoalText}
                         updateGoalStatus={updateGoalStatus}
@@ -205,12 +207,12 @@ export default function TodayGoals() {
                         addGoal={addGoal}
                         isHome={true}
                     />
-                    <button
+                    {!home && <button
                         onClick={() => setEisenHower(p => !p)}
                         className="mt-2 px-2 py-2 bg-stone-800/40 hover:bg-stone-700/40 border border-stone-700/30 rounded-xl text-stone-600 text-xs italic transition-colors pointer-events-auto"
                     >
                         Switch to Eisenhower Matrix
-                    </button>
+                    </button>}
                 </div>
             ) : (
                 <div className="w-11/12 flex flex-col items-center justify-center">

@@ -191,14 +191,14 @@ export default function GoalItem({
                             }}
                             onBlur={() => setEditing(false)}
                             className={`w-full bg-transparent focus:outline-none font-bold
-        ${goal.is_completed ? "line-through text-stone-500" : ""}
+        ${goal.is_completed ? "line-through text-stone-500" : " text-stone-300"}
       `}
                         />
                     ) : (
                         <div
                             onClick={() => setEditing(true)}
                             className={`font-bold cursor-text flex flex-row gap-2
-        ${goal.is_completed ? "line-through text-stone-500" : ""}
+        ${goal.is_completed ? "line-through text-stone-500" : "text-stone-300"}
       `}
                         >
                             {removeTags(goal.title) || (

@@ -17,7 +17,7 @@ export default function PageContainer({
 }: PageContainerProps) {
     return (
         <div
-            className="fixed left-0 top-0 h-screen min-h-0 h-full flex flex-col pointer pointer-events-none"
+            className="fixed left-0 top-0 h-screen min-h-0 h-full sm:flex flex-col hidden pointer pointer-events-none"
              style={{
                 width: "100vw",
 

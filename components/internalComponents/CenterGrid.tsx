@@ -4,6 +4,7 @@ import { ChevronsRight, Cross, PlusIcon, Snail, Soup } from "lucide-react";
 import Image from "next/image";
 import { DayCounterWidget } from "./widgets/DayCounterWidget";
 import { PomodoroTimer } from "./widgets/PomodoroCounter";
+import TodayGoals from "./TodayGoals";
 
 interface CenteredGridProps {
     images: string[];
@@ -13,33 +14,41 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
     return (
         <div
             className="
-        h-[95vh]
+        h-full
         w-full
         flex
         items-center
         justify-center
         bg-stone-1000
+        pt-12
+        sm:pt-5
       "
         >
-            {/* Grid Container */}
             <div
                 className="
-          grid
-          grid-cols-3
+                flex flex-col
+          sm:grid
+          sm:grid-cols-3
           gap-6
           place-items-center
-          max-w-6xl
+          max-w-7xl
           p-6
         "
             >
+
                 <div
-                    key="day-counter" className="  w-full    row-span-2 col-span-2"
+                    key="today" className="row-span-2 col-span-2 border rounded-xl border-stone-900"
+                >
+                    <TodayGoals home />
+                </div>
+                <div
+                    key="day-counter" className="w-full h-full row-span-1 col-span-1 "
                 >
                     <DayCounterWidget targetDate={"2025-12-06T06:15:23.123Z"} toFrom={true} />
                 </div>
 
 
-                <div
+                {/* <div
                     key={"t"}
                     className="
               w-80
@@ -58,7 +67,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                     <Snail size={90} strokeWidth={1.5} />
                 </div>
 
-                                <div
+                <div
                     key={"s"}
                     className="
               w-80
@@ -74,9 +83,9 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
             "
                 >
                     <Soup size={116} strokeWidth={1.5} />
-                </div>
-                                <div
-                    key="countdown" className="col-span-3 w-full"
+                </div>  */}
+                <div
+                    key="countdown" className="col-span-1 w-full h-full"
                 >
                     <PomodoroTimer />
                 </div>
@@ -86,7 +95,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                         key={index}
                         className="
     relative
-    w-80
+    w-full
     h-48
     rounded-xl
     bg-stone-800/30
@@ -141,5 +150,5 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
 
             </div>
         </div>
-    );
+    )
 }

@@ -40,6 +40,7 @@ const getInitialTab = () => {
 
 export default function Home() {
   const [active, setActive] = useState<string | null>(getInitialTab());
+  const [minimalMode, setMinimalMode] = useState(false) //do it with api later
   const { loggedIn } = useAuth();
   const images = [
     "/img/i1.png",
@@ -74,7 +75,7 @@ export default function Home() {
 
   return (
     <div className="h-full flex flex-col">
-      {loggedIn && pages.map((p, i) => (
+      {loggedIn && minimalMode && pages.map((p, i) => (
         <PageContainer
           key={p.title}
           title={p.title}
@@ -108,10 +109,10 @@ export default function Home() {
           </>
         </PageContainer>
       ))}
-      <UserHeader />
-      {!active && loggedIn && (
+      <UserHeader minimalMode={minimalMode} setMinimalMode={setMinimalMode} />
+      {(!active || !minimalMode) && loggedIn && (
         <>
-          <CenteredGrid images={images} />;
+          <CenteredGrid images={images} />
           <div className="fixed bottom-4 right-4 text-stone-500 text-xs italic">
             {/* &copy; 2026 Progress Tracker */}
             Made with 💖
