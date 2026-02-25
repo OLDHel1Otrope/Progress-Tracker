@@ -35,3 +35,5 @@ CREATE INDEX idx_goals_date ON goals(goal_date) WHERE archived_at IS NULL;
 
 
 COMMIT;
+
+-- DROP INDEX IF EXISTS unique_day_position_active;

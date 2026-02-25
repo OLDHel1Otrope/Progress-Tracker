@@ -60,14 +60,12 @@ Fill in or replace the old title and description fields only. Return the JSON ar
       throw new Error('Empty Gemini response');
     }
 
-    // Strip markdown code fences if present
     let cleanedText = text.trim();
     
-    // Remove ```json and ``` wrappers
     if (cleanedText.startsWith('```json')) {
-      cleanedText = cleanedText.slice(7); // Remove ```json
+      cleanedText = cleanedText.slice(7);
     } else if (cleanedText.startsWith('```')) {
-      cleanedText = cleanedText.slice(3); // Remove ```
+      cleanedText = cleanedText.slice(3);
     }
     
     if (cleanedText.endsWith('```')) {

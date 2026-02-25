@@ -36,8 +36,7 @@ export default function GoalDetails({
         />
       </section>
 
-      <section className="space-y-2">
-        {/* <label className="text-sm text-stone-400">Notes</label> */}
+      {/* <section className="space-y-2">
         <RichTextEditor
           value={goal.notes || ""}
           placeholder="Add thoughts, links, reflections…"
@@ -45,7 +44,7 @@ export default function GoalDetails({
             onUpdate({ ...goal, notes: value })
           }
         />
-      </section>
+      </section> */}
     </div>
   );
 }

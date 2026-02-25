@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getSessionUser } from "@/lib/auth";
 
 export async function GET(req: Request) {
   try {
@@ -49,6 +50,8 @@ export async function GET(req: Request) {
 
 
 export async function POST(req: Request) {
+  const user = await getSessionUser();
+  const userId = user.id;
   const client = await db.connect(); // get transaction client
 
   try {
@@ -68,12 +71,12 @@ export async function POST(req: Request) {
     const dayGoalRes = await client.query(
       `
       INSERT INTO goals
-      (goal_date, title, is_completed, created_at, position)
+      (goal_date, title, is_completed, created_at, position, user_id)
       VALUES ($1, $2, false, NOW(), COALESCE(
-      (SELECT MAX(position) + 1 FROM goals WHERE goal_date = $1 AND archived_at IS null),1))
+      (SELECT MAX(position) + 1 FROM goals WHERE goal_date = $1 AND archived_at IS null),1),$3)
       RETURNING *
       `,
-      [goal_date, title]
+      [goal_date, title, userId]
     );
 
     await client.query("COMMIT");
@@ -96,4 +99,4 @@ export async function POST(req: Request) {
   }
 }
 //find yesterdays incompleted goals, make its position next days highest position, keep equadrant same, make eposition the next days highest position
-const cron="update goals "
+const cron = "update goals "

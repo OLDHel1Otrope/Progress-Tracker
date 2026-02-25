@@ -203,10 +203,10 @@ export default function RecurrenceModal({
 
         {/* Body - Scrollable */}
         <div className="flex-1 overflow-y-auto px-8 py-6">
-          <div className="grid grid-cols-2 gap-8">
+          <div className="flex flex-row gap-8 w-full h-full">
 
             {/* Left Column - Settings */}
-            <div className="space-y-6">
+            <div className="space-y-6 w-1/3">
 
               {/* Group Name */}
               <div className="space-y-2">
@@ -245,7 +245,7 @@ export default function RecurrenceModal({
             </div>
 
             {/* Right Column - Goals for each date */}
-            <div className="space-y-4">
+            <div className="space-y-4 w-2/3 overflow-auto">
               <div className="flex items-center justify-between">
                 <label className="block text-sm font-medium text-stone-400 tracking-wide">
                   Goals for Each Date ({sortedGoalsData.length})
@@ -279,8 +279,8 @@ export default function RecurrenceModal({
                         "
                       >
                         {/* Date header */}
-                        <div className="flex items-center justify-between pl-4 py- italic bg-stone-800/40 border-b border-stone-700/30">
-                          <span className="text-xs font-medium text-stone-500">
+                        <div className="flex items-center justify-between pl-4  bg-stone-800/40 border-b border-stone-700/30">
+                          <span className="text-xs font-thin text-stone-500">
                             {formattedDate}
                           </span>
                           <button
@@ -308,7 +308,7 @@ export default function RecurrenceModal({
                               px-4 py-3
                               text-sm text-stone-200 placeholder:text-stone-600
                               focus:outline-none focus:bg-stone-800/60
-                              transition-all duration-200
+                              transition-all duration-200 font-semibold
                             "
                           />
                           <textarea

@@ -3,7 +3,7 @@ import { DateGoal } from "@/components/internalComponents/RecurrenceModal";
 
 interface saveRecurranceProps {
     recurr_name: string;
-    goalsData: DateGoal[];
+    goalsData: { date: string; goal: { title: string; description: string; }; }[];
 }
 
 export async function getRecurrance() {
@@ -30,7 +30,7 @@ export async function saveRecurranceGoals({ recurr_name, goalsData }: saveRecurr
         },
         body: JSON.stringify(payload),
     });
-    
+
     if (!res.ok) {
         const err = await res.text();
         throw new Error(err || "Failed to save recurrence goals");

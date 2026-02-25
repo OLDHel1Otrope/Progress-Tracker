@@ -1,39 +1,51 @@
 import { ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
 import { useState } from "react";
 import DayModal from "./internalComponents/DayModal";
+import { useQuery } from "@tanstack/react-query";
+import { getMonthlyStats } from "@/lib/api/calender";
 
 const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function getCalendarDays(month: number, year: number) {
   const firstDay = new Date(year, month, 1);
   const startOffset = (firstDay.getDay() + 6) % 7;
-
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const daysInPrevMonth = new Date(year, month, 0).getDate();
-
   const days = [];
+
+  // Helper to format date as YYYY-MM-DD without timezone conversion
+  const formatDate = (y: number, m: number, d: number) => {
+    return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  };
 
   for (let i = 0; i < 42; i++) {
     const dayNumber = i - startOffset + 1;
 
     if (dayNumber <= 0) {
+      // Previous month
+      const actualDay = daysInPrevMonth + dayNumber;
       days.push({
-        label: daysInPrevMonth + dayNumber,
+        label: actualDay,
         isCurrentMonth: false,
+        date: formatDate(year, month - 1, actualDay)
       });
     } else if (dayNumber > daysInMonth) {
+      // Next month
+      const actualDay = dayNumber - daysInMonth;
       days.push({
-        label: dayNumber - daysInMonth,
+        label: actualDay,
         isCurrentMonth: false,
+        date: formatDate(year, month + 1, actualDay)
       });
     } else {
+      // Current month
       days.push({
         label: dayNumber,
         isCurrentMonth: true,
+        date: formatDate(year, month, dayNumber)
       });
     }
   }
-
   return days;
 }
 
@@ -45,6 +57,26 @@ export default function CalendarPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const calendarDays = getCalendarDays(month, year);
+  const stats = useQuery({
+    queryFn: getMonthlyStats,
+    queryKey: ["monthlySats", month + 1, year],
+    select: (data) => {
+      const statsMap = new Map(data.map(d => [d.date, d.stats]));
+
+      return calendarDays.map(day => ({
+        ...day,
+        stats: statsMap.get(day.date) || { total_goals: 0, completed: 0 }
+      }));
+    },
+  });
+
+  // Now use stats.data directly - it's calendarDays with stats merged
+
+  stats.refetch()
+
+  console.log(stats.data)
+
+  // console.log({ calendarDays })
 
   const monthLabel = new Date(year, month).toLocaleString("default", {
     month: "long",
@@ -101,7 +133,7 @@ export default function CalendarPage() {
           </div>
 
           <div className="grid grid-cols-7 gap-[1px]">
-            {calendarDays.map((day, index) => (
+            {stats?.data?.map((day, index) => (
               <div
                 onClick={() => {
                   if (day.isCurrentMonth) {
@@ -110,20 +142,48 @@ export default function CalendarPage() {
                   }
                 }}
                 key={index}
-                className={`h-32 p-3 text-sm cursor-pointer transition-all duration-200 ease-out
+                className={`h-32 p-3 text-sm cursor-pointer transition-all duration-200 ease-out  flex flex-col
                 ${day.isCurrentMonth
                     ? "bg-stone-700/40 text-stone-100 hover:bg-stone-600/50 hover:scale-[1.01] hover:shadow-[0_0_0_1px_rgba(255,255,255,0.15),0_10px_30px_rgba(0,0,0,0.4)]"
                     : "bg-stone-800/30 text-stone-500"
                   }
               `}
               >
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start ">
                   <span>{day.label}</span>
                 </div>
 
                 {day.isCurrentMonth && (
-                  <div className="mt-2 flex flex-col gap-1 text-xs text-stone-300">
-                    {/* progress dots / completion bars later */}
+                  <div className="mt-auto">
+                    {day?.stats?.total_goals > 0 ? (
+                      <div className="space-y-1">
+                        {/* Stats text */}
+                        <div className="flex items-center justify-between text-[10px]">
+                          <span className="text-stone-500">
+                            {day.stats.completed}/{day.stats.total_goals}
+                          </span>
+                          <span className={`font-semibold ${day.stats.completed === day.stats.total_goals
+                            ? 'text-stone-300'
+                            : 'text-stone-400'
+                            }`}>
+                            {Math.round((day.stats.completed / day.stats.total_goals) * 100)}%
+                          </span>
+                        </div>
+                        {/* Progress bar */}
+                        <div className="w-full h-1.5 bg-stone-800/60 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-stone-500 to-stone-400 rounded-full transition-all duration-300"
+                            style={{
+                              width: `${Math.round((day.stats.completed / day.stats.total_goals) * 100)}%`
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-[10px] text-stone-600 italic">
+                        No goals
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

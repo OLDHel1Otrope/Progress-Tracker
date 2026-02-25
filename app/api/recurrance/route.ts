@@ -3,19 +3,41 @@ import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
-    const user = await getSessionUser();
-    const userId = user.id;
     const client = await db.connect();
-    let result = await client.query(`select id, group_name from recurrence_groups where user_id = $1`, [userId])
-    if (!result) {
-        return NextResponse.json(
-            { error: "Groups not found" },
-            { status: 404 }
+
+    try {
+        const user = await getSessionUser();
+
+        if (!user) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const result = await client.query(
+            `SELECT id, group_name FROM recurrence_groups WHERE user_id = $1`,
+            [user.id]
         );
+
+        if (result.rows.length === 0) {
+            return NextResponse.json(
+                { error: "Groups not found" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json(result.rows);
+
+    } catch (err) {
+        console.error("GET /recurrence_groups error:", err);
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: 500 }
+        );
+    } finally {
+        client.release();
     }
-    return NextResponse.json(
-        result.rows
-    )
 }
 
 export async function POST(req: Request) {
