@@ -13,6 +13,9 @@ import {
     arrayMove,
 } from "@dnd-kit/sortable";
 import GoalItem from "./GoalItem";
+import { Plus } from "lucide-react";
+import RecurrenceModal from "./RecurrenceModal";
+import { useState } from "react";
 
 interface GoalListProps {
     goals: any[];
@@ -41,6 +44,7 @@ export default function GoalList({
     addGoal,
     isHome = false,
 }: GoalListProps) {
+    const [showRecurr, setShowRecurr] = useState(false)
     return (
         <DndContext
             sensors={sensors}
@@ -76,17 +80,17 @@ export default function GoalList({
                 </SortableContext>
 
                 {/* ADD INPUT (fixed at bottom) */}
-                <div className={`${isHome ? "mt-0.5" : "mt-2"} shrink-0 flex items-center gap-4 p-1 pl-9 bg-stone-800/${isHome && goals.length > 0 ? "20 rounded-b-xl" : "30 rounded-xl"}`}
+                <div className={`${isHome ? "mt-0.5" : "mt-2"} shrink-0 flex items-center gap-4 p-1 pl-9 pr-3 bg-stone-800/${isHome && goals.length > 0 ? "30 rounded-b-xl" : "30 rounded-xl"}`}
                     style={{
 
                     }}
                 >
                     <input type="checkbox" disabled className="opacity-40" />
-                    
+
 
                     <input
                         placeholder="Add a new goal…"
-                        className="bg-transparent focus:outline-none w-full text-stone-500 h-12 placeholder:text-stone-600 font-bold"
+                        className="bg-transparent focus:outline-none w-full text-stone-500 h-12 placeholder:text-stone-600 font-bold "
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 addGoal(e.currentTarget.value);
@@ -94,9 +98,25 @@ export default function GoalList({
                             }
                         }}
                     />
+                    <button
+                        onClick={() => setShowRecurr(true)}
+                        className=" font-normal w-36 h-10
+                                px-2 py-[2px] rounded-md text-xs
+                                
+                                text-stone-500
+                                hover:bg-stone-700/60
+                                flex items-center gap-1
+
+                                transition-all duration-200
+                                translate-x-1
+                                group-hover:translate-x-0
+                            "
+                    >
+                        <Plus width={15} height={13} />
+                        Add multiple
+                    </button>
                 </div>
-
             </div>
-
+                    <RecurrenceModal isOpen={showRecurr} onClose={() => setShowRecurr(false)} />
         </DndContext>);
 }

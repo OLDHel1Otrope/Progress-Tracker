@@ -10,7 +10,6 @@ import { getRecurrance, saveRecurranceGoals } from "@/lib/api/recurrance";
 
 interface RecurrenceModalProps {
   isOpen: boolean;
-  selectedGoal?: Goal;
   onClose: () => void;
 }
 
@@ -32,7 +31,6 @@ const repeatOptions = [
 
 export default function RecurrenceModal({
   isOpen,
-  selectedGoal,//will use this later
   onClose,
 }: RecurrenceModalProps) {
   const [groupName, setGroupName] = useState("");

@@ -14,6 +14,22 @@ export async function getRecurrance() {
     return res.json();
 }
 
+export async function addRecurrence(goalId: string, recurrName: string) {
+    const res = await fetch("/api/recurrance", {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ goalId, recurrName }),
+    });
+
+    if (!res.ok) {
+        throw new Error("Failed to add recurrence");
+    }
+
+    return res.json();
+}
+
 export async function saveRecurranceGoals({ recurr_name, goalsData }: saveRecurranceProps) {
     const payload = {
         recurr_name,

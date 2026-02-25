@@ -25,8 +25,12 @@ export async function GET(req: Request) {
           g.created_at AS added_on,
           g.equadrant,
           g.eposition,
-          g.goal_date
-        FROM goals g
+          g.goal_date,
+          rg.id AS recurr_id,
+          rg.group_name AS group_name
+        FROM goals g LEFT JOIN recurrence_groups rg
+        ON
+          g.recurr_id = rg.id
         WHERE
           g.goal_date = $1
           AND g.archived_at IS NULL

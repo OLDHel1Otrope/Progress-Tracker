@@ -10,6 +10,7 @@ import { GripVertical } from "lucide-react";
 import GoalDetails from "./GoalDetails";
 import MenuItem from "./MenuItem";
 import { useDeleteGoal } from "@/hooks/useDeleteGoal";
+import { AddRecurrenceModal } from "../AddRecurrenceModal";
 
 
 function extractTags(text: string): string[] {
@@ -54,7 +55,7 @@ export default function GoalItem({
 }) {
     const [expanded, setExpanded] = useState(false);
     const [editing, setEditing] = useState(false);
-    const [showRecurrenceModal, setShowRecurrenceModal] = useState(false);
+    const [showAddRecurrenceModal, setShowAddRecurrenceModal] = useState<string | null>(null); //this holds goal's id
     const [localTitle, setLocalTitle] = useState(goal.title)
     const [showMenu, setShowMenu] = useState(false);
     const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
@@ -124,7 +125,7 @@ export default function GoalItem({
                         ? "bg-stone-700/30"
                         : expanded
                             ? "bg-stone-800/60"
-                            : "bg-stone-800/40"
+                            : "bg-stone-800/30"
                 }
     ${isHome ? " bg-stone-800/20 hover:bg-stone-500/20" : ""}
   `}
@@ -204,9 +205,9 @@ export default function GoalItem({
                                 <span className="text-stone-500">Untitled</span>
                             )}
 
-                            {!goal.recurrence_group_id && extractTags(goal.title).length == 0 && (<button
+                            {!goal.recurr_id && extractTags(goal.title).length == 0 && (<button
                                 onClick={() => {
-                                    setShowRecurrenceModal(true);
+                                    setShowAddRecurrenceModal(goal.id);
                                     console.log("Clicked tag:", "recurrence");
                                 }}
                                 className=" font-normal
@@ -222,7 +223,7 @@ export default function GoalItem({
             group-hover:translate-x-0
           "
                             >
-                                <Plus width={10} height={10} /> Add Recurrence group
+                                <Plus width={10} height={10} /> Assign Recurrence group
                             </button>)}
                         </div>
                     )}
@@ -248,6 +249,7 @@ export default function GoalItem({
                             >
                                 {goal.recurrence_group_id.charAt(0).toUpperCase() + goal.recurrence_group_id.slice(1)}
                             </button>)}
+
                         {goal?.equadrant == 0 && (
                             <button
                                 key={"important"}
@@ -257,12 +259,31 @@ export default function GoalItem({
                                 className="
             px-2 py-[2px] rounded-md text-xs
             border border-stone-600
-            text-stone-300
+            text-stone-900
+            bg-stone-300 
             hover:bg-stone-700/60
             transition
           "
                             >
                                 {"P1"}
+                            </button>
+                        )}
+                        {goal?.group_name && (
+                            <button
+                                key={"recurr_name"}
+                                onClick={() => {
+                                    console.log("Clicked important tag");
+                                }}
+                                className="
+            px-2 py-[2px] rounded-md text-xs
+            border border-stone-600
+            border-2
+            text-stone-300 capitalize font-bold
+            hover:bg-stone-700/60
+            transition
+          "
+                            >
+                                {goal?.group_name}
                             </button>
                         )}
 
@@ -289,9 +310,9 @@ export default function GoalItem({
                             </>
                         )}
 
-                        {!goal.recurrence_group_id && extractTags(goal.title).length > 0 && (<button
+                        {!goal.recurr_id && extractTags(goal.title).length > 0 && (<button
                             onClick={() => {
-                                setShowRecurrenceModal(true);
+                                setShowAddRecurrenceModal(goal.id);
                                 console.log("Clicked tag:", "recurrence");
                             }}
                             className="
@@ -433,7 +454,7 @@ export default function GoalItem({
             )}
 
 
-            <RecurrenceModal isOpen={showRecurrenceModal} onClose={() => setShowRecurrenceModal(false)} />
+            <AddRecurrenceModal isOpen={showAddRecurrenceModal} onClose={() => setShowAddRecurrenceModal(null)} />
         </div>
     );
 }
