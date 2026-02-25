@@ -258,10 +258,10 @@ export default function GoalItem({
                                 }}
                                 className="
             px-2 py-[2px] rounded-md text-xs
-            border border-stone-600
-            text-stone-900
-            bg-stone-300 
-            hover:bg-stone-700/60
+            border border-rose-600
+            text-stone-200  font-bold
+            bg-rose-700 
+            hover:bg-rose-500/60
             transition
           "
                             >

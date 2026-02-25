@@ -1,5 +1,5 @@
-import { getRecurrance } from "@/lib/api/recurrance";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { addRecurrence, getRecurrance } from "@/lib/api/recurrance";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { X, Tag, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
@@ -13,22 +13,22 @@ export const AddRecurrenceModal = ({ isOpen, onClose }: AddRecurrenceModalProps)
     const [showDropdown, setShowDropdown] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const queryClient = useQueryClient();
+
 
     const userRecurranceTags = useQuery({
         queryKey: ["recurranceTypes"],
         queryFn: getRecurrance
     });
 
-    // userRecurranceTags.refetch()
-
     const addRecurranceMutation = useMutation({
         mutationFn: ({ goalId, recurrName }: { goalId: string, recurrName: string }) => {
-            // addRecurrence(goalId, recurrName)
-            return Promise.resolve();
+            return addRecurrence(goalId, recurrName) 
         },
         onSuccess: () => {
-            setInputValue("");
-            setShowDropdown(false);
+            queryClient.invalidateQueries({
+                queryKey: ["goals", "byDate"],
+            });
         },
         onError: (err) => {
             console.error("Add recurrence failed:", err);
@@ -42,7 +42,7 @@ export const AddRecurrenceModal = ({ isOpen, onClose }: AddRecurrenceModalProps)
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
-                dropdownRef.current && 
+                dropdownRef.current &&
                 !dropdownRef.current.contains(event.target as Node) &&
                 !inputRef.current?.contains(event.target as Node)
             ) {
@@ -65,8 +65,9 @@ export const AddRecurrenceModal = ({ isOpen, onClose }: AddRecurrenceModalProps)
     };
 
     const handleAddRecurrence = () => {
+        console.log({ inputValue, isOpen })
         if (!inputValue.trim() || !isOpen) return;
-        
+
         addRecurranceMutation.mutate({
             goalId: isOpen,
             recurrName: inputValue.trim()
@@ -117,7 +118,7 @@ export const AddRecurrenceModal = ({ isOpen, onClose }: AddRecurrenceModalProps)
                         <label className="text-sm font-medium text-stone-400">
                             Select or create group
                         </label>
-                        
+
                         <div className="relative">
                             {/* Input field */}
                             <div className="relative">
@@ -140,8 +141,8 @@ export const AddRecurrenceModal = ({ isOpen, onClose }: AddRecurrenceModalProps)
                                         transition-all duration-200
                                     "
                                 />
-                                <ChevronDown 
-                                    size={16} 
+                                <ChevronDown
+                                    size={16}
                                     className={`
                                         absolute right-3 top-1/2 -translate-y-1/2 
                                         text-stone-500 transition-transform duration-200
