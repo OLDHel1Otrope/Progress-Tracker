@@ -124,10 +124,10 @@ export default function GoalItem({
                     : goal.is_completed
                         ? "bg-stone-700/30"
                         : expanded
-                            ? "bg-stone-800/60"
+                            ? "bg-stone-800/40"
                             : "bg-stone-800/30"
                 }
-    ${isHome ? " bg-stone-800/20 hover:bg-stone-500/20" : ""}
+    ${isHome ? " bg-stone-800/20 hover:bg-stone-600/20" : ""}
   `}
         >
 

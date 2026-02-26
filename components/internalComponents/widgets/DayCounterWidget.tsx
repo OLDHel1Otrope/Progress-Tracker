@@ -1,5 +1,4 @@
-// create all of these with in mind that its not for fixed size, the widgets can be resized as the user pleases in the future
-//from the modal all the data will be set and 
+"use client"
 export const DayCounterWidget = ({
     targetDate,
     toFrom,
@@ -37,20 +36,15 @@ export const DayCounterWidget = ({
 
             <div className="relative w-full h-full flex flex-row items-center justify-center p-3">
                 <div className="relative  w-full">
-                    <div className="relative pl-4 pr-14 text-[110px] font-extrabold italic font-pixelify bg-gradient-to-br from-stone-100 via-stone-300 to-stone-400 bg-clip-text text-transparent">
-                        {displayDays<100?`0${displayDays}`:displayDays}
+                    <div className="relative  pl-4 pr-14 text-[110px] text-stone-200 font-extrabold italic font-pixelify h-32">
+                        {String(displayDays).padStart(3, '0')}
+                    </div>
+                    <div className="relative  px-6 py-1.5 font-pixelify text-[clamp(8px,1.5vw,14px)] text-stone-300 italic tracking-wide ">
+                        DAYS {toFrom ? 'SINCE' : 'UNTIL'} {setDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase()}
                     </div>
                 </div>
-
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] backdrop-blur-sm">
-                    <div className="absolute inset-0 bg-stone-800/60  transform -skew-x-6 border-l-2 border-r-2 border-stone-600/40" />
-
-                    <div className="relative px-4 py-1.5 font-semibold text-[clamp(8px,1.5vw,14px)] text-stone-300 italic tracking-wide text-center">
-                        {displayDays} DAYS {toFrom ? 'SINCE' : 'UNTIL'} {setDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase()}
-                    </div>
-                </div>
-                <div className="absolute top-4 right-4 w-8 h-8 opacity-10">
-                    <div className="grid grid-cols-4 grid-rows-4 w-full h-full transform rotate-12">
+                               <div className="absolute top-4 right-4 w-6 h-6 opacity-5">
+                    <div className="grid grid-cols-4 grid-rows-4 w-full h-full transform rotate-12 hover:opacity-45">
                         {[...Array(16)].map((_, i) => (
                             <div
                                 key={i}

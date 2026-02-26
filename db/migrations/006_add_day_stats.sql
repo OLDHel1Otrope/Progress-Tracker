@@ -1,0 +1,12 @@
+CREATE TABLE day_stats (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    date DATE NOT NULL,
+    completion_percentage NUMERIC(5, 2)
+);
+
+ALTER TABLE users
+ADD COLUMN focus_mode BOOLEAN DEFAULT FALSE,
+ADD COLUMN carry_over BOOLEAN DEFAULT TRUE,
+ADD COLUMN zestify_mode BOOLEAN DEFAULT FALSE,
+ADD COLUMN auto_place BOOLEAN DEFAULT FALSE;

@@ -40,8 +40,8 @@ const getInitialTab = () => {
 
 export default function Home() {
   const [active, setActive] = useState<string | null>(getInitialTab());
-  const [minimalMode, setMinimalMode] = useState(false) //do it with api later
   const { loggedIn } = useAuth();
+  const [minimalMode, setMinimalMode] = useState(true) //do it with api later
   const images = [
     "/img/i1.png",
     "/img/in.png",

@@ -31,7 +31,7 @@ export async function getSessionUser() {
   const userId = cookie.value;
 
   const res = await db.query(
-    `SELECT id, name FROM users WHERE id = $1`,
+    `SELECT * FROM users WHERE id = $1`,
     [userId]
   );
 

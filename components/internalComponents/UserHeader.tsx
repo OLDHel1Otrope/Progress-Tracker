@@ -31,8 +31,6 @@ export default function UserMenu() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    console.log(user)
-
     return (
         <div
             ref={menuRef}

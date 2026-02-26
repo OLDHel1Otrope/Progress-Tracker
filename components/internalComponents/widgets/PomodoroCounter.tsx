@@ -106,10 +106,9 @@ export const PomodoroTimer = () => {
             <div className="absolute top-0 left-1/4 w-px h-full bg-stone-600/20 transform -skew-x-12" />
             <div className="absolute top-0 right-1/4 w-px h-full bg-stone-600/20 transform -skew-x-12" />
 
-
             <div className="relative w-full h-full flex flex-col items-center justify-center p-6">
 
-                <div className="flex-1 flex items-center justify-center">
+                <div className="flex flex-col w-full p-2 ">
                     {isEditing ? (
                         <div className="flex items-center gap-2">
                             <input
@@ -140,58 +139,39 @@ export const PomodoroTimer = () => {
                             </span>
                         </div>
                     )}
-                </div>
+                    <div className="relative w-full ">
+                        <div className="flex gap-1 font-pixelify text-[clamp(10px,1.5vw,14px)] text-stone-300 italic tracking-wide">
+                            {!isEditing && (
+                                <button
+                                    onClick={handleEdit}
+                                    className="hover:text-rose-700 italic transition-colors duration-200"
+                                >
+                                    SET
+                                </button>
+                            )}
 
-                <div className={`flex gap-2 transition-opacity duration-300 ${isHovered || isEditing || isRunning ? 'opacity-100' : 'opacity-0'} `}>
-                    {!isEditing && (
-                        <button
-                            onClick={handleEdit}
-                            className={`
-                                px-4 py-2 rounded-lg
-                                bg-stone-700/40 hover:bg-stone-600/50
-                                border border-stone-600/40
-                                text-stone-300 hover:text-stone-100
-                                text-xs font-semibold tracking-wide
-                                transition-all duration-200
-                                backdrop-blur-sm
-                            `}
-                        >
-                            SET
-                        </button>
-                    )}
+                            {!isEditing && <span className="text-stone-600">·</span>}
 
-                    <button
-                        onClick={handleStart}
-                        className={`
-                            px-6 py-2 rounded-lg
-                            bg-stone-600/60 hover:bg-stone-500/70
-                            border border-stone-500/50
-                            text-stone-100
-                            text-xs font-bold tracking-wide
-                            transition-all duration-200
-                            backdrop-blur-sm
-                            shadow-lg shadow-stone-900/20
-                        `}
-                    >
-                        {isRunning ? 'PAUSE' : isEditing ? 'START' : 'RESUME'}
-                    </button>
+                            <button
+                                onClick={handleStart}
+                                className="hover:text-rose-700 italic transition-colors duration-200"
+                            >
+                                {isRunning ? 'PAUSE' : isEditing ? 'START' : 'RESUME'}
+                            </button>
 
-                    {!isEditing && (
-                        <button
-                            onClick={handleReset}
-                            className={`
-                                px-4 py-2 rounded-lg
-                                bg-stone-700/40 hover:bg-stone-600/50
-                                border border-stone-600/40
-                                text-stone-300 hover:text-stone-100
-                                text-xs font-semibold tracking-wide
-                                transition-all duration-200
-                                backdrop-blur-sm
-                            `}
-                        >
-                            RESET
-                        </button>
-                    )}
+                            {!isEditing && (
+                                <>
+                                    <span className="text-stone-600">·</span>
+                                    <button
+                                        onClick={handleReset}
+                                        className="hover:text-rose-700 italic transition-colors duration-200"
+                                    >
+                                        RESET
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </div>
                 </div>
 
                 <div className="absolute top-4 right-4 w-6 h-6 opacity-5">

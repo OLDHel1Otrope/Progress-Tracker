@@ -5,6 +5,7 @@ import Image from "next/image";
 import { DayCounterWidget } from "./widgets/DayCounterWidget";
 import { PomodoroTimer } from "./widgets/PomodoroCounter";
 import TodayGoals from "./TodayGoals";
+import { StatsDisplay } from "./widgets/StatsDisplay";
 
 interface CenteredGridProps {
     images: string[];
@@ -25,19 +26,19 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
       "
         >
             <div
-                className="
+                className={`
                 flex flex-col
-          sm:grid
-          sm:grid-cols-3
-          gap-6
-          place-items-center
-          max-w-7xl
-          p-6
-        "
+                gap-6
+                place-items-center
+                max-w-7xl
+                p-6
+                `}
+            //   sm:grid
+            //   sm:grid-cols-3
             >
 
                 <div
-                    key="today" className="row-span-2 col-span-2 border rounded-xl border-stone-900"
+                    key="today" className="row-span-2 col-span-2 border rounded-xl border-stone-900 h-full"
                 >
                     <TodayGoals home />
                 </div>
@@ -46,6 +47,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                 >
                     <DayCounterWidget targetDate={"2025-12-06T06:15:23.123Z"} toFrom={true} />
                 </div>
+
 
 
                 {/* <div
@@ -89,25 +91,29 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                 >
                     <PomodoroTimer />
                 </div>
+                <div
+                    key="stats" className="w-full h-full row-span-1 col-span-1 "
+                >
+                    <StatsDisplay/>
+                </div>
 
-                {images.map((src, index) => (
+                {/* {images.map((src, index) => (
                     <div
                         key={index}
                         className="
-    relative
-    w-full
-    h-48
-    rounded-xl
-    bg-stone-800/30
-    shadow-lg
-    hover:scale-105
-    transition-transform
-    border border-stone-700/30
-    backdrop-blur-lg
-    overflow-hidden
-  "
+                                        relative
+                                        w-full
+                                        h-48
+                                        rounded-xl
+                                        bg-stone-800/30
+                                        shadow-lg
+                                        hover:scale-105
+                                        transition-transform
+                                        border border-stone-700/30
+                                        backdrop-blur-lg
+                                        overflow-hidden
+                                    "
                     >
-                        {/* Image */}
                         <Image
                             src={src}
                             alt={`Image ${index}`}
@@ -115,18 +121,17 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                             className="object-cover"
                         />
 
-                        {/* Inset Shadow Overlay */}
                         <div
                             className="
-      pointer-events-none
-      absolute inset-0
-      rounded-none
-      shadow-[inset_0_0_20px_rgba(0,0,0,0.7)]
-    "
+                                pointer-events-none
+                                absolute inset-0
+                                rounded-none
+                                shadow-[inset_0_0_20px_rgba(0,0,0,0.7)]
+                                "
                         />
                     </div>
 
-                ))}
+                ))} */}
 
 
 

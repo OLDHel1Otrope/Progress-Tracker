@@ -16,5 +16,9 @@ export async function GET() {
 
   return NextResponse.json({
     userName: user.name,
+    focus_mode: user.focus_mode,
+    carry_over: user.carry_over,
+    zestify_mode: user.zestify_mode,
+    auto_place: user.auto_place
   });
 }
