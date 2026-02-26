@@ -10,6 +10,10 @@ import {
 
 type AuthUser = {
   userName: string;
+  focus_mode: boolean;
+  carry_over: boolean;
+  zestify_mode: boolean;
+  auto_place: boolean;
 };
 
 type AuthContextType = {
@@ -19,6 +23,12 @@ type AuthContextType = {
   login: (passphrase: string) => Promise<boolean>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
+  updateUserDetails: (data: {
+    focus_mode?: boolean;
+    carry_over?: boolean;
+    zestify_mode?: boolean;
+    auto_place?: boolean;
+  }) => Promise<void>
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -50,6 +60,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser({
         userName: data.userName,
+        focus_mode: data.focus_mode,
+        carry_over: data.carry_over,
+        zestify_mode: data.zestify_mode,
+        auto_place: data.auto_place
       });
     } catch {
       setUser(null);
@@ -89,9 +103,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }
 
-  // ----------------------------
+  async function updateUserDetails(
+    data: {
+      focus_mode?: boolean;
+      carry_over?: boolean;
+      zestify_mode?: boolean;
+      auto_place?: boolean;
+    }
+  ) {
+    if (!user) return;
+
+    const payload = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => typeof v === "boolean")
+    );
+
+    if (Object.keys(payload).length === 0) return;
+
+    try {
+      setUser((prev) =>
+        prev ? { ...prev, ...payload } : prev
+      );
+
+      const res = await fetch("/api/me", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        await refresh();
+        throw new Error("Failed to update user details");
+      }
+
+      const updated = await res.json();
+
+      setUser((prev) =>
+        prev ? { ...prev, ...updated } : prev
+      );
+    } catch (err) {
+      console.error("updateUserDetails failed", err);
+    }
+  }
+
+
   const value: AuthContextType = {
     user,
+    updateUserDetails,
     loggedIn: !!user,
     loading,
     login,

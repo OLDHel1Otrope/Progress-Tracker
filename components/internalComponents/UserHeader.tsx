@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { CircleUserRound, Earth, Link, LogOut, ScanFace, User } from "lucide-react";
+import { CircleUserRound, Earth, Focus, Link, LogOut, ScanFace, User } from "lucide-react";
 import { useAuth } from "@/contexts/authContext";
 
 export default function UserMenu() {
@@ -7,7 +7,7 @@ export default function UserMenu() {
     const [pass, setPass] = useState("");
     const [error, setError] = useState("");
     const menuRef = useRef(null);
-    const { user, loggedIn, loading, login, logout } = useAuth();
+    const { user, updateUserDetails, loggedIn, loading, login, logout } = useAuth();
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -89,6 +89,16 @@ export default function UserMenu() {
                     >
                         <Earth size={16} className="text-stone-400" />
                         Space
+                    </button>
+
+                    <button
+                        onClick={() => updateUserDetails({ focus_mode: !user?.focus_mode })}
+                        className="w-full flex items-center gap-2 px-4 py-3 text-left
+             text-stone-200 hover:bg-stone-700/40 transition"
+                    >
+
+                        <Focus size={16} className="text-stone-400" />
+                        {user?.focus_mode ? "Scheduling Mode" : "Focus Mode"}
                     </button>
 
 

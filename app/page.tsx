@@ -40,8 +40,7 @@ const getInitialTab = () => {
 
 export default function Home() {
   const [active, setActive] = useState<string | null>(getInitialTab());
-  const { loggedIn } = useAuth();
-  const [minimalMode, setMinimalMode] = useState(true) //do it with api later
+  const { user, loggedIn } = useAuth();
   const images = [
     "/img/i1.png",
     "/img/in.png",
@@ -75,7 +74,7 @@ export default function Home() {
 
   return (
     <div className="h-full flex flex-col">
-      {loggedIn && minimalMode && pages.map((p, i) => (
+      {loggedIn && !user?.focus_mode && pages.map((p, i) => (
         <PageContainer
           key={p.title}
           title={p.title}
@@ -95,7 +94,7 @@ export default function Home() {
 
                 {/* Center wrapper */}
                 <div className="min-h-full flex items-center justify-center p-4 ">
-                  <TodayGoals />
+                  <TodayGoals home={false}/>
                 </div>
 
               </div>
@@ -109,8 +108,8 @@ export default function Home() {
           </>
         </PageContainer>
       ))}
-      <UserHeader minimalMode={minimalMode} setMinimalMode={setMinimalMode} />
-      {(!active || !minimalMode) && loggedIn && (
+      <UserHeader />
+      {(!active || user?.focus_mode) && loggedIn && (
         <>
           <CenteredGrid images={images} />
           <div className="fixed bottom-4 right-4 text-stone-500 text-xs italic">
