@@ -45,7 +45,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                 <div
                     key="day-counter" className="w-full h-full row-span-1 col-span-1 "
                 >
-                    <DayCounterWidget targetDate={"2025-12-06T06:15:23.123Z"} toFrom={true} />
+                    <DayCounterWidget/>
                 </div>
 
 

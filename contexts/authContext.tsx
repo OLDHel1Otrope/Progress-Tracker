@@ -14,6 +14,7 @@ type AuthUser = {
   carry_over: boolean;
   zestify_mode: boolean;
   auto_place: boolean;
+  target_date: string;
 };
 
 type AuthContextType = {
@@ -28,6 +29,7 @@ type AuthContextType = {
     carry_over?: boolean;
     zestify_mode?: boolean;
     auto_place?: boolean;
+    target_date?: string;
   }) => Promise<void>
 };
 
@@ -63,7 +65,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         focus_mode: data.focus_mode,
         carry_over: data.carry_over,
         zestify_mode: data.zestify_mode,
-        auto_place: data.auto_place
+        auto_place: data.auto_place,
+        target_date: data.target_date
       });
     } catch {
       setUser(null);
@@ -109,12 +112,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       carry_over?: boolean;
       zestify_mode?: boolean;
       auto_place?: boolean;
+      target_date?: string;
     }
   ) {
+    // console.log("no user")
     if (!user) return;
 
     const payload = Object.fromEntries(
-      Object.entries(data).filter(([, v]) => typeof v === "boolean")
+      Object.entries(data).filter(([, v]) => typeof v !== undefined)
     );
 
     if (Object.keys(payload).length === 0) return;

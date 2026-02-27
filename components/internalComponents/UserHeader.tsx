@@ -65,7 +65,7 @@ export default function UserMenu() {
 
             {open && loggedIn && (
                 <div
-                    className="absolute right-0 mt-12 w-44 overflow-hidden
+                    className="absolute right-0 mt-12 w-44 overflow-hidden z-50
             rounded-2xl
             bg-gradient-to-br from-stone-800/90 to-stone-900/90
             border border-stone-700/30

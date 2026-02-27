@@ -48,6 +48,7 @@ export default function DateSelection({ selectedDates, onDateToggle }: DateSelec
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
+  console.log({selectedDates})
 
   const calendarDays = getCalendarDays(month, year);
 
