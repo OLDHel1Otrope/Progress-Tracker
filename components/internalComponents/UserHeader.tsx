@@ -34,7 +34,7 @@ export default function UserMenu() {
     return (
         <div
             ref={menuRef}
-            className={`z-1 text-stone-300 text-sm ${loggedIn
+            className={`z-[1000] text-stone-300 text-sm ${loggedIn
                 ? "fixed top-4 right-4 flex flex-row gap-2"
                 : "fixed inset-0 flex items-center justify-center px-4"
                 }`}
@@ -65,7 +65,7 @@ export default function UserMenu() {
 
             {open && loggedIn && (
                 <div
-                    className="absolute right-0 mt-12 w-44 overflow-hidden z-50
+                    className="absolute right-0 mt-12 w-44 overflow-hidden 
             rounded-2xl
             bg-gradient-to-br from-stone-800/90 to-stone-900/90
             border border-stone-700/30
@@ -92,7 +92,10 @@ export default function UserMenu() {
                     </button>
 
                     <button
-                        onClick={() => updateUserDetails({ focus_mode: !user?.focus_mode })}
+                        onClick={() => {
+                            updateUserDetails({ focus_mode: !user?.focus_mode })
+                            setOpen(false);
+                        }}
                         className="w-full flex items-center gap-2 px-4 py-3 text-left
              text-stone-200 hover:bg-stone-700/40 transition"
                     >

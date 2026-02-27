@@ -2,12 +2,12 @@
 import { useState, useEffect, useRef } from 'react';
 
 export const PomodoroTimer = () => {
+    const [pomodoroMode, setPomodoroMode] = useState(true)
     const [minutes, setMinutes] = useState(25);
     const [seconds, setSeconds] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(25 * 60 * 1000);
+    const [time, setTime] = useState(25 * 60 * 1000);
     const totalTimeRef = useRef(25 * 60 * 1000);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -22,33 +22,56 @@ export const PomodoroTimer = () => {
 
         intervalRef.current = setInterval(() => {
             const now = Date.now();
-            const remaining = (endTimeRef.current ?? 0) - now;
 
-            if (remaining <= 0) {
-                setTimeLeft(0);
-                setIsRunning(false);
-                clearInterval(intervalRef.current!);
+            if (pomodoroMode) {
+                const remaining = (endTimeRef.current ?? 0) - now;
+
+                if (remaining <= 0) {
+                    setTime(0);
+                    setIsRunning(false);
+                    clearInterval(intervalRef.current!);
+                } else {
+                    setTime(remaining);
+                }
+
             } else {
-                setTimeLeft(remaining);
+                const elapsed = now - (startTimeRef.current ?? now);
+                setTime(elapsed);
             }
+
         }, 50);
 
         return () => {
             if (intervalRef.current) clearInterval(intervalRef.current);
         };
-    }, [isRunning]);
+    }, [isRunning, pomodoroMode]);
 
     const handleStart = () => {
+
+        if (!pomodoroMode) {
+
+            if (!isRunning) {
+                startTimeRef.current = Date.now() - time;
+            }
+
+            setIsRunning(prev => !prev);
+            return;
+        }
+
+        const newTotal = isEditing
+            ? minutes * 60 * 1000 + seconds * 1000
+            : time;
+
         if (isEditing) {
-            const newTotal = minutes * 60 * 1000 + seconds * 1000;
             totalTimeRef.current = newTotal;
-            setTimeLeft(newTotal);
+            setTime(newTotal);
             setIsEditing(false);
         }
 
         if (!isRunning) {
-            startTimeRef.current = Date.now();
-            endTimeRef.current = Date.now() + timeLeft;
+            const now = Date.now();
+            startTimeRef.current = now;
+            endTimeRef.current = now + newTotal;
         }
 
         setIsRunning(prev => !prev);
@@ -56,7 +79,13 @@ export const PomodoroTimer = () => {
 
     const handleReset = () => {
         setIsRunning(false);
-        setTimeLeft(totalTimeRef.current);
+
+        if (pomodoroMode) {
+            setTime(totalTimeRef.current);
+        } else {
+            setTime(0);
+        }
+
         startTimeRef.current = null;
         endTimeRef.current = null;
     };
@@ -66,18 +95,14 @@ export const PomodoroTimer = () => {
         setIsEditing(true);
     };
 
-    const displayMinutes = Math.floor(timeLeft / 60000);
-    const displaySeconds = Math.floor((timeLeft % 60000) / 1000);
-    const displayMs = Math.floor((timeLeft % 1000) / 10);
+    const displayMinutes = Math.floor(time / 60000);
+    const displaySeconds = Math.floor((time % 60000) / 1000);
+    const displayMs = Math.floor((time % 1000) / 10);
 
-    const progress = (timeLeft / totalTimeRef.current) * 100;
+    const progress = !pomodoroMode ? 100 : (time / totalTimeRef.current) * 100;
 
     return (
-        <div
-            className="relative w-full h-full rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.6)] border border-stone-700/30"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
+        <div className="relative w-full h-48 rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.6)] border border-stone-700/30">
             <div className="absolute inset-0">
                 <div
                     className="absolute inset-0 bg-gradient-to-br from-stone-800/20 to-stone-900/30 transition-all duration-100 ease-linear"
@@ -130,7 +155,7 @@ export const PomodoroTimer = () => {
                             />
                         </div>
                     ) : (
-                        <div className="text-[clamp(48px,10vw,64px)] font-extrabold italic font-pixelify bg-gradient-to-br from-stone-100 via-stone-200 to-stone-300 bg-clip-text text-transparent tracking-wider drop-shadow-lg">
+                        <div className="text-[clamp(55px,10vw,64px)] sm:text-[110px]  sm:-mb-8 font-extrabold italic font-pixelify bg-gradient-to-br from-stone-100 via-stone-200 to-stone-300 bg-clip-text text-transparent tracking-wider drop-shadow-lg">
                             {String(displayMinutes).padStart(2, '0')}
                             <span className="text-stone-400/60">:</span>
                             {String(displaySeconds).padStart(2, '0')}
@@ -175,7 +200,12 @@ export const PomodoroTimer = () => {
                 </div>
 
                 <div className="absolute top-4 right-4 w-6 h-6 opacity-5">
-                    <div className="grid grid-cols-4 grid-rows-4 w-full h-full transform rotate-12">
+                    <div className="grid grid-cols-4 grid-rows-4 w-full h-full transform rotate-12 hover:opacity-45"
+                        onClick={() => {
+                            !pomodoroMode ? setTime(totalTimeRef.current) : setTime(0)
+                            setPomodoroMode(prev => !prev)
+                            setIsRunning(false)
+                        }}>
                         {[...Array(16)].map((_, i) => (
                             <div
                                 key={i}
@@ -223,3 +253,4 @@ export const PomodoroTimer = () => {
         </div>
     );
 };
+

@@ -6,12 +6,39 @@ import { DayCounterWidget } from "./widgets/DayCounterWidget";
 import { PomodoroTimer } from "./widgets/PomodoroCounter";
 import TodayGoals from "./TodayGoals";
 import { StatsDisplay } from "./widgets/StatsDisplay";
+import { useEffect, useState } from "react";
 
 interface CenteredGridProps {
     images: string[];
 }
 
 export default function CenteredGrid({ images }: CenteredGridProps) {
+    const [dayElapsedPercentage, setDayElapsedPercentage] = useState(0);
+
+    useEffect(() => {
+        function calculateDayProgress() {
+            const now = new Date();
+
+            const startOfDay = new Date();
+            startOfDay.setHours(0, 0, 0, 0);
+
+            const endOfDay = new Date();
+            endOfDay.setHours(24, 0, 0, 0);
+
+            const progress =
+                (now.getTime() - startOfDay.getTime()) /
+                (endOfDay.getTime() - startOfDay.getTime());
+
+            setDayElapsedPercentage(progress * 100);
+        }
+
+        calculateDayProgress();
+
+        const interval = setInterval(calculateDayProgress, 60000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <div
             className="
@@ -38,14 +65,20 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
             >
 
                 <div
-                    key="today" className="row-span-2 col-span-2 border rounded-xl border-stone-900 h-full"
+                    key="today"
+                    className="relative row-span-2 col-span-2 border rounded-2xl border-stone-900 h-full overflow-hidden"
                 >
-                    <TodayGoals home />
+                    <div
+                        className="absolute inset-y-0 left-0  z-0 transition-[width] h-full duration-500 border-b-2 border-stone-700/40 rounded-2xl rounded-br-none"
+                        style={{ width: `${dayElapsedPercentage}%` }} />
+                    <div className="relative z-10 h-full pb-0.5">
+                        <TodayGoals home />
+                    </div>
                 </div>
                 <div
                     key="day-counter" className="w-full h-full row-span-1 col-span-1 "
                 >
-                    <DayCounterWidget/>
+                    <DayCounterWidget />
                 </div>
 
 
@@ -94,7 +127,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                 <div
                     key="stats" className="w-full h-full row-span-1 col-span-1 "
                 >
-                    <StatsDisplay/>
+                    <StatsDisplay />
                 </div>
 
                 {/* {images.map((src, index) => (
