@@ -1,7 +1,7 @@
 "use client";
 
-import { ChevronsRight, Cross, PlusIcon, Snail, Soup } from "lucide-react";
-import Image from "next/image";
+// import { ChevronsRight, Cross, PlusIcon, Snail, Soup } from "lucide-react";
+// import Image from "next/image";
 import { DayCounterWidget } from "./widgets/DayCounterWidget";
 import { PomodoroTimer } from "./widgets/PomodoroCounter";
 import TodayGoals from "./TodayGoals";
@@ -20,7 +20,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
     const [dayElapsedPercentage, setDayElapsedPercentage] = useState(0);
     const [completionRate, setCompletionRate] = useState(0)
 
-    const componentMap = {
+    const componentMap = useMemo(() => ({
         goals:
             <div
                 key="today-goals"
@@ -53,7 +53,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
         >
             <StatsDisplay />
         </div>,
-    }
+    }), [completionRate, dayElapsedPercentage])
 
     const HomeItems = useMemo(() => {
         if (!user?.home_order) return [];
