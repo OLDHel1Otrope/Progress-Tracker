@@ -8,6 +8,13 @@ import {
   ReactNode,
 } from "react";
 
+export type HomeItem = {
+  id: "goals" | "day_counter" | "timer" | "stats";
+  position: number;
+  active: boolean;
+};
+
+
 type AuthUser = {
   userName: string;
   focus_mode: boolean;
@@ -15,6 +22,7 @@ type AuthUser = {
   zestify_mode: boolean;
   auto_place: boolean;
   target_date: string;
+  home_order: HomeItem[];
 };
 
 type AuthContextType = {
@@ -30,6 +38,7 @@ type AuthContextType = {
     zestify_mode?: boolean;
     auto_place?: boolean;
     target_date?: string;
+    home_order?: HomeItem[];
   }) => Promise<void>
 };
 
@@ -66,7 +75,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         carry_over: data.carry_over,
         zestify_mode: data.zestify_mode,
         auto_place: data.auto_place,
-        target_date: data.target_date
+        target_date: data.target_date,
+        home_order: data.home_order
       });
     } catch {
       setUser(null);
@@ -113,9 +123,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       zestify_mode?: boolean;
       auto_place?: boolean;
       target_date?: string;
+      home_order?: HomeItem[];
     }
   ) {
-    // console.log("no user")
     if (!user) return;
 
     const payload = Object.fromEntries(

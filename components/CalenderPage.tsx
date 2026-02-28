@@ -70,13 +70,9 @@ export default function CalendarPage() {
     },
   });
 
-  // Now use stats.data directly - it's calendarDays with stats merged
 
   stats.refetch()
 
-  console.log(stats.data)
-
-  // console.log({ calendarDays })
 
   const monthLabel = new Date(year, month).toLocaleString("default", {
     month: "long",

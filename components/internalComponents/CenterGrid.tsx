@@ -6,14 +6,67 @@ import { DayCounterWidget } from "./widgets/DayCounterWidget";
 import { PomodoroTimer } from "./widgets/PomodoroCounter";
 import TodayGoals from "./TodayGoals";
 import { StatsDisplay } from "./widgets/StatsDisplay";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "@/contexts/authContext";
 
 interface CenteredGridProps {
     images: string[];
 }
 
+
 export default function CenteredGrid({ images }: CenteredGridProps) {
+    const { user } = useAuth();
+
     const [dayElapsedPercentage, setDayElapsedPercentage] = useState(0);
+    const [completionRate, setCompletionRate] = useState(0)
+
+    const componentMap = {
+        goals:
+            <div
+                key="today-goals"
+                className="relative row-span-2 col-span-2 border rounded-2xl border-stone-900 h-full overflow-hidden"
+            >
+                <div
+                    className="absolute inset-y-0 left-0  z-0 transition-[width] h-full duration-500  border-t-2 border-stone-700/40 rounded-2xl rounded-tr-none"
+                    style={{ width: `${completionRate * 100}%` }} />
+                <div
+                    className="absolute inset-y-0 left-0  z-0 transition-[width] h-full duration-500  border-b-2 border-stone-700/40 rounded-2xl rounded-br-none"
+                    style={{ width: `${dayElapsedPercentage}%` }} />
+                <div className="relative z-10 h-full pb-0.5 pt-0.5">
+                    <TodayGoals home setCompletionRate={setCompletionRate} />
+                </div>
+            </div>,
+        day_counter:
+            <div
+                key="day-counter" className="w-full h-full row-span-1 col-span-1 "
+            >
+                <DayCounterWidget />
+            </div>,
+        timer:
+            <div
+                key="countdown" className="col-span-1 w-full h-full"
+            >
+                <PomodoroTimer />
+            </div>,
+        stats: <div
+            key="stats" className="w-full h-full row-span-1 col-span-1 "
+        >
+            <StatsDisplay />
+        </div>,
+    }
+
+    const HomeItems = useMemo(() => {
+        if (!user?.home_order) return [];
+
+        return user.home_order
+            .filter(i => i.active)
+            .sort((a, b) => a.position - b.position)
+            .map(i => ({
+                ...i,
+                component: componentMap[i.id]
+            }));
+
+    }, [user]);
 
     useEffect(() => {
         function calculateDayProgress() {
@@ -39,6 +92,8 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
         return () => clearInterval(interval);
     }, []);
 
+    if (!user) return null
+
     return (
         <div
             className="
@@ -57,80 +112,20 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                 flex flex-col
                 gap-6
                 place-items-center
+                w-full
                 max-w-7xl
                 p-6
                 `}
             //   sm:grid
             //   sm:grid-cols-3
             >
+                {HomeItems.map(i => i.component)}
+            </div>
+        </div>
+    )
+}
 
-                <div
-                    key="today"
-                    className="relative row-span-2 col-span-2 border rounded-2xl border-stone-900 h-full overflow-hidden"
-                >
-                    <div
-                        className="absolute inset-y-0 left-0  z-0 transition-[width] h-full duration-500 border-b-2 border-stone-700/40 rounded-2xl rounded-br-none"
-                        style={{ width: `${dayElapsedPercentage}%` }} />
-                    <div className="relative z-10 h-full pb-0.5">
-                        <TodayGoals home />
-                    </div>
-                </div>
-                <div
-                    key="day-counter" className="w-full h-full row-span-1 col-span-1 "
-                >
-                    <DayCounterWidget />
-                </div>
-
-
-
-                {/* <div
-                    key={"t"}
-                    className="
-              w-80
-              h-48
-              rounded-xl
-              overflow-hidden
-              bg-stone-900/30
-              hover:scale-105
-              hover:bg-stone-700/50
-              transition-transform
-              border border-stone-700/30 backdrop-blur-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]
-              flex flex-row items-center justify-center
-            "
-                >
-                    <ChevronsRight size={90} strokeWidth={1.5} />
-                    <Snail size={90} strokeWidth={1.5} />
-                </div>
-
-                <div
-                    key={"s"}
-                    className="
-              w-80
-              h-48
-              rounded-xl
-              overflow-hidden
-              bg-stone-900/30
-              hover:scale-105
-              hover:bg-stone-700/50
-              transition-transform
-              border border-stone-700/30 backdrop-blur-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]
-              flex flex-col items-center justify-center
-            "
-                >
-                    <Soup size={116} strokeWidth={1.5} />
-                </div>  */}
-                <div
-                    key="countdown" className="col-span-1 w-full h-full"
-                >
-                    <PomodoroTimer />
-                </div>
-                <div
-                    key="stats" className="w-full h-full row-span-1 col-span-1 "
-                >
-                    <StatsDisplay />
-                </div>
-
-                {/* {images.map((src, index) => (
+{/* {images.map((src, index) => (
                     <div
                         key={index}
                         className="
@@ -167,8 +162,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                 ))} */}
 
 
-
-                {/* <div
+{/* <div
                     key={"tk"}
                     className="
               w-80
@@ -186,7 +180,40 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                     <PlusIcon size={90} strokeWidth={1.5} />
                 </div> */}
 
-            </div>
-        </div>
-    )
-}
+
+{/* <div
+                    key={"t"}
+                    className="
+              w-80
+              h-48
+              rounded-xl
+              overflow-hidden
+              bg-stone-900/30
+              hover:scale-105
+              hover:bg-stone-700/50
+              transition-transform
+              border border-stone-700/30 backdrop-blur-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]
+              flex flex-row items-center justify-center
+            "
+                >
+                    <ChevronsRight size={90} strokeWidth={1.5} />
+                    <Snail size={90} strokeWidth={1.5} />
+                </div>
+
+                <div
+                    key={"s"}
+                    className="
+              w-80
+              h-48
+              rounded-xl
+              overflow-hidden
+              bg-stone-900/30
+              hover:scale-105
+              hover:bg-stone-700/50
+              transition-transform
+              border border-stone-700/30 backdrop-blur-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]
+              flex flex-col items-center justify-center
+            "
+                >
+                    <Soup size={116} strokeWidth={1.5} />
+                </div>  */}

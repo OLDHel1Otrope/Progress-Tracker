@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Minimize2, Maximize2 } from "lucide-react";
 import GoalItem, { Goal } from "./GoalItem";
 import GoalDetails from "./GoalDetails";
@@ -32,7 +32,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { reorderDayGoals } from "@/lib/api/reorder";
 import EisenhowerMatrix from "./EisenhowerMatrix";
 
-export default function TodayGoals({ home = false }: { home: boolean }) {
+export default function TodayGoals({ home = false, setCompletionRate }: { home: boolean, setCompletionRate: Dispatch<SetStateAction<number>> }) {
 
     const [eisenHower, setEisenHower] = useState(false)
 
@@ -172,6 +172,22 @@ export default function TodayGoals({ home = false }: { home: boolean }) {
         updateGoalMutation.mutate(debouncedGoal);
     }, [debouncedGoal]);
 
+
+    useEffect(() => {
+        if (!setCompletionRate) return
+        if (!Array.isArray(goals) || goals.length === 0) {
+            setCompletionRate(0);
+            return;
+        }
+
+        const completed = goals.filter(g => g?.is_completed === true).length;
+        const rawRate = completed / goals.length;
+
+        const safeRate = Math.min(Math.max(rawRate, 0), 1);
+
+        setCompletionRate(safeRate);
+    }, [goals]);
+
     if (isLoading) {
         return (
             <div className="text-stone-400">
@@ -187,6 +203,8 @@ export default function TodayGoals({ home = false }: { home: boolean }) {
             </div>
         );
     }
+
+
 
 
 

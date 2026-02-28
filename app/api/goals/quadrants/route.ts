@@ -5,10 +5,8 @@ export async function PUT(req: NextRequest) {
   try {
     const { updates } = await req.json();
     
-    console.log('Received updates:', updates);
     
     const updatePromises = updates.map(async ([id, quadrant, position]: [number, number, number]) => {
-      console.log(`Updating goal ${id}: quadrant=${quadrant}, position=${position}`);
       
       const result = await db.query(
         'UPDATE goals SET equadrant = $1, eposition = $2 WHERE id = $3 RETURNING *',

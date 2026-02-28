@@ -21,7 +21,8 @@ export async function GET() {
     carry_over: user.carry_over,
     zestify_mode: user.zestify_mode,
     auto_place: user.auto_place,
-    target_date: user.target_date
+    target_date: user.target_date,
+    home_order: user.home_order
   });
 }
 
@@ -38,7 +39,7 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { focus_mode, carry_over, zestify_mode, auto_place, target_date } = body;
+    const { focus_mode, carry_over, zestify_mode, auto_place, target_date, home_order } = body;
 
     const fields: string[] = [];
     const values: any[] = [];
@@ -69,6 +70,12 @@ export async function PATCH(req: Request) {
       values.push(target_date);
     }
 
+    if (Array.isArray(home_order)) {
+      fields.push(`home_order = $${idx++}`);
+      values.push(JSON.stringify(home_order));
+    }
+
+
     if (fields.length === 0) {
       return NextResponse.json(
         { error: "No valid fields provided" },
@@ -83,7 +90,7 @@ export async function PATCH(req: Request) {
       UPDATE users
       SET ${fields.join(", ")}
       WHERE id = $${idx}
-      RETURNING id, focus_mode, carry_over, zestify_mode, auto_place, target_date;
+      RETURNING id, focus_mode, carry_over, zestify_mode, auto_place, target_date, home_order;
       `,
       [...values, user.id]
     );
