@@ -1,10 +1,31 @@
 "use client"
 
-export const StatsDisplay = () => {
-    const randomData = [34, 67, 34, 76, 87, 100, 32, 40, 76, 80, 90, 100, 45, 78, 92, 65, 88, 73, 95, 58, 82, 69, 91, 77, 84, 100, 96, 71, 89, 100, 40];
-    const avg = Math.round(
-        randomData.reduce((a, b) => a + b, 0) / randomData.length
-    );
+import { getStats } from "@/lib/api/calender";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+
+export const StatsDisplay = ({ todayRate }: { todayRate: number }) => {
+    const stats = useQuery({
+        queryFn: getStats,
+        queryKey: ["stats"],
+    });
+
+    const avg = useMemo(() => {
+        const data = stats?.data ?? [];
+
+        const totalFromStats = data.reduce((acc, item) => {
+            const value = parseFloat(item?.completion_percentage ?? 0);
+            return acc + (isNaN(value) ? 0 : value);
+        }, 0);
+
+        const safeTodayRate = Number(todayRate * 100) || 0;
+
+        const totalCount = data.length + 1;
+
+        if (totalCount === 0) return 0;
+
+        return (totalFromStats + safeTodayRate) / totalCount;
+    }, [stats?.data, todayRate]);
 
     return (
         <div className="relative w-full h-48 bg-gradient-to-br from-stone-800/20 to-stone-900/30 backdrop-blur-xl border border-stone-700/20 rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.6)]">
@@ -16,38 +37,55 @@ export const StatsDisplay = () => {
             {/* Stats bars */}
             <div className="relative w-full h-[100%] flex items-end gap-[1px] ">
                 <div
-                    className="absolute left-0 right-0 border-t border-dashed border-stone-400/30"
+                    className="absolute left-0 right-0 border-t border-dashed border-stone-400/30 transition-all duration-300"
                     style={{ bottom: `${avg}%` }}
                 >
                     <span className="absolute right-4 -top-2 text-[10px] font-pixelify text-stone-400/70">
                         AVG {avg}%
                     </span>
                 </div>
-                {randomData.map((p, i) => (
+                {stats?.data?.map((p, i) => (
                     <div
                         key={i}
                         className="max-w-0.5 w-[1px] relative flex-1 group transition-all duration-300 hover:scale-105"
-                        style={{ height: `${p}%` }}
+                        style={{ height: `${parseFloat(p.completion_percentage)}%` }}
                     >
                         {/* Bar */}
                         <div className="absolute inset-0 bg-gradient-to-t from-stone-700 via-stone-600 to-stone-500 rounded-t-sm shadow-[0_0_10px_rgba(120,113,108,0.3)]">
                             <div className="absolute inset-0 bg-gradient-to-t from-transparent via-stone-400/20 to-transparent opacity-50" />
                         </div>
 
-                        {i === randomData.length - 1 && (
-                            <div className="absolute -top-0 left-1/2 -translate-x-1/2 pointer-events-none">
-                                <div className="pulse-glow" />
-                            </div>
-                        )}
-
                         {/* Tooltip */}
                         <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                             <div className="bg-stone-900/90 backdrop-blur-sm border border-stone-700/50 rounded-lg px-2 py-1 whitespace-nowrap">
-                                <span className="text-xs font-pixelify text-stone-200">{p}%</span>
+                                <span className="text-xs font-pixelify text-stone-200">{p.completion_percentage}%</span>
                             </div>
                         </div>
                     </div>
                 ))}
+                <div
+                    key={"today"}
+                    className="max-w-0.5 w-[1px] relative flex-1 group transition-all duration-300 hover:scale-105"
+                    style={{ height: `${todayRate * 100}%` }}
+                >
+                    {/* Bar */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-stone-700 via-stone-600 to-stone-500 rounded-t-sm shadow-[0_0_10px_rgba(120,113,108,0.3)]">
+                        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-stone-400/20 to-transparent opacity-50" />
+                    </div>
+
+
+                    <div className="absolute -top-0 left-1/2 -translate-x-1/2 pointer-events-none">
+                        <div className="pulse-glow" />
+                    </div>
+
+
+                    {/* Tooltip */}
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                        <div className="bg-stone-900/90 backdrop-blur-sm border border-stone-700/50 rounded-lg px-2 py-1 whitespace-nowrap">
+                            <span className="text-xs font-pixelify text-stone-200">{todayRate * 100}%</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Grid lines */}

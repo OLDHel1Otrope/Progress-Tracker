@@ -95,9 +95,9 @@ function SortableHomeItem({ item, onToggle }: SortableHomeItemProps) {
         <div
             ref={setNodeRef}
             style={style}
-            className="w-[400px] h-24 bg-stone-800 rounded-xl rounded-l-2xl flex flex-row p-0.5"
+            className="w-[500px] h-24 bg-black-900 rounded-xl rounded-l-2xl flex flex-row p-0.5 border border-stone-700/30"
         >
-            <div className="w-10 h-full flex flex-col items-center justify-center gap-3">
+            <div className="w-10 h-full flex flex-col items-center justify-center gap-3 ">
                 <button
                     onClick={(e) => {
                         e.stopPropagation();

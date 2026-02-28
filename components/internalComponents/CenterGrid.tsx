@@ -20,6 +20,30 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
     const [dayElapsedPercentage, setDayElapsedPercentage] = useState(0);
     const [completionRate, setCompletionRate] = useState(0)
 
+    useEffect(() => {
+        function calculateDayProgress() {
+            const now = new Date();
+
+            const startOfDay = new Date();
+            startOfDay.setHours(0, 0, 0, 0);
+
+            const endOfDay = new Date();
+            endOfDay.setHours(24, 0, 0, 0);
+
+            const progress =
+                (now.getTime() - startOfDay.getTime()) /
+                (endOfDay.getTime() - startOfDay.getTime());
+
+            setDayElapsedPercentage(progress * 100);
+        }
+
+        calculateDayProgress();
+
+        const interval = setInterval(calculateDayProgress, 60000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     const componentMap = useMemo(() => ({
         goals:
             <div
@@ -51,7 +75,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
         stats: <div
             key="stats" className="w-full h-full row-span-1 col-span-1 "
         >
-            <StatsDisplay />
+            <StatsDisplay todayRate={completionRate}/>
         </div>,
     }), [completionRate, dayElapsedPercentage])
 
@@ -66,31 +90,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                 component: componentMap[i.id]
             }));
 
-    }, [user]);
-
-    useEffect(() => {
-        function calculateDayProgress() {
-            const now = new Date();
-
-            const startOfDay = new Date();
-            startOfDay.setHours(0, 0, 0, 0);
-
-            const endOfDay = new Date();
-            endOfDay.setHours(24, 0, 0, 0);
-
-            const progress =
-                (now.getTime() - startOfDay.getTime()) /
-                (endOfDay.getTime() - startOfDay.getTime());
-
-            setDayElapsedPercentage(progress * 100);
-        }
-
-        calculateDayProgress();
-
-        const interval = setInterval(calculateDayProgress, 60000);
-
-        return () => clearInterval(interval);
-    }, []);
+    }, [user, componentMap]);
 
     if (!user) return null
 

@@ -65,7 +65,7 @@ export default function CalendarPage() {
 
       return calendarDays.map(day => ({
         ...day,
-        stats: statsMap.get(day.date) || { total_goals: 0, completed: 0 }
+        stats: statsMap.get(day.date) || { completion_percentage: "0" }
       }));
     },
   });
@@ -151,35 +151,31 @@ export default function CalendarPage() {
 
                 {day.isCurrentMonth && (
                   <div className="mt-auto">
-                    {day?.stats?.total_goals > 0 ? (
-                      <div className="space-y-1">
-                        {/* Stats text */}
-                        <div className="flex items-center justify-between text-[10px]">
-                          <span className="text-stone-500">
-                            {day.stats.completed}/{day.stats.total_goals}
-                          </span>
-                          <span className={`font-semibold ${day.stats.completed === day.stats.total_goals
-                            ? 'text-stone-300'
-                            : 'text-stone-400'
-                            }`}>
-                            {Math.round((day.stats.completed / day.stats.total_goals) * 100)}%
-                          </span>
-                        </div>
-                        {/* Progress bar */}
-                        <div className="w-full h-1.5 bg-stone-800/60 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-stone-500 to-stone-400 rounded-full transition-all duration-300"
-                            style={{
-                              width: `${Math.round((day.stats.completed / day.stats.total_goals) * 100)}%`
-                            }}
-                          />
-                        </div>
+                    <div className="space-y-1">
+                      {/* Stats text */}
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="text-stone-500">
+                          {/* {parseFloat(day?.stats?.completion_percentage)} */}
+
+                        </span>
+                        <span className={`font-semibold ${parseFloat(day?.stats?.completion_percentage) ==100
+                          ? 'text-stone-300'
+                          : 'text-stone-400'
+                          }`}>
+                          {parseFloat(day?.stats?.completion_percentage)}%
+                        </span>
                       </div>
-                    ) : (
-                      <div className="text-[10px] text-stone-600 italic">
-                        No goals
+                      {/* Progress bar */}
+                      <div className="w-full h-1.5 bg-stone-800/60 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-stone-500 to-stone-400 rounded-full transition-all duration-300"
+                          style={{
+                            width: `${parseFloat(day?.stats?.completion_percentage)}%`
+                          }}
+                        />
                       </div>
-                    )}
+                    </div>
+
                   </div>
                 )}
               </div>
