@@ -15,7 +15,7 @@ import {
 import GoalItem, { Goal } from "./GoalItem";
 import { Plus } from "lucide-react";
 import RecurrenceModal from "./RecurrenceModal";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 interface GoalListProps {
     goals: any[];
@@ -30,6 +30,7 @@ interface GoalListProps {
     isHome?: boolean;
     updateGoalText: (updated: Goal) => void;
     updateGoalStatus: (updated: Goal) => void;
+    setCompletedGoals?: Dispatch<SetStateAction<number>>
 }
 
 
@@ -45,6 +46,7 @@ export default function GoalList({
     handleDragEnd,
     addGoal,
     isHome = false,
+    setCompletedGoals
 }: GoalListProps) {
     const [showRecurr, setShowRecurr] = useState(false)
     return (
@@ -75,6 +77,7 @@ export default function GoalList({
                                 onFocus={() => setActiveGoalId(goal.id)}
                                 isActive={activeGoalId === goal.id}
                                 isHome={isHome}
+                                setCompletedGoals={setCompletedGoals}
                             />
                         ))}
 

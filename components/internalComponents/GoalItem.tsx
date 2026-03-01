@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { ChevronRight, Ellipsis, Fullscreen, Plus, RectangleEllipsis } from "lucide-react";
 import RecurrenceModal from "./RecurrenceModal";
 import { useSortable } from "@dnd-kit/sortable";
@@ -37,7 +37,7 @@ export interface Goal {
     recurr_id?: string,
     equadrant?: number,
     group_name?: string,
-    goal_date?: string
+    goal_date?: string,
 }
 
 export default function GoalItem({
@@ -48,7 +48,7 @@ export default function GoalItem({
     onFocus,
     isActive,
     isHome = false,
-
+    setCompletedGoals
 }: {
     goal: Goal;
     updateGoalText: (updated: Goal) => void;
@@ -57,6 +57,8 @@ export default function GoalItem({
     onFocus: () => void;
     isHome?: boolean;
     isActive: boolean;
+    setCompletedGoals?: Dispatch<SetStateAction<number>>
+
 }) {
     const [expanded, setExpanded] = useState(false);
     const [editing, setEditing] = useState(false);
@@ -156,7 +158,11 @@ export default function GoalItem({
                 <button
                     onClick={async () => {
                         setGoalCompleted(p => !p)
-                         updateGoalStatus({ ...goal, is_completed: !goal.is_completed })
+                        if (setCompletedGoals) {
+                            console.log("setting new value")
+                            setCompletedGoals(p => goal.is_completed ? p - 1 : p + 1)
+                        }
+                        updateGoalStatus({ ...goal, is_completed: !goal.is_completed })
                     }
                     }
                     className={`

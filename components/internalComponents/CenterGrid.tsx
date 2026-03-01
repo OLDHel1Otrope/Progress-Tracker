@@ -18,7 +18,10 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
     const { user } = useAuth();
 
     const [dayElapsedPercentage, setDayElapsedPercentage] = useState(0);
-    const [completionRate, setCompletionRate] = useState(0)
+
+    //optimistic completion bar
+    const [totalGoals, setTotalGoals] = useState(0)
+    const [completedGoals, setCompletedGoals] = useState(0)
 
     useEffect(() => {
         function calculateDayProgress() {
@@ -44,6 +47,14 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
         return () => clearInterval(interval);
     }, []);
 
+    const completionRate = useMemo(() => {
+        if (!totalGoals || totalGoals <= 0) return 0;
+
+        const rate = completedGoals / totalGoals;
+
+        return Number.isFinite(rate) ? rate : 0;
+    }, [totalGoals, completedGoals]);
+
     const componentMap = useMemo(() => ({
         goals:
             <div
@@ -57,7 +68,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
                     className="absolute inset-y-0 left-0  z-0 transition-[width] h-full duration-500  border-b-2 border-stone-700/40 rounded-2xl rounded-br-none"
                     style={{ width: `${dayElapsedPercentage}%` }} />
                 <div className="relative z-10 h-full pb-0.5 pt-0.5">
-                    <TodayGoals home setCompletionRate={setCompletionRate} />
+                    <TodayGoals home setCompletedGoals={setCompletedGoals} setTotalGoals={setTotalGoals} />
                 </div>
             </div>,
         day_counter:
@@ -75,9 +86,9 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
         stats: <div
             key="stats" className="w-full h-full row-span-1 col-span-1 "
         >
-            <StatsDisplay todayRate={completionRate}/>
+            <StatsDisplay todayRate={completionRate} />
         </div>,
-    }), [completionRate, dayElapsedPercentage])
+    }), [completionRate, dayElapsedPercentage, totalGoals, completedGoals])
 
     const HomeItems = useMemo(() => {
         if (!user?.home_order) return [];

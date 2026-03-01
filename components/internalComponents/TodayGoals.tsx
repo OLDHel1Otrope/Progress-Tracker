@@ -32,7 +32,12 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { reorderDayGoals } from "@/lib/api/reorder";
 import EisenhowerMatrix from "./EisenhowerMatrix";
 
-export default function TodayGoals({ home = false, setCompletionRate }: { home: boolean, setCompletionRate?: Dispatch<SetStateAction<number>> }) {
+export default function TodayGoals({ home = false, setCompletedGoals, setTotalGoals }:
+    {
+        home: boolean,
+        setCompletedGoals?: Dispatch<SetStateAction<number>>,
+        setTotalGoals?: Dispatch<SetStateAction<number>>
+    }) {
 
     const [eisenHower, setEisenHower] = useState(false)
 
@@ -174,19 +179,15 @@ export default function TodayGoals({ home = false, setCompletionRate }: { home: 
 
 
     useEffect(() => {
-        if (!setCompletionRate) return
+        if (!setCompletedGoals || !setTotalGoals) return
         if (!Array.isArray(goals) || goals.length === 0) {
-            setCompletionRate(0);
+            setTotalGoals(0);
             return;
         }
+        setTotalGoals(goals.length)
+        setCompletedGoals(goals.filter(g => g?.is_completed === true).length || 0);
+    }, [goals, goals.filter(g => g?.is_completed === true).length]);
 
-        const completed = goals.filter(g => g?.is_completed === true).length;
-        const rawRate = completed / goals.length;
-
-        const safeRate = Math.min(Math.max(rawRate, 0), 1);
-
-        setCompletionRate(safeRate);
-    }, [goals]);
 
     if (isLoading) {
         return (
@@ -225,6 +226,7 @@ export default function TodayGoals({ home = false, setCompletionRate }: { home: 
                         handleDragEnd={handleDragEnd}
                         addGoal={addGoal}
                         isHome={true}
+                        setCompletedGoals={setCompletedGoals}
                     />
                     {!home && <button
                         onClick={() => setEisenHower(p => !p)}
