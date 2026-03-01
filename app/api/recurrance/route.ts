@@ -20,12 +20,12 @@ export async function GET(req: Request) {
             [user.id]
         );
 
-        if (result.rows.length === 0) {
-            return NextResponse.json(
-                { error: "Groups not found" },
-                { status: 404 }
-            );
-        }
+        // if (result.rows.length === 0) {
+        //     return NextResponse.json(
+        //         { error: "Groups not found" },
+        //         { status: 404 }
+        //     );
+        // }
 
         return NextResponse.json(result.rows);
 
