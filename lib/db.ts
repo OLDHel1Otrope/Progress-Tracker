@@ -14,15 +14,17 @@ declare global {
   var pgPool: Pool | undefined;
 }
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export const db =
   global.pgPool ||
   new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
+    ssl: isProduction
+      ? { rejectUnauthorized: false }
+      : false,
   });
 
-if (process.env.NODE_ENV !== "production") {
+if (!isProduction) {
   global.pgPool = db;
 }

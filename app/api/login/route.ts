@@ -14,11 +14,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // Get first user (or customize later)
     const result = await db.query(`
       SELECT id, password_hash, name
       FROM users
-      LIMIT 1
     `);
 
     if (result.rowCount === 0) {
@@ -28,16 +26,18 @@ export async function POST(req: Request) {
       );
     }
 
-    const user = result.rows[0];
+    let matchedUser = null;
 
-    const ok = await bcrypt.compare(
-      passphrase,
-      user.password_hash
-    );
+    for (const user of result.rows) {
+      const ok = await bcrypt.compare(passphrase, user.password_hash);
+      if (ok) {
+        matchedUser = user;
+        break;
+      }
+    }
 
 
-
-    if (!ok) {
+    if (!matchedUser) {
       return NextResponse.json(
         { error: "Invalid passphrase" },
         { status: 401 }
@@ -45,11 +45,11 @@ export async function POST(req: Request) {
     }
 
     // Set cookie
-    await setSession(user.id);
+    await setSession(matchedUser.id);
 
     return NextResponse.json({
       success: true,
-      userName: user.name,
+      userName: matchedUser.name,
     });
 
   } catch (err) {

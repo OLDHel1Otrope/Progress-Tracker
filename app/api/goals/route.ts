@@ -6,6 +6,15 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const date = searchParams.get("date");
+    const user = await getSessionUser();
+
+    if (!user.id) {
+      return NextResponse.json(
+        { error: "login is required" },
+        { status: 400 }
+      );
+    }
+
 
     if (!date) {
       return NextResponse.json(
@@ -34,9 +43,10 @@ export async function GET(req: Request) {
         WHERE
           g.goal_date = $1
           AND g.archived_at IS NULL
+          AND g.user_id = $2
         ORDER BY g.position ASC
       `,
-      [date]
+      [date, user.id]
     );
 
 
