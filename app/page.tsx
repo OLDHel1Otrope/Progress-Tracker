@@ -29,17 +29,8 @@ const prevP = [
 
 const pages = prevP.map((p, i) => ({ ...p, color: prevP[prevP.length - 1 - i].color }));
 
-const getInitialTab = () => {
-  if (typeof window !== 'undefined') {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('tab') || 'Today';
-  }
-  return 'Today';
-};
-
-
 export default function Home() {
-  const [active, setActive] = useState<string | null>(getInitialTab());
+  const [active, setActive] = useState<string | null>(null);
   const { user, loggedIn } = useAuth();
   const images = [
     "/img/i1.png",
@@ -50,24 +41,32 @@ export default function Home() {
   ];
 
   useEffect(() => {
+    const url = new URL(window.location.href);
+
     if (active) {
-      const url = new URL(window.location.href);
-      url.searchParams.set('tab', active);
-      window.history.pushState({}, '', url);
+      url.searchParams.set("tab", active);
+    } else {
+      url.searchParams.delete("tab");
     }
+
+    window.history.replaceState({}, "", url);
   }, [active]);
 
   useEffect(() => {
-    const handlePopState = () => {
+    const syncFromUrl = () => {
       const params = new URLSearchParams(window.location.search);
-      const tab = params.get('tab') || 'Today';
+      const tab = params.get("tab");
       setActive(tab);
     };
 
-    window.addEventListener('popstate', handlePopState);
+    // Run once on mount
+    syncFromUrl();
+
+    // Listen for back/forward
+    window.addEventListener("popstate", syncFromUrl);
 
     return () => {
-      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener("popstate", syncFromUrl);
     };
   }, []);
 
@@ -81,9 +80,9 @@ export default function Home() {
           index={i}
           color={p.color}
           isActive={active === p.title}
-          onToggle={() =>
-            setActive(active === p.title ? null : p.title)
-          }
+          onToggle={() => {
+            setActive(prev => (prev === p.title ? null : p.title));
+          }}
         >
           <>
             {p.title === "Calendar" && <CalendarPage />}
@@ -94,7 +93,7 @@ export default function Home() {
 
                 {/* Center wrapper */}
                 <div className="min-h-full flex items-center justify-center p-4 ">
-                  <TodayGoals home={false}/>
+                  <TodayGoals home={false} />
                 </div>
 
               </div>

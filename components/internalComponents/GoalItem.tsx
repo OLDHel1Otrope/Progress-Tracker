@@ -64,6 +64,7 @@ export default function GoalItem({
     const [localTitle, setLocalTitle] = useState(goal.title)
     const [showMenu, setShowMenu] = useState(false);
     const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
+    const [goalCompleted, setGoalCompleted] = useState(goal.is_completed) //optimistic updates
 
     const menuRef = useRef<HTMLDivElement | null>(null);
     const ellipsisRef = useRef<HTMLButtonElement | null>(null);
@@ -80,10 +81,10 @@ export default function GoalItem({
         isDragging,
     } = useSortable({ id: goal.id });
 
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-    };
+    useEffect(() => {
+        setGoalCompleted(goal.is_completed)
+    }, [goal?.is_completed])
+
 
     useEffect(() => {
         setLocalTitle(goal.title);
@@ -126,7 +127,7 @@ export default function GoalItem({
 
     ${isDragging
                     ? "opacity-60 bg-stone-700/60"
-                    : goal.is_completed
+                    : goalCompleted
                         ? "bg-stone-700/30"
                         : expanded
                             ? "bg-stone-800/40"
@@ -153,19 +154,21 @@ export default function GoalItem({
                 </div>
 
                 <button
-                    onClick={() =>
-                        updateGoalStatus({ ...goal, is_completed: !goal.is_completed })
+                    onClick={async () => {
+                        setGoalCompleted(p => !p)
+                         updateGoalStatus({ ...goal, is_completed: !goal.is_completed })
+                    }
                     }
                     className={`
             w-4 h-4 rounded-[4px] border flex items-center justify-center
             transition-all duration-200
-            ${goal.is_completed
+            ${goalCompleted
                             ? "bg-blue-600 border-blue-600"
                             : "border-stone-500 hover:border-stone-300"
                         }
         `}
                 >
-                    {goal.is_completed && (
+                    {goalCompleted && (
                         <svg
                             viewBox="0 0 24 24"
                             className="w-3 h-3 text-white"
@@ -196,14 +199,14 @@ export default function GoalItem({
                             }}
                             onBlur={() => setEditing(false)}
                             className={`w-full bg-transparent focus:outline-none font-bold
-        ${goal.is_completed ? "line-through text-stone-500" : " text-stone-300"}
+        ${goalCompleted ? "line-through text-stone-500" : " text-stone-300"}
       `}
                         />
                     ) : (
                         <div
                             onClick={() => setEditing(true)}
                             className={`font-bold cursor-text flex flex-row gap-2
-        ${goal.is_completed ? "line-through text-stone-500" : "text-stone-300"}
+        ${goalCompleted ? "line-through text-stone-500" : "text-stone-300"}
       `}
                         >
                             {removeTags(goal.title) || (

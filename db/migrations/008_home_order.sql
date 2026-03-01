@@ -1,6 +1,6 @@
 ALTER TABLE users
-ALTER COLUMN home_order
-SET DEFAULT
+ADD COLUMN home_order
+jsonb DEFAULT
 '[
   {"id":"goals","position":1,"active":true},
   {"id":"day_counter","position":2,"active":true},

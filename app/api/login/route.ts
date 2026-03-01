@@ -31,11 +31,12 @@ export async function POST(req: Request) {
     for (const user of result.rows) {
       const ok = await bcrypt.compare(passphrase, user.password_hash);
       if (ok) {
+        console.log(user.password_hash)
         matchedUser = user;
         break;
       }
     }
-
+    
 
     if (!matchedUser) {
       return NextResponse.json(
