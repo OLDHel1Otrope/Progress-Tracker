@@ -48,7 +48,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
         goals:
             <div
                 key="today-goals"
-                className="relative row-span-2 col-span-2 border rounded-2xl border-stone-900 h-full overflow-hidden"
+                className="relative row-span-2 col-span-2 w-full border rounded-2xl border-stone-900 h-full overflow-hidden"
             >
                 <div
                     className="absolute inset-y-0 left-0  z-0 transition-[width] h-full duration-500  border-t-2 border-stone-700/40 rounded-2xl rounded-tr-none"

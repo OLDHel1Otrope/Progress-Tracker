@@ -214,7 +214,8 @@ export default function TodayGoals({ home = false, setCompletionRate }: { home: 
                 <div
                     className={`flex flex-col items-center justify-center pointer-events-auto ${home ? "w-full" : "w-[900px]"
                         }`}
-                >                    <GoalList
+                >
+                    <GoalList
                         goals={goals}
                         updateGoalText={updateGoalText}
                         updateGoalStatus={updateGoalStatus}
