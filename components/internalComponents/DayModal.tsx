@@ -41,6 +41,11 @@ type Goal = {
   description?: string;
   notes?: string;
   subtasks?: { id: string; title: string; done: boolean }[];
+  index?: number;
+  recurr_id?: string;
+  equadrant?: number;
+  group_name?: string;
+  goal_date?: string;
 };
 
 const getOrdinal = (n: number) => {
@@ -107,7 +112,7 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
     setEditingGoalText(updated);
   };
 
-  const updateGoalStatus = (updated: Goal) => {
+  const updateGoalStatus = (updated: any) => {
     updateGoalMutation.mutate(updated);
   }
 
@@ -174,16 +179,16 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
     if (!goals.length) return;
 
     const oldIndex = goals.findIndex(
-      (g) => g.id === active.id
+      (g: Goal) => g.id === active.id
     );
 
     const newIndex = goals.findIndex(
-      (g) => g.id === over.id
+      (g: Goal) => g.id === over.id
     );
 
     if (oldIndex === -1 || newIndex === -1) return;
 
-    const reordered = arrayMove(goals, oldIndex, newIndex);
+    const reordered: Goal[] = arrayMove(goals, oldIndex, newIndex);
 
     reorderMutation.mutate({
       goal_date: goals[0].goal_date,
@@ -282,7 +287,7 @@ export default function DayModal({ day, month, year, isOpen, onClose }: DayModal
             <div className="w-full min-h-0 overflow-y-auto rounded-xl bg-stone-800/40 p-6">
               {activeGoalId ? (
                 <GoalDetails
-                  goal={goals.find((g) => g.id === activeGoalId)!}
+                  goal={goals.find((g: Goal) => g.id === activeGoalId)!}
                   onUpdate={updateGoalText}
                   isFullscreen={isFullscreen}
                 />

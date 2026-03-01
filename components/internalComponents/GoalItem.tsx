@@ -27,13 +27,17 @@ function removeTags(text: string): string {
 
 
 export interface Goal {
-    recurrence_group_id: any;
+    recurrence_group_id?: any;
     id: string;
     title: string;
     is_completed: boolean;
     description?: string;
     notes?: string;
-    isHome?: boolean;
+    index?: number;
+    recurr_id?: string,
+    equadrant?: number,
+    group_name?: string,
+    goal_date?: string
 }
 
 export default function GoalItem({
@@ -51,6 +55,7 @@ export default function GoalItem({
     updateGoalStatus: (updated: Goal) => void;
     isFullscreen: boolean;
     onFocus: () => void;
+    isHome?: boolean;
     isActive: boolean;
 }) {
     const [expanded, setExpanded] = useState(false);
@@ -215,7 +220,7 @@ export default function GoalItem({
             border border-stone-600
             text-stone-300
             hover:bg-stone-700/60
-            transition flex items-center gap-1
+            flex items-center gap-1
             opacity-0
             group-hover:opacity-100
             transition-all duration-200
@@ -276,7 +281,7 @@ export default function GoalItem({
                                 }}
                                 className="
             px-2 py-[2px] rounded-md text-xs
-            border border-stone-600
+            border-stone-600
             border-2
             text-stone-300 capitalize font-bold
             hover:bg-stone-700/60
@@ -320,7 +325,7 @@ export default function GoalItem({
             border border-stone-600
             text-stone-300
             hover:bg-stone-700/60
-            transition flex items-center gap-1
+            flex items-center gap-1
             opacity-0
             group-hover:opacity-100
             transition-all duration-200
@@ -344,7 +349,7 @@ export default function GoalItem({
                             setExpanded(!expanded);
                         }
                     }}
-                    className="text-stone-400 hover:text-stone-200 transition     opacity-0 
+                    className="text-stone-400 hover:text-stone-200 opacity-0 
     group-hover:opacity-100     transition-all duration-200
     translate-x-1
     group-hover:translate-x-0"
@@ -428,7 +433,7 @@ export default function GoalItem({
                             </MenuItem>
 
                             <MenuItem onClick={() => {
-                                const nextDay = new Date(goal.goal_date);
+                                const nextDay = new Date(goal.goal_date || "");
                                 nextDay.setDate(nextDay.getDate() + 1);
                                 updateGoalStatus({
                                     ...goal,

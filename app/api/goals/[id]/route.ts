@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   const client = await db.connect();
 
   try {
-    const { id: goalId } = await params;
+    const { id: goalId } = await context.params;
 
     if (!goalId) {
       return NextResponse.json(
@@ -50,15 +50,15 @@ export async function PATCH(
 
 
     let newPosition = position;
-    let newEPosition=eposition;
-    
+    let newEPosition = eposition;
+
     if (goal_date !== oldGoalDate) {
       const newp = await client.query(
         `SELECT COUNT(*) FROM goals WHERE goal_date = $1`,
         [dateToStore]
       );
       //NEWP IS THE NEW POSITION OF THE NOTE, IF IT IS MOVED TO A DIFFERENT DATE, HENCE EQUATE IT TO newPosition
-      newPosition=newp.rows[0].count
+      newPosition = newp.rows[0].count
 
     }
 
@@ -67,7 +67,7 @@ export async function PATCH(
         `SELECT COUNT(*) FROM goals WHERE goal_date = $1 AND equadrant= $2`,
         [dateToStore, equadrant]
       );
-      newEPosition=newP.rows[0].count
+      newEPosition = newP.rows[0].count
     }
 
 
@@ -142,14 +142,13 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  req: Request,
-  context: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   let client;
   try {
     client = await db.connect();
-    const params = await context.params;
-    const dayGoalId = params?.id;
+    const { id: dayGoalId } = await context.params;
 
     if (!dayGoalId) {
       return NextResponse.json(

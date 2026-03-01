@@ -66,7 +66,7 @@ export default function EisenhowerMatrix({ goalsUC }: { goalsUC: any[] }) {
                     );
 
                     return old.map(goal => {
-                        const update = updatesMap.get(goal.id);
+                        const update = updatesMap.get(goal.id as any);
                         if (update) {
                             return { ...goal, ...update };
                         }

@@ -12,14 +12,14 @@ import {
     verticalListSortingStrategy,
     arrayMove,
 } from "@dnd-kit/sortable";
-import GoalItem from "./GoalItem";
+import GoalItem, { Goal } from "./GoalItem";
 import { Plus } from "lucide-react";
 import RecurrenceModal from "./RecurrenceModal";
 import { useState } from "react";
 
 interface GoalListProps {
     goals: any[];
-    updateGoal: (id: string, updates: any) => void;
+    // updateGoal: (id: string, updates: any) => void;
     isFullscreen: boolean;
     activeGoalId: string | null;
     setActiveGoalId: (id: string) => void;
@@ -28,6 +28,8 @@ interface GoalListProps {
     handleDragEnd: (event: any) => void;
     addGoal: (goal: string) => void;
     isHome?: boolean;
+    updateGoalText: (updated: Goal) => void;
+    updateGoalStatus: (updated: Goal) => void;
 }
 
 

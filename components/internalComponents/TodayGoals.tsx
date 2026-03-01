@@ -32,7 +32,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { reorderDayGoals } from "@/lib/api/reorder";
 import EisenhowerMatrix from "./EisenhowerMatrix";
 
-export default function TodayGoals({ home = false, setCompletionRate }: { home: boolean, setCompletionRate: Dispatch<SetStateAction<number>> }) {
+export default function TodayGoals({ home = false, setCompletionRate }: { home: boolean, setCompletionRate?: Dispatch<SetStateAction<number>> }) {
 
     const [eisenHower, setEisenHower] = useState(false)
 
@@ -159,7 +159,7 @@ export default function TodayGoals({ home = false, setCompletionRate }: { home: 
         const reordered = arrayMove(goals, oldIndex, newIndex);
 
         reorderMutation.mutate({
-            goal_date: goals[0].goal_date,
+            goal_date: goals[0].goal_date || "",
             ordered: reordered,
         });
     };
