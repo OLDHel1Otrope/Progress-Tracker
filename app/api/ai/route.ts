@@ -14,8 +14,8 @@ Rules:
 - Do NOT add or remove array items
 - Do NOT add extra text, markdown, or code fences
 - Return raw JSON only
-- Title: max 15 words
-- Description: 1–2 or more actionable sentences
+- Title: max 20 words
+- Description: multiple detailed actionable sentences
 - If there are existing title and descriptions, replace them with newer ones according to the user intent
 
 User intent:
