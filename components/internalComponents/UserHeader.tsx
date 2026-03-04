@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { CircleUserRound, Earth, Focus, Link, LogOut, ScanFace, User } from "lucide-react";
 import { useAuth } from "@/contexts/authContext";
 
-export default function UserMenu() {
+export default function UserMenu({ active }: { active: boolean }) {
     const [open, setOpen] = useState(false);
     const [pass, setPass] = useState("");
     const [error, setError] = useState("");
@@ -30,6 +30,8 @@ export default function UserMenu() {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    if(active) return null
 
     return (
         <div

@@ -8,6 +8,7 @@ import CenteredGrid from "@/components/internalComponents/CenterGrid";
 import UserHeader from "@/components/internalComponents/UserHeader";
 import { useAuth } from "@/contexts/authContext";
 import { SettingsPane } from "@/components/SettingsPane";
+import GoalPane from "@/components/GoalPane";
 
 const prevPs = [
   { title: "Today", color: "#2a2a2af1" },
@@ -104,10 +105,16 @@ export default function Home() {
                 <NotesPane />
               </div>
             )}
+
+            {p.title == "Goals" && (
+              <div className="flex flex-row justify-center min-h-0 h-full flex-1  ml-32 px-32 pointer-events-auto">
+                {/* <GoalPane /> */}
+              </div>
+            )}
           </>
         </PageContainer>
       ))}
-      <UserHeader />
+      <UserHeader active={!!active} />
       {(!active || user?.focus_mode) && loggedIn && (
         <>
           <CenteredGrid images={images} />

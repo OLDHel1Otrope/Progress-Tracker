@@ -12,6 +12,7 @@ interface RichTextEditorProps {
   onChange?: (html: string) => void;
   placeholder?: string;
   minimal?: boolean,
+  isPane?: boolean
 }
 
 export default function RichTextEditor({
@@ -19,6 +20,7 @@ export default function RichTextEditor({
   onChange,
   placeholder = "Write something…",
   minimal = false,
+  isPane = false
 }: RichTextEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
@@ -136,7 +138,7 @@ export default function RichTextEditor({
 
       <EditorContent
         editor={editor}
-        className="min-h-[60px] text-base"
+        className={`${!isPane?"min-h-[60px]":"text-sm"} text-base`}
       />
 
       {!editor.getText() && (

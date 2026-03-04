@@ -13,7 +13,7 @@ import { useDeleteGoal } from "@/hooks/useDeleteGoal";
 import { AddRecurrenceModal } from "../AddRecurrenceModal";
 
 
-function extractTags(text: string): string[] {
+export function extractTags(text: string): string[] {
     return Array.from(
         new Set(
             text.match(/#[a-zA-Z0-9_]+/g)?.map(t => t.slice(1)) ?? []
@@ -21,7 +21,7 @@ function extractTags(text: string): string[] {
     );
 }
 
-function removeTags(text: string): string {
+export function removeTags(text: string): string {
     return text.replace(/#[a-zA-Z0-9_]+/g, "").replace(/\s+/g, " ").trim();
 }
 

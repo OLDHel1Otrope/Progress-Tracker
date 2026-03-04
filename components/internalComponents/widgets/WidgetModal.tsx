@@ -8,7 +8,7 @@ interface WidgetModalProps {
     isOpen: boolean;
     onClose: () => void;
     children: React.ReactNode,
-    title: string,
+    title: string | React.ReactNode,
     hideFooter?: boolean
 }
 
@@ -69,7 +69,7 @@ export const WidgetModal = ({
 
                 {/* Footer */}
                 {!hideFooter && <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-stone-700/30 bg-stone-800/40">
-                    <button
+                    {/* <button
                         onClick={onClose}
                         className="
                             px-5 py-2 rounded-xl
@@ -79,10 +79,10 @@ export const WidgetModal = ({
                         "
                     >
                         Cancel
-                    </button>
+                    </button> */}
 
                     <button
-                        onClick={() => { }}
+                        onClick={() => { onClose()}}
                         disabled={false}
                         className="
                             px-6 py-2 rounded-xl

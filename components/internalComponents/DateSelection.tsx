@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -42,13 +42,14 @@ function getCalendarDays(month: number, year: number) {
 interface DateSelectionProps {
   selectedDates: Date[];
   onDateToggle: (date: Date) => void;
+  selectTwo?: boolean
 }
 
-export default function DateSelection({ selectedDates, onDateToggle }: DateSelectionProps) {
+export default function DateSelection({ selectedDates, onDateToggle, selectTwo = false }: DateSelectionProps) {
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
-  console.log({selectedDates})
+  console.log({ selectedDates })
 
   const calendarDays = getCalendarDays(month, year);
 
@@ -67,6 +68,15 @@ export default function DateSelection({ selectedDates, onDateToggle }: DateSelec
     const dateStr = date.toISOString().split('T')[0];
     return selectedDates.some(d => d.toISOString().split('T')[0] === dateStr);
   };
+
+  const isDateBetween = useCallback((date: Date) => {
+    if (selectedDates.length < 2 || !selectedDates[1]) return false;
+    const d = date.getTime();
+    const [start, end] = [selectedDates[0], selectedDates[1]].sort((a, b) => a.getTime() - b.getTime());
+    let k = d > start.getTime() && d < end.getTime();
+    console.log(k)
+    return k
+  }, [selectedDates]);
 
   const isToday = (date: Date) => {
     const todayStr = today.toISOString().split('T')[0];
@@ -147,9 +157,10 @@ export default function DateSelection({ selectedDates, onDateToggle }: DateSelec
                     ? "bg-stone-200 text-stone-900 shadow-md hover:bg-stone-100 scale-105 border-2 border-stone-300"
                     : today
                       ? "bg-stone-700/60 text-stone-200 border border-stone-500 hover:bg-stone-600/60"
-                      : "bg-stone-800/40 text-stone-400 hover:bg-stone-700/60 hover:text-stone-200 border border-stone-700/30"
+                      : selectTwo && isDateBetween(day.date) ? "bg-stone-700/90" :
+                        "bg-stone-800/40 text-stone-400 hover:bg-stone-700/60 hover:text-stone-200 border border-stone-700/30"
                 }
-              `}
+                `}
             >
               {/* Glow effect for selected dates */}
               {selected && (
