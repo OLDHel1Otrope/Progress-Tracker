@@ -32,7 +32,7 @@ export default function GoalDetails({
         <RichTextEditor
           isPane
           value={goal.description || ""}
-          placeholder="What is this goal about?"
+          placeholder={"What is this goal about?"}
           onChange={(value) =>
             onUpdate({ ...goal, description: value })
           }

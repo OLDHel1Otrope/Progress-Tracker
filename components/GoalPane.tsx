@@ -254,7 +254,7 @@ export default function GoalPane() {
     const hookResponse = useGoals()
 
 
-    console.log("groupedGoals",hookResponse.groupedGoals)
+    console.log("groupedGoals", hookResponse.groupedGoals)
 
 
     useEffect(() => {//get all the details from from url 
@@ -382,36 +382,67 @@ export default function GoalPane() {
                 </div>
             </div>
             <div className="flex h-full flex-col  overflow-y-scroll gap-1">
-                {hookResponse?.groupedGoals.map(d => (
-                    <div key={`${d.month}-${d.year}`} className="w-full flex flex-row group">
-
-                        {/* Month label */}
+                {hookResponse?.groupedGoals.map(mw => (
+                    <div key={`${mw.title}`} className="w-full flex flex-row border rounded-2xl border-stone-800/40 "
+                    >
                         <div
-                            className="flex items-end justify-end shrink-0 w-9 px-2 py-4 tracking-widest rounded-r-2xl"
+                            className="sticky top-0 self-start flex items-end justify-end shrink-0 w-9 px-2 py-4 tracking-widest  h-fit "
                             style={{
                                 writingMode: "vertical-rl",
                                 transform: "rotate(180deg)",
-                                background: "linear-gradient(to top, #0c0a0a, #0a0a0a )",
-                                borderRight: "1px solid rgba(255,255,255,0.04)",
-                                borderTop: "1px solid rgba(255,255,255,0.04)",
-                                borderBottom: "1px solid rgba(255,255,255,0.04)",
                             }}
                         >
-                            <span className="text-xs font-mono font-medium"
-                                style={{ color: "#4e4e4e", letterSpacing: "0.18em" }}>
-                                {monthName(d.month)} {d.year}
+                            <span
+                                className="text-xs font-mono font-medium text-stone-600"
+                                style={{letterSpacing: "0.18em" }}
+                            >
+                                {mw.title.toUpperCase()}
                             </span>
                         </div>
 
                         {/* Goals */}
-                        <div className="flex flex-col w-full gap-0.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
-                            {d.goals.map(g => (
-                                <GoalItem2
-                                    key={g.id}
-                                    goal={g}
-                                    updateGoalText={updateGoalText}
-                                    updateGoalStatus={updateGoalStatus}
-                                />
+                        <div className="flex flex-col w-full pt-0.5 pb-0.5 gap-0.5" >
+                            {mw.days.map(d => (
+                                <div key={`${d.date}`} className="w-full flex flex-row border rounded-2xl border-stone-800/40 "
+                                >
+
+
+
+                                    <div
+                                        className="sticky top-0 self-start flex items-end justify-end shrink-0 w-12 px-2 py-4 tracking-widest  h-fit "
+                                        style={{
+                                            writingMode: "vertical-rl",
+                                            transform: "rotate(180deg)",
+                                        }}
+                                    >
+                                        <div className="flex flex-col">
+
+                                            <div
+                                                className="text-xs font-mono font-medium text-end text-stone-600"
+                                                style={{letterSpacing: "0.18em" }}
+                                            >
+                                                {d.day.toUpperCase()}
+                                            </div>
+                                            <span
+                                                className="text-xs font-mono font-medium text-stone-600"
+                                                style={{letterSpacing: "0.18em" }}
+                                            >
+                                             {d.date}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className=" flex flex-col w-full gap-0.5 pt-0.5 pb-0.5"
+                                    >
+                                        {d.goals.map(g =>
+                                            <GoalItem2
+                                                key={g.id}
+                                                goal={g}
+                                                updateGoalText={updateGoalText}
+                                                updateGoalStatus={updateGoalStatus}
+                                            />
+                                        )}
+                                    </div>
+                                </div>
                             ))}
                         </div>
 
@@ -432,6 +463,7 @@ const GoalItem2 = ({
     updateGoalText: (updated: Goal) => void;
     updateGoalStatus: (updated: Goal) => void;
 }) => {
+    const [expanded, setExpanded] = useState(!!goal.description);
     const [editing, setEditing] = useState(false);
     const [showAddRecurrenceModal, setShowAddRecurrenceModal] = useState<string | null>(null); //this holds goal's id
     const [localTitle, setLocalTitle] = useState(goal.title)
@@ -474,9 +506,9 @@ const GoalItem2 = ({
     group p-3
     flex flex-col
     transition-colors duration-200
-    ${goal.index === 0 ? "rounded-t-xl" : ""}
+    border rounded-md border-stone-800/40
     ${goal.is_completed
-                    ? "bg-stone-800/30"
+                    ? "bg-stone-900/0"
                     : "bg-[#0c0a0a]"
                 }
   `}
@@ -489,10 +521,10 @@ const GoalItem2 = ({
                     }
                     }
                     className={`
-            w-3 h-3 rounded-[4px] border flex items-center justify-center
+            w-3 h-3 mt-1 rounded-[4px] border flex items-center justify-center
             transition-all duration-200
             ${goal.is_completed
-                            ? "bg-blue-600 border-blue-600"
+                            ? "bg-stone-600 border-stone-600"
                             : "border-stone-500 hover:border-stone-300"
                         }
         `}
@@ -643,13 +675,55 @@ const GoalItem2 = ({
                         </div>
                     )}
                 </div>
+                <button
+                    ref={ellipsisRef}
+                    onClick={(e) => {
+                        e.stopPropagation();
+
+                        const rect = e.currentTarget.getBoundingClientRect();
+
+                        setMenuPos({
+                            top: rect.top - 10,
+                            left: rect.left - 120,
+                        });
+
+                        setShowMenu(prev => !prev);
+                    }}
+                    className=" text-stone-400 hover:text-stone-200 opacity-0 
+    group-hover:opacity-100     transition-all duration-200
+    translate-x-1
+    group-hover:translate-x-0 "
+                >
+                    <Ellipsis color="#666666" />
+                </button>
+                <button
+                    onClick={() => {
+                        setExpanded(!expanded);
+                    }}
+                    className="text-stone-400 hover:text-stone-200 opacity-0 
+    group-hover:opacity-100     transition-all duration-200
+    translate-x-1
+    group-hover:translate-x-0 "
+                >
+                    <ChevronRight
+                        color="#666666"
+                        size={16}
+                        className={`transition-transform duration-200
+              ${expanded ? "rotate-90" : ""}
+            `}
+                    />
+                </button>
             </div>
+
 
             {/* Expanded section */}
             <div
-                className={` mx-7
+                className={`
+    mx-7
     overflow-hidden
-    transition-[max-height,opacity,margin-top] duration-300 ease-out `}
+    transition-[max-height,opacity,margin-top] duration-300 ease-out
+    ${expanded ? "max-h-96 opacity-100 mt-3" : "max-h-0 opacity-0 mt-0"}
+  `}
             >
                 <GoalDetails
                     isPane
@@ -661,7 +735,7 @@ const GoalItem2 = ({
             <div className="flex justify-end mt-0">
 
                 {/* Ellipsis Button */}
-                <button
+                {/* <button
                     ref={ellipsisRef}
                     onClick={(e) => {
                         e.stopPropagation();
@@ -678,7 +752,7 @@ const GoalItem2 = ({
                     className=" rounded hover:bg-stone-700/50 transition"
                 >
                     <Ellipsis color="#666666" />
-                </button>
+                </button> */}
                 {/* Floating Menu (Portal-like) */}
                 {showMenu && (
                     <div

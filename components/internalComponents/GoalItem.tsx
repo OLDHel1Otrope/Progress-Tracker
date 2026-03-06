@@ -169,7 +169,7 @@ export default function GoalItem({
             w-4 h-4 rounded-[4px] border flex items-center justify-center
             transition-all duration-200
             ${goalCompleted
-                            ? "bg-blue-600 border-blue-600"
+                            ? "bg-stone-600 border-stone-600"
                             : "border-stone-500 hover:border-stone-300"
                         }
         `}

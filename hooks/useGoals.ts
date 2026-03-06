@@ -41,65 +41,109 @@ export function useGoals() {
 
     const groupedGoals = useMemo(() => {
         if (!query.data) return [];
+
         const goals = query.data;
 
+        const formatDate = (d: Date) => {
+            const dd = String(d.getDate()).padStart(2, "0");
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const yyyy = d.getFullYear();
+            return `${dd}-${mm}-${yyyy}`;
+        };
+
+        const getDay = (d: Date) =>
+            d.toLocaleString("en-US", { weekday: "long" });
+
         if (group === "monthly") {
-            const map = new Map<string, { month: string; year: string; goals: Goal[] }>();
-
-            for (const goal of goals) {
-                const date = new Date(goal.goal_date);
-                const month = String(date.getMonth() + 1).padStart(2, "0");
-                const year = String(date.getFullYear());
-
-                const key = `${year}-${month}`;
-
-                if (!map.has(key)) {
-                    map.set(key, { month, year, goals: [] });
-                }
-
-                map.get(key)!.goals.push(goal);
-            }
-            // console.log("grouped data",Array.from(map.values()))
-            return Array.from(map.values());
-        }
-
-        if (group === "weekly") {
-            const weeks: Record<string, any> = {};
+            const map = new Map<
+                string,
+                { title: string; days: { date: string; day: string; goals: Goal[] }[] }
+            >();
 
             for (const goal of goals) {
                 if (!goal.goal_date) continue;
 
                 const d = new Date(goal.goal_date);
+                const year = d.getFullYear();
+                const month = d.getMonth();
 
-                if (isNaN(d.getTime())) continue; // invalid date protection
+                const key = `${year}-${month}`;
+
+                const title = d.toLocaleString("en-US", {
+                    month: "long",
+                    year: "numeric"
+                });
+
+                const date = formatDate(d);
+                const day = getDay(d);
+
+                if (!map.has(key)) {
+                    map.set(key, { title, days: [] });
+                }
+
+                const group = map.get(key)!;
+
+                let dayObj = group.days.find((x) => x.date === date);
+
+                if (!dayObj) {
+                    dayObj = { date, day, goals: [] };
+                    group.days.push(dayObj);
+                }
+
+                dayObj.goals.push(goal);
+            }
+
+            return Array.from(map.values());
+        }
+
+        if (group === "weekly") {
+            const weeks = new Map<
+                string,
+                { title: string; days: { date: string; day: string; goals: Goal[] }[] }
+            >();
+
+            for (const goal of goals) {
+                if (!goal.goal_date) continue;
+
+                const d = new Date(goal.goal_date);
+                if (isNaN(d.getTime())) continue;
 
                 const dayIndex = (d.getDay() + 6) % 7;
 
                 const monday = new Date(d);
                 monday.setDate(d.getDate() - dayIndex);
 
+                const sunday = new Date(monday);
+                sunday.setDate(monday.getDate() + 6);
+
                 const weekKey = monday.toISOString().slice(0, 10);
 
-                if (!weeks[weekKey]) {
-                    weeks[weekKey] = Array.from({ length: 7 }, (_, i) => {
-                        const date = new Date(monday);
-                        date.setDate(monday.getDate() + i);
+                if (!weeks.has(weekKey)) {
+                    const title = `${formatDate(monday)} - ${formatDate(sunday)}`;
+
+                    const days = Array.from({ length: 7 }, (_, i) => {
+                        const dateObj = new Date(monday);
+                        dateObj.setDate(monday.getDate() + i);
 
                         return {
-                            date: date.toISOString().slice(0, 10),
+                            date: formatDate(dateObj),
+                            day: getDay(dateObj),
                             goals: []
                         };
                     });
+
+                    weeks.set(weekKey, { title, days });
                 }
 
-                weeks[weekKey][dayIndex].goals.push(goal);
+                const week = weeks.get(weekKey)!;
+
+                week.days[dayIndex].goals.push(goal);
             }
 
-            return Object.values(weeks);
+            return Array.from(weeks.values());
         }
 
-        return goals;
-
+        return [];
     }, [query.data, group]);
 
     return {

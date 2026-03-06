@@ -40,7 +40,7 @@ export async function GET(req: Request) {
         const additionalConditions: string[] = []
         const additionalValues: any[] = []
 
-        additionalConditions.push(`AND user_id = $${values.length + 1} `)
+        additionalConditions.push(`AND g.user_id = $${values.length + 1} `)
         values.push(user.id)
 
         console.log(query + additionalConditions[0] + " ORDER BY goal_date ASC")
@@ -135,7 +135,7 @@ export function buildGoalsQuery(params: {
     const filters: Record<string, () => void> = {
 
         priority: () => {
-            conditions.push(`equadrant = 1`)
+            conditions.push(`equadrant = 0`)
         },
 
         completed: () => {
@@ -158,8 +158,8 @@ export function buildGoalsQuery(params: {
 
     if (params.search) {
         conditions.push(`(
-      goal ILIKE $${i}
-      OR description ILIKE $${i}
+      g.title ILIKE $${i}
+      OR g.base_description ILIKE $${i}
     )`)
         values.push(`%${params.search}%`)
         i++
