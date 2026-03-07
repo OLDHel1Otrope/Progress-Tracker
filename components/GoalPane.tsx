@@ -11,6 +11,8 @@ import { WidgetModal } from "./internalComponents/widgets/WidgetModal";
 import DateSelection from "./internalComponents/DateSelection";
 import { getRecurrance } from "@/lib/api/recurrance";
 import { useGoals } from "@/hooks/useGoals";
+import { useDebounce } from "@/hooks/useDebounce";
+import { GoalsShimmer } from "./internalComponents/GoalsPaneShimmer";
 
 const group = ["monthly", "weekly"]
 const type = ["all", "priority", "completed", "incomplete", "recurrence"]
@@ -162,8 +164,12 @@ export default function GoalPane() {
     const [showDateModal, setShowDateModal] = useState(false)
     const [duration, setDuration] = useState("between")
 
-
     const [editingGoalText, setEditingGoalText] = useState<Goal | null>(null);
+    const debouncedGoal = useDebounce(editingGoalText, 600);
+
+    const targetRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
 
     const userRecurranceTags = useQuery({
         queryKey: ["recurranceTypes"],
@@ -235,21 +241,21 @@ export default function GoalPane() {
 
     const updateGoalMutation = useMutation({
         mutationFn: updateGoalApi,
-
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["goals", "today"],
-            });
-        },
     });
 
     const updateGoalText = (updated: Goal) => {
         setEditingGoalText(updated);
     };
 
-    const updateGoalStatus = (updated: Goal) => {
-        // updateGoalMutation.mutate(updated);
+    const updateGoalStatus = (updated: any) => {
+        updateGoalMutation.mutate(updated);
     }
+
+    useEffect(() => {
+        if (!debouncedGoal) return;
+
+        updateGoalMutation.mutate(debouncedGoal);
+    }, [debouncedGoal]);
 
     const hookResponse = useGoals()
 
@@ -257,9 +263,17 @@ export default function GoalPane() {
     console.log("groupedGoals", hookResponse.groupedGoals)
 
 
-    useEffect(() => {//get all the details from from url 
-
-    }, [])
+    useEffect(() => {
+        const container = containerRef.current;
+        const target = targetRef.current;
+        if (!container || !target) return;
+        const containerRect = container.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        container.scrollTo({
+            top: targetRect.bottom,
+            behavior: "smooth"
+        });
+    }, [hookResponse.groupedGoals]);
 
     return (
         <div className="flex flex-col gap-0 w-full h-full">
@@ -381,74 +395,74 @@ export default function GoalPane() {
                     </div>
                 </div>
             </div>
-            <div className="flex h-full flex-col  overflow-y-scroll gap-1">
-                {hookResponse?.groupedGoals.map(mw => (
-                    <div key={`${mw.title}`} className="w-full flex flex-row border rounded-2xl border-stone-800/40 "
-                    >
-                        <div
-                            className="sticky top-0 self-start flex items-end justify-end shrink-0 w-9 px-2 py-4 tracking-widest  h-fit "
-                            style={{
-                                writingMode: "vertical-rl",
-                                transform: "rotate(180deg)",
-                            }}
-                        >
-                            <span
-                                className="text-xs font-mono font-medium text-stone-600"
-                                style={{letterSpacing: "0.18em" }}
+            {hookResponse.isLoading ? <GoalsShimmer /> :
+                <div className="flex h-full flex-col overflow-y-scroll gap-2 py-2"
+                    ref={containerRef}
+                >
+                    {hookResponse?.groupedGoals.map(mw => (
+                        <div key={mw.title} className="w-full flex flex-row bor"
+                            style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+
+                            <div
+                                className="sticky top-0 self-start flex items-end justify-end shrink-0 w-7 py-4 h-fit"
+                                style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
                             >
-                                {mw.title.toUpperCase()}
-                            </span>
-                        </div>
+                                <span className="text-xs font-mono font-medium"
+                                    style={{ letterSpacing: "0.2em", color: "#252525" }}>
+                                    {mw.title.toUpperCase()}
+                                </span>
+                            </div>
 
-                        {/* Goals */}
-                        <div className="flex flex-col w-full pt-0.5 pb-0.5 gap-0.5" >
-                            {mw.days.map(d => (
-                                <div key={`${d.date}`} className="w-full flex flex-row border rounded-2xl border-stone-800/40 "
-                                >
+                            <div className="flex flex-col w-full gap-1 py-1">
+                                {mw.days.map(d => {
+                                    const today = isToday(d.date)
 
 
-
-                                    <div
-                                        className="sticky top-0 self-start flex items-end justify-end shrink-0 w-12 px-2 py-4 tracking-widest  h-fit "
-                                        style={{
-                                            writingMode: "vertical-rl",
-                                            transform: "rotate(180deg)",
-                                        }}
-                                    >
-                                        <div className="flex flex-col">
-
-                                            <div
-                                                className="text-xs font-mono font-medium text-end text-stone-600"
-                                                style={{letterSpacing: "0.18em" }}
-                                            >
-                                                {d.day.toUpperCase()}
+                                    return <div
+                                        key={d.date}
+                                        className={`w-full flex flex-row pr-px ${today ? "border rounded-lg border-stone-700" : ""}`}
+                                        ref={today ? targetRef : null}>
+                                        <div
+                                            className="sticky top-0 self-start flex items-end justify-end shrink-0 w-10 py-3 h-fit pb-4 pl-1"
+                                            style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+                                        >
+                                            <div className="flex flex-col items-end gap-0.5 ">
+                                                <span className="font-mono font-semibold"
+                                                    style={{ fontSize: 9, letterSpacing: "0.18em", color: "#333" }}>
+                                                    {d.day.toUpperCase()}
+                                                </span>
+                                                <span className="font-mono"
+                                                    style={{ fontSize: 9, letterSpacing: "0.12em", color: "#333" }}>
+                                                    {d.date}
+                                                </span>
                                             </div>
-                                            <span
-                                                className="text-xs font-mono font-medium text-stone-600"
-                                                style={{letterSpacing: "0.18em" }}
-                                            >
-                                             {d.date}
-                                            </span>
+                                        </div>
+
+                                        <div className="flex flex-col w-full gap-px py-px">
+                                            {d.goals.map((g, i) => {
+                                                const top = i == 0;
+                                                const bottom = i == d.goals.length - 1
+
+                                                return <GoalItem2
+                                                    top={top}
+                                                    bottom={bottom}
+                                                    key={g.id}
+                                                    goal={g}
+                                                    updateGoalText={updateGoalText}
+                                                    updateGoalStatus={updateGoalStatus}
+                                                />
+                                            }
+                                            )}
                                         </div>
                                     </div>
-                                    <div className=" flex flex-col w-full gap-0.5 pt-0.5 pb-0.5"
-                                    >
-                                        {d.goals.map(g =>
-                                            <GoalItem2
-                                                key={g.id}
-                                                goal={g}
-                                                updateGoalText={updateGoalText}
-                                                updateGoalStatus={updateGoalStatus}
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                                }
+                                )}
+                            </div>
 
-                    </div>
-                ))}
-            </div>
+                        </div>
+                    ))}
+                </div>
+            }
         </div >
     )
 }
@@ -458,15 +472,20 @@ const GoalItem2 = ({
     goal,
     updateGoalText,
     updateGoalStatus,
+    top,
+    bottom
 }: {
     goal: Goal;
     updateGoalText: (updated: Goal) => void;
     updateGoalStatus: (updated: Goal) => void;
+    top: boolean,
+    bottom: boolean
 }) => {
     const [expanded, setExpanded] = useState(!!goal.description);
     const [editing, setEditing] = useState(false);
-    const [showAddRecurrenceModal, setShowAddRecurrenceModal] = useState<string | null>(null); //this holds goal's id
+    const [showAddRecurrenceModal, setShowAddRecurrenceModal] = useState<string | null>(null);
     const [localTitle, setLocalTitle] = useState(goal.title)
+    const [localComplete, setLocalComplete] = useState(goal.is_completed)
     const [showMenu, setShowMenu] = useState(false);
     const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
 
@@ -475,9 +494,9 @@ const GoalItem2 = ({
 
     const deleteGoalMutation = useDeleteGoal();
 
-    useEffect(() => {
-        setLocalTitle(goal.title);
-    }, [goal.title])
+    // useEffect(() => {
+    //     setLocalTitle(goal.title);
+    // }, [goal.title])
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
@@ -506,8 +525,11 @@ const GoalItem2 = ({
     group p-3
     flex flex-col
     transition-colors duration-200
-    border rounded-md border-stone-800/40
-    ${goal.is_completed
+    border border-stone-800/40
+    ${top ? "rounded-t-md" : ""}
+    ${bottom ? "rounded-b-md" : ""}
+
+    ${localComplete
                     ? "bg-stone-900/0"
                     : "bg-[#0c0a0a]"
                 }
@@ -517,19 +539,20 @@ const GoalItem2 = ({
 
                 <button
                     onClick={async () => {
+                        setLocalComplete(p => !p)
                         updateGoalStatus({ ...goal, is_completed: !goal.is_completed })
                     }
                     }
                     className={`
             w-3 h-3 mt-1 rounded-[4px] border flex items-center justify-center
             transition-all duration-200
-            ${goal.is_completed
+            ${localComplete
                             ? "bg-stone-600 border-stone-600"
                             : "border-stone-500 hover:border-stone-300"
                         }
         `}
                 >
-                    {goal.is_completed && (
+                    {localComplete && (
                         <svg
                             viewBox="0 0 24 24"
                             className="w-2 h-2 text-white"
@@ -560,17 +583,17 @@ const GoalItem2 = ({
                             }}
                             onBlur={() => setEditing(false)}
                             className={`w-full bg-transparent focus:outline-none font-bold
-        ${goal.is_completed ? "line-through text-stone-500" : " text-stone-300"}
+        ${localComplete ? "line-through text-stone-500" : " text-stone-300"}
       `}
                         />
                     ) : (
                         <div
                             onClick={() => setEditing(true)}
                             className={`font-bold cursor-text flex flex-row gap-2
-        ${goal.is_completed ? "line-through text-stone-500" : "text-stone-300"}
+        ${localComplete ? "line-through text-stone-500" : "text-stone-300"}
       `}
                         >
-                            {removeTags(goal.title) || (
+                            {removeTags(localTitle) || (
                                 <span className="text-stone-500">Untitled</span>
                             )}
 
@@ -721,7 +744,7 @@ const GoalItem2 = ({
                 className={`
     mx-7
     overflow-hidden
-    transition-[max-height,opacity,margin-top] duration-300 ease-out
+    transition-[max-height,opacity,margin-top] duration-300 ease-out mb-1
     ${expanded ? "max-h-96 opacity-100 mt-3" : "max-h-0 opacity-0 mt-0"}
   `}
             >
@@ -733,27 +756,6 @@ const GoalItem2 = ({
                 />
             </div>
             <div className="flex justify-end mt-0">
-
-                {/* Ellipsis Button */}
-                {/* <button
-                    ref={ellipsisRef}
-                    onClick={(e) => {
-                        e.stopPropagation();
-
-                        const rect = e.currentTarget.getBoundingClientRect();
-
-                        setMenuPos({
-                            top: rect.top - 10,
-                            left: rect.left - 120,
-                        });
-
-                        setShowMenu(prev => !prev);
-                    }}
-                    className=" rounded hover:bg-stone-700/50 transition"
-                >
-                    <Ellipsis color="#666666" />
-                </button> */}
-                {/* Floating Menu (Portal-like) */}
                 {showMenu && (
                     <div
                         ref={menuRef}
@@ -816,3 +818,16 @@ const monthName = (num: number) => ([
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ])[num - 1].toUpperCase()
+
+function isToday(dateStr: string) {
+    const [day, month, year] = dateStr.split("-").map(Number);
+
+    const inputDate = new Date(year, month - 1, day);
+    const today = new Date();
+
+    return (
+        inputDate.getFullYear() === today.getFullYear() &&
+        inputDate.getMonth() === today.getMonth() &&
+        inputDate.getDate() === today.getDate()
+    );
+}
