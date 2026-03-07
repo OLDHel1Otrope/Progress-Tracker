@@ -107,7 +107,7 @@ export default function Home() {
             )}
 
             {p.title == "Goals" && (
-              <div className="flex flex-row justify-center min-h-0 h-full flex-1  ml-32 px-20 pointer-events-auto">
+              <div className="flex flex-row justify-center min-h-0 h-full flex-1  ml-24 px-20 pointer-events-auto">
                 <GoalPane />
               </div>
             )}
