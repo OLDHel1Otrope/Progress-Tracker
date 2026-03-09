@@ -31,7 +31,7 @@ export default function UserMenu({ active }: { active: boolean }) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    if(active) return null
+    if (active) return null
 
     return (
         <div
@@ -112,7 +112,10 @@ export default function UserMenu({ active }: { active: boolean }) {
                     <button
                         className="w-full flex items-center gap-2 px-4 py-3 text-left
               text-red-400 hover:bg-red-500/10 transition"
-                        onClick={() => logout()}
+                        onClick={() => {
+                            logout()
+                            setOpen(false)
+                        }}
                     >
                         <LogOut size={16} />
                         Logout
