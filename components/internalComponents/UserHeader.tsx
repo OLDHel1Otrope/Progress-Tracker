@@ -57,7 +57,7 @@ export default function UserMenu({ active }: { active: boolean }) {
                     <div className="mr-2 italic font-light text-stone-400 flex flex-row gap-4 items-center">
                         <ScanFace strokeWidth={2.5} className="h-8 w-8 text-stone-400" />
                         <form onSubmit={handleSubmit}>
-                            <input type="text" value={pass} onChange={(e) => setPass(e.target.value)} placeholder="Enter passphrase" className="bg-transparent text-xl w-80  border-none outline-none text-stone-200 italic" />
+                            <input type="password" value={pass} onChange={(e) => setPass(e.target.value)} placeholder="Enter passphrase" className="bg-transparent text-xl w-80  border-none outline-none text-stone-200 italic" />
                         </form>
                         {error && <p className="text-xs text-red-400">{error}</p>}
                     </div>
