@@ -101,6 +101,15 @@ export const PomodoroTimer = () => {
 
     const progress = !pomodoroMode ? 100 : (time / totalTimeRef.current) * 100;
 
+    useEffect(() => {
+        if (isRunning) {
+            const timeStr = `${String(displayMinutes).padStart(2, '0')}:${String(displaySeconds).padStart(2, '0')}`;
+            document.title = `${timeStr}`;
+        } else {
+            document.title = 'Progress Tracker';
+        }
+    }, [isRunning, displayMinutes, displaySeconds, pomodoroMode]);
+
     return (
         <div className="relative w-full h-48 rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.6)] border border-stone-700/30">
             <div className="absolute inset-0">
