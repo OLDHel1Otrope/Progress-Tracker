@@ -20,6 +20,7 @@ export async function POST(req: Request) {
     `);
 
     if (result.rowCount === 0) {
+      console.log("no user found")
       return NextResponse.json(
         { error: "No user found" },
         { status: 401 }
@@ -28,8 +29,11 @@ export async function POST(req: Request) {
 
     let matchedUser = null;
 
+    console.log(result.rows)
+
     for (const user of result.rows) {
       const ok = await bcrypt.compare(passphrase, user.password_hash);
+      console.log(passphrase)
       if (ok) {
         console.log(user.password_hash)
         matchedUser = user;

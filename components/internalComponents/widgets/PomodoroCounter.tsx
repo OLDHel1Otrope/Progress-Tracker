@@ -137,8 +137,8 @@ export const PomodoroTimer = () => {
                 />
             </div>
 
-            <div className="absolute top-0 left-1/4 w-px h-full bg-stone-600/20 transform -skew-x-12" />
-            <div className="absolute top-0 right-1/4 w-px h-full bg-stone-600/20 transform -skew-x-12" />
+            {/* <div className="absolute top-0 left-1/4 w-px h-full bg-stone-600/20 transform -skew-x-12" />
+            <div className="absolute top-0 right-1/4 w-px h-full bg-stone-600/20 transform -skew-x-12" /> */}
 
             <div className="relative w-full h-full flex flex-col items-center justify-center p-6">
 
@@ -149,7 +149,7 @@ export const PomodoroTimer = () => {
                                 type="number"
                                 value={minutes}
                                 onChange={(e) => setMinutes(Math.max(0, Math.min(99, parseInt(e.target.value) || 0)))}
-                                className="[appearance:textfield] w-24 font-semibold bg-stone-800/80 border border-stone-600/40 rounded-xl px-3 py-2 text-4xl font-pixelify text-stone-100 text-center focus:outline-none focus:border-stone-400/60 backdrop-blur-sm"
+                                className="[appearance:textfield] w-24 font-semibold bg-stone-800/80 border border-stone-600/40 rounded-xl px-3 py-2 text-4xl  text-stone-100 text-center focus:outline-none focus:border-stone-400/60 backdrop-blur-sm"
                                 min="0"
                                 max="99"
                             />
@@ -158,13 +158,13 @@ export const PomodoroTimer = () => {
                                 type="number"
                                 value={seconds}
                                 onChange={(e) => setSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                                className="[appearance:textfield] w-24 font-semibold bg-stone-800/80 border border-stone-600/40 rounded-xl px-3 py-2 text-4xl font-pixelify text-stone-100 text-center focus:outline-none focus:border-stone-400/60 backdrop-blur-sm"
+                                className="[appearance:textfield] w-24 font-semibold bg-stone-800/80 border border-stone-600/40 rounded-xl px-3 py-2 text-4xl  text-stone-100 text-center focus:outline-none focus:border-stone-400/60 backdrop-blur-sm"
                                 min="0"
                                 max="59"
                             />
                         </div>
                     ) : (
-                        <div className="text-[clamp(55px,10vw,64px)] sm:text-[110px]  sm:-mb-8 font-extrabold italic font-pixelify bg-gradient-to-br from-stone-100 via-stone-200 to-stone-300 bg-clip-text text-transparent tracking-wider drop-shadow-lg">
+                        <div className="text-[clamp(55px,10vw,64px)] sm:text-[110px]  sm:-mb-8  italic  bg-gradient-to-br from-stone-100 via-stone-200 to-stone-300 bg-clip-text text-transparent tracking-wider drop-shadow-lg">
                             {String(displayMinutes).padStart(2, '0')}
                             <span className="text-stone-400/60">:</span>
                             {String(displaySeconds).padStart(2, '0')}
@@ -174,7 +174,7 @@ export const PomodoroTimer = () => {
                         </div>
                     )}
                     <div className="relative w-full ">
-                        <div className="flex gap-1 font-pixelify text-[clamp(10px,1.5vw,14px)] text-stone-300 italic tracking-wide">
+                        <div className="flex gap-1  text-[clamp(10px,1.5vw,14px)] text-stone-300 italic tracking-wide">
                             {!isEditing && (
                                 <button
                                     onClick={handleEdit}
@@ -224,7 +224,7 @@ export const PomodoroTimer = () => {
                     </div>
                 </div>
 
-                {isRunning && (
+                {/* {isRunning && (
                     <div className="absolute inset-0 pointer-events-none overflow-hidden">
                         {[...Array(4)].map((_, i) => (
                             <div
@@ -238,7 +238,7 @@ export const PomodoroTimer = () => {
                             />
                         ))}
                     </div>
-                )}
+                )} */}
             </div>
 
             <style jsx>{`
