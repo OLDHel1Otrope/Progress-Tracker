@@ -137,8 +137,19 @@ export const PomodoroTimer = () => {
                 />
             </div>
 
-            {/* <div className="absolute top-0 left-1/4 w-px h-full bg-stone-600/20 transform -skew-x-12" />
-            <div className="absolute top-0 right-1/4 w-px h-full bg-stone-600/20 transform -skew-x-12" /> */}
+            <div className="absolute top-0 left-[10%] w-px h-full bg-stone-600/10 transform " />
+            <div className="absolute top-0 left-[20%] w-px h-full bg-stone-600/10 transform " />
+            <div className="absolute top-0 left-[30%] w-px h-full bg-stone-600/10 transform " />
+            <div className="absolute top-0 left-[40%] w-px h-full bg-stone-600/10 transform " />
+            <div className="absolute top-0 left-[50%] w-px h-full bg-stone-600/10 transform " />
+            <div className="absolute top-0 left-[60%] w-px h-full bg-stone-600/10 transform " />
+            <div className="absolute top-0 left-[70%] w-px h-full bg-stone-600/10 transform " />
+            <div className="absolute top-0 left-[80%] w-px h-full bg-stone-600/10 transform " />
+            <div className="absolute top-0 left-[90%] w-px h-full bg-stone-600/10 transform " />
+
+            <div className="absolute top-0 left-1/4 w-px h-full bg-stone-600/30 transform " />
+            <div className="absolute top-0 left-2/4 w-px h-full bg-stone-600/30 transform " />
+            <div className="absolute top-0 right-1/4 w-px h-full bg-stone-600/30 transform " />
 
             <div className="relative w-full h-full flex flex-col items-center justify-center p-6">
 
