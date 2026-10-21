@@ -5,7 +5,7 @@ import { setSession } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
-    const { passphrase } = await req.json();
+    const { passphrase, timezone } = await req.json();
 
     if (!passphrase) {
       return NextResponse.json(
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
         break;
       }
     }
-    
+
 
     if (!matchedUser) {
       return NextResponse.json(
@@ -51,6 +51,19 @@ export async function POST(req: Request) {
 
     // Set cookie
     await setSession(matchedUser.id);
+
+
+    const isValidTz = async (tz: unknown) =>
+      typeof tz === 'string' &&
+      ((await db.query('SELECT 1 FROM pg_timezone_names WHERE name = $1', [tz])).rowCount ?? 0) > 0;
+
+    if (await isValidTz(timezone)) {
+      await db.query(
+        'UPDATE users SET timezone = $1 WHERE id = $2 AND timezone IS DISTINCT FROM $1',
+        [timezone, matchedUser.id]
+      );
+    }
+
 
     return NextResponse.json({
       success: true,

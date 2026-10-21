@@ -17,35 +17,11 @@ interface CenteredGridProps {
 export default function CenteredGrid({ images }: CenteredGridProps) {
     const { user } = useAuth();
 
-    const [dayElapsedPercentage, setDayElapsedPercentage] = useState(0);
 
     //optimistic completion bar
     const [totalGoals, setTotalGoals] = useState(0)
     const [completedGoals, setCompletedGoals] = useState(0)
 
-    useEffect(() => {
-        function calculateDayProgress() {
-            const now = new Date();
-
-            const startOfDay = new Date();
-            startOfDay.setHours(0, 0, 0, 0);
-
-            const endOfDay = new Date();
-            endOfDay.setHours(24, 0, 0, 0);
-
-            const progress =
-                (now.getTime() - startOfDay.getTime()) /
-                (endOfDay.getTime() - startOfDay.getTime());
-
-            setDayElapsedPercentage(progress * 100);
-        }
-
-        calculateDayProgress();
-
-        const interval = setInterval(calculateDayProgress, 60000);
-
-        return () => clearInterval(interval);
-    }, []);
 
     const completionRate = useMemo(() => {
         if (!totalGoals || totalGoals <= 0) return 0;
@@ -59,15 +35,15 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
         goals:
             <div
                 key="today-goals"
-                className="relative row-span-2 col-span-2 w-full border rounded-2xl border-stone-900 h-full overflow-hidden"
+                className="relative row-span-2 col-span-2 w-full border rounded-2xl border-stone-700/20 h-full overflow-hidden"
             >
                 <div
-                    className="absolute inset-y-0 left-0  z-0 transition-[width] h-full duration-500  border-t-2 border-stone-700/40 rounded-2xl rounded-tr-none"
+                    className="absolute inset-y-0 left-0  z-0 transition-[width] h-full duration-500  border-t-2 border-stone-400 rounded-2xl rounded-tr-none"
                     style={{ width: `${completionRate * 100}%` }} />
                 <div
-                    className="absolute inset-y-0 left-0  z-0 transition-[width] h-full duration-500  border-b-2 border-stone-700/40 rounded-2xl rounded-br-none"
-                    style={{ width: `${dayElapsedPercentage}%` }} />
-                <div className="relative z-10 h-full pb-0.5 pt-0.5">
+                    className="absolute inset-y-0 left-0  z-0 transition-[width] h-full duration-500  border-b-2 border-stone-400 rounded-2xl rounded-br-none"
+                    style={{ width: `${completionRate * 100}%` }} />
+                <div className="relative z-10 h-full pb-0.5 pt-0.5 bg-black/90">
                     <TodayGoals home setCompletedGoals={setCompletedGoals} setTotalGoals={setTotalGoals} />
                 </div>
             </div>,
@@ -88,7 +64,7 @@ export default function CenteredGrid({ images }: CenteredGridProps) {
         >
             <StatsDisplay todayRate={completionRate} />
         </div>,
-    }), [completionRate, dayElapsedPercentage, totalGoals, completedGoals])
+    }), [completionRate, totalGoals, completedGoals])
 
     const HomeItems = useMemo(() => {
         if (!user?.home_order) return [];

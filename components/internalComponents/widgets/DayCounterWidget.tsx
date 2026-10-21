@@ -39,14 +39,10 @@ export const DayCounterWidget = () => {
 
 
     return (
-        <div className="relative w-full h-full bg-gradient-to-br from-stone-800/20 to-stone-900/30 backdrop-blur-xl border border-stone-700/20 rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.6)]">
-            {/* <div className="absolute inset-0 opacity-5">
-                <div className="absolute top-0 left-1/4 w-px h-full bg-stone-200 transform -skew-x-12" />
-                <div className="absolute top-0 right-1/4 w-px h-full bg-stone-200 transform -skew-x-12" />
-            </div> */}
+        <div className="relative w-full h-full bg-stone-800/20 backdrop-blur-xl border border-stone-700/20 rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.6)]">
 
             <div className="absolute inset-0 flex items-center justify-center">
-                <div className="absolute blur-3xl opacity-20 w-3/4 h-3/4 bg-gradient-to-br from-stone-600/30 to-stone-500/30 rounded-full" />
+                <div className="absolute blur-3xl opacity-20 w-3/4 h-3/4  rounded-full" />
             </div>
 
             <div className="relative w-full h-full flex flex-row items-center justify-center p-3">

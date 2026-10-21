@@ -94,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ passphrase }),
+        body: JSON.stringify({ passphrase, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone }),
       });
 
       if (!res.ok) return false;
