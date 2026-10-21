@@ -24,7 +24,7 @@ export async function PATCH(
     try {
         const { rows } = await db.query(
             `
-                UPDATE stints
+                UPDATE strints
                 SET goal_id     = COALESCE($3::uuid, goal_id),
                     description = COALESCE($4::text, description)
                 WHERE id = $1
@@ -68,7 +68,7 @@ export async function DELETE(
     try {
         const { rows } = await db.query(
             `
-            UPDATE stints
+            UPDATE strints
             SET archived_at = NOW()
             WHERE id = $1
               AND user_id = $2

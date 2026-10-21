@@ -2,6 +2,7 @@ import { StintEntry } from "@/components/internalComponents/widgets/StintList";
 
 export async function startStrint(): Promise<StintEntry> {
     //start a strint
+    console.log('fired')
     const res = await fetch(`/api/strint`, { method: 'POST' });
     if (!res.ok) {
         throw new Error("Failed to get the strint id");
@@ -29,7 +30,7 @@ export async function updateStrint(s: StintEntry) {
 
 export async function traceAwake(sid: string) {
     //keep strint alive
-    const res = await fetch(`/api/strint/${sid}/traceAwake`, {
+    const res = await fetch(`/api/strint/${sid}/tracePing`, {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",

@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useRef, useState } from 'react';
 import { StintEntry, StintList } from './StintList';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteStrint, getTodayStrints, startStrint, traceAwake, updateStrint } from '@/lib/api/strints';
 import { useHeartbeat } from '@/hooks/useHeartBeat';
 
@@ -27,9 +27,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
 const clock = (ms: number) => `${pad(Math.floor(ms / 60000))}:${pad(Math.floor((ms % 60000) / 1000))}`;
 
 export const PomodoroTimer = () => {
+    const queryClient = useQueryClient();
     const [dayElapsedPercentage, setDayElapsedPercentage] = useState(0);
 
-    const [view, setView] = useState<Mode>('pomodoro');
+    const [view, setView] = useState<Mode>('stint');
     const [pomo, setPomo] = useState<Pomo>({
         total: DEFAULT_TOTAL,
         remaining: DEFAULT_TOTAL,
@@ -179,7 +180,7 @@ export const PomodoroTimer = () => {
     };
 
 
-    const startPromiseRef = useRef<Promise<{ id: number }> | null>(null);
+    const startPromiseRef = useRef<Promise<{ id: string }> | null>(null);
 
     const beginStint = () => {
         const t = Date.now();
@@ -197,11 +198,14 @@ export const PomodoroTimer = () => {
 
     const stopStint = async () => {
         const elapsed = Math.max(0, Date.now() - (stint.startAt ?? Date.now()));
-        setStint({ elapsed, startAt: null, status: 'done' });
+        setStint({ elapsed: 0, startAt: null, status: 'idle' });
 
         try {
             const row = await startPromiseRef.current;
             if (row) await pingStrintMutation.mutateAsync(String(row.id));
+            queryClient.invalidateQueries({
+                queryKey: ["todayStrints"],
+            });
         } finally {
             startPromiseRef.current = null;
         }
@@ -240,9 +244,21 @@ export const PomodoroTimer = () => {
 
     };
 
+    // const handleReset = () => {
+    //     if (view === 'pomodoro') {
+    //         setPomo(p => ({ ...p, remaining: p.total, endAt: null, status: 'idle' }));
+    //     } else {
+    //         setStint({ elapsed: 0, startAt: null, status: 'idle' });
+    //     }
+    // };
+
+    console.log({stint})
+
     const handleReset = () => {
         if (view === 'pomodoro') {
             setPomo(p => ({ ...p, remaining: p.total, endAt: null, status: 'idle' }));
+        } else if (stint.status === 'running') {
+            stopStint();
         } else {
             setStint({ elapsed: 0, startAt: null, status: 'idle' });
         }
@@ -320,7 +336,7 @@ export const PomodoroTimer = () => {
                 className=" group/day absolute inset-y-0 left-0  z-0 transition-[width] h-full duration-500  border-t-2 border-stone-700 rounded-2xl rounded-tr-none"
                 style={{ width: `${dayElapsedPercentage}%` }}
             >
-                <NowTooltip />
+                <NowTooltip totalMin={todayStrintData?.data?.stints.reduce((sum: number, stint: StintEntry) => sum += stint?.minutes || 0, 0) || 0} />
             </div>
 
 
@@ -465,7 +481,7 @@ export const PomodoroTimer = () => {
                 </div>
             </div>
             <div className='absolute bottom-0  w-full'>
-                <StintList />
+                <StintList stints={todayStrintData?.data?.stints || []} loading={todayStrintData.isLoading} isRunning={stint.status == 'running'} currentId={addStrintMutation?.data?.id || ''}/>
             </div>
         </div>
     );
@@ -491,7 +507,7 @@ function beep(ctx: AudioContext | null) {
 const formatNow = () =>
     new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 
-export const NowTooltip = () => {
+export const NowTooltip = ({ totalMin }: { totalMin: number }) => {
     const [label, setLabel] = useState('');
 
     useEffect(() => {
@@ -512,10 +528,13 @@ export const NowTooltip = () => {
                 transition: 'left 500ms, opacity 150ms, transform 150ms',
             }}
         >
-            <div className="relative flex items-center whitespace-nowrap rounded-xl bg-stone-800 p-1.5 text-[13px] text-stone-100 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+            <div className="relative flex gap-2 items-center whitespace-nowrap rounded-xl bg-stone-800 p-1.5 text-[10px] text-stone-300 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
                 <span className="tabular-nums">
                     {time}{' '}
-                    <span className="text-stone-500">{period.toLowerCase()}</span>
+                    <span className="text-stone-300">{period.toLowerCase()}</span>
+                </span>
+                <span className='rounded-lg bg-stone-100 text-stone-600 px-1.5 py-0.5'>
+                    {totalMin} minutes today
                 </span>
 
                 <span className="absolute left-1/2 bottom-full -mb-1 h-2 w-2 -translate-x-1/2 rotate-45 rounded-[2px] bg-stone-800" />

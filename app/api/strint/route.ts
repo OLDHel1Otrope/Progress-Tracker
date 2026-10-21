@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
     try {
         const { rows } = await db.query(
-            `INSERT INTO stints (user_id, is_sprint)
+            `INSERT INTO strints (user_id, is_sprint)
        VALUES ($1, $2)
        RETURNING id, user_id, is_sprint, start_at, end_at`,
             [user.id, isSprint]

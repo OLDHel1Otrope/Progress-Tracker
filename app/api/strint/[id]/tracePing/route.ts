@@ -16,16 +16,19 @@ export async function PATCH(
     try {
         const { rows } = await db.query(
             `
-            UPDATE stints
-            SET end_at  = NOW(),
-            WHERE id = $1
-              AND user_id = $2
-              AND archived_at IS NULL
-            RETURNING id, user_id, goal_id, is_sprint, start_at, end_at
-            `,
-            [id, user.id,]
+    UPDATE strints
+    SET end_at = NOW()
+    WHERE id = $1
+      AND user_id = $2
+      AND archived_at IS NULL
+    RETURNING id, user_id, goal_id, is_sprint, description, start_at, end_at
+    `,
+            [id, user.id]
         );
 
+        if (rows.length === 0) {
+            return NextResponse.json({ error: "Not found or already ended" }, { status: 404 });
+        }
         if (rows.length === 0) {
             return NextResponse.json({ error: "Not found" }, { status: 404 });
         }

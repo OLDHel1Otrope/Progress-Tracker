@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
           GREATEST(s.start_at, b.day_start)   AS c_start,
           COALESCE(s.end_at, now())           AS raw_end,
           b.tz, b.local_date, b.day_start, b.day_end
-        FROM stints s
+        FROM strints s
         CROSS JOIN b
         WHERE s.user_id = $1
           AND s.archived_at IS NULL
@@ -71,8 +71,8 @@ export async function GET(req: NextRequest) {
         description: r.description,
         // assessment: r.assessment,
         running: r.running,
-        start: r.start, // "00:00" if it began on a previous day
-        end: r.end,     // "23:59" if it ends after this day
+        start_at: r.start, // "00:00" if it began on a previous day
+        end_at: r.end,     // "23:59" if it ends after this day
         startH, startM, endH, endM,
         minutes: r.minutes,
       };
