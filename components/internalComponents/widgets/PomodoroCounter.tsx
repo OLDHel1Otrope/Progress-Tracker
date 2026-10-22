@@ -331,9 +331,9 @@ export const PomodoroTimer = () => {
 
 
     return (
-        <div className=' relative rounded-2xl border border-stone-700/30 pb-[2px] pt-[2px]'>
+        <div className='relative group/day rounded-2xl border border-stone-700/30 pb-[2px] pt-[2px]'>
             <div
-                className=" group/day absolute inset-y-0 left-0  z-0 transition-[width] h-full duration-500  border-t-2 border-stone-700 rounded-2xl rounded-tr-none"
+                className="  absolute inset-y-0 left-0  z-50 transition-[width] h-full duration-500  border-t-2 border-stone-700 rounded-2xl rounded-tr-none"
                 style={{ width: `${dayElapsedPercentage}%` }}
             >
                 <NowTooltip totalMin={todayStrintData?.data?.stints.reduce((sum: number, stint: StintEntry) => sum += stint?.minutes || 0, 0) || 0} />
@@ -374,7 +374,7 @@ export const PomodoroTimer = () => {
                     );
                 })}
 
-                <div className="relative w-full h-full flex flex-col items-center justify-center p-6">
+                <div className="relative z-50 w-full h-full flex flex-col items-center justify-center p-6">
                     <div className="flex flex-col w-full p-2">
                         {isEditing ? (
                             <div className="flex items-center gap-2">
@@ -473,7 +473,7 @@ export const PomodoroTimer = () => {
                             {Array.from({ length: 16 }, (_, i) => (
                                 <div
                                     key={i}
-                                    className={(Math.floor(i / 4) + i) % 2 === 0 ? 'bg-stone-100' : 'bg-stone-900'}
+                                    className={(Math.floor(i / 4) + i) % 2 === 0 ? 'bg-stone-500' : 'bg-stone-900'}
                                 />
                             ))}
                         </div>
@@ -481,7 +481,7 @@ export const PomodoroTimer = () => {
                 </div>
             </div>
             <div className='absolute bottom-0  w-full'>
-                <StintList stints={todayStrintData?.data?.stints || []} loading={todayStrintData.isLoading} isRunning={stint.status == 'running'} currentId={addStrintMutation?.data?.id || ''} />
+                <StintList stints={todayStrintData?.data?.stints || []} loading={todayStrintData.isLoading} isRunning={stint.status == 'running'} currentId={addStrintMutation?.data?.id || ''} startAt={stint.startAt || undefined} />
             </div>
         </div>
     );

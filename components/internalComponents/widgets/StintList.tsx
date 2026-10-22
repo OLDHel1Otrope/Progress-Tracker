@@ -52,7 +52,14 @@ function minutesBetween(older: Date | number, newer: Date | number): number {
 }
 
 
-export const StintList = ({ stints, loading, isRunning, currentId }: { stints?: StintEntry[], loading: boolean, isRunning: boolean, currentId: string }) => {
+export const StintList = ({ stints, loading, isRunning, currentId, startAt }: { stints?: StintEntry[], loading: boolean, isRunning: boolean, currentId: string, startAt?: number }) => {
+
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const dayStart = new Date().setHours(0, 0, 0, 0); // today 00:00
+    const liveLeft = startAt ? Math.max(0, (startAt - dayStart) / DAY_MS) * 100 : 0;
+    const liveWidth = startAt != null
+        ? Math.max(0, Math.min(100 - liveLeft, ((Date.now() - Math.max(startAt, dayStart)) / DAY_MS) * 100))
+        : 0;
 
     return (
         // no overflow-hidden here, or the tooltips get clipped
@@ -60,34 +67,35 @@ export const StintList = ({ stints, loading, isRunning, currentId }: { stints?: 
             {loading ? null : stints?.map((entry, index) => {
                 const start = toPercent(entry.start_at);
                 const end = toPercent(entry.end_at);
+                if ((entry?.minutes || 2) < 5) return <></>
 
                 return (
                     // taller hover area than the 2px line so it is easy to hit
                     <div
                         key={entry.id}
-                        className="group absolute bottom-0 h-4"
+                        className="absolute bottom-0 h-4"
                         style={{ left: `${start}%`, width: `${end - start}%` }}
                     >
                         <div
                             className={`absolute bottom-0 inset-x-0 h-[2px] rounded-none ${entry.id === currentId && isRunning
-                                    ? "bg-red-500"
-                                    : "bg-stone-500"
+                                ? "bg-rose-500"
+                                : "bg-stone-500"
                                 }`}
                         />
 
                         {/* tooltip */}
                         <div
                             role="tooltip"
-                            className="pointer-events-none absolute bottom-full left-1/2 mb-0 z-50 -translate-x-1/2 translate-y-1 opacity-0 transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100"
+                            className="pointer-events-none absolute bottom-full left-1/2 mb-0 z-50 -translate-x-1/2 translate-y-1 opacity-0 transition-all duration-150 group-hover/day:translate-y-0 group-hover/day:opacity-100"
                         >
-                            <div className="relative flex items-center gap-2 whitespace-nowrap rounded-xl bg-stone-800 mr-1 p-1.5 text-[10px] text-stone-100 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+                            <div className="relative flex items-center whitespace-nowrap rounded-xl bg-stone-800  p-1.5 text-[10px] text-stone-100 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
                                 <span className="tabular-nums">
-                                    <span className="rounded-lg  px-1.5 py-0.5 font-xs text-stone-600 mr-1 bg-stone-100"
+                                    <span className="rounded-lg  px-1.5 py-0.5 font-xs text-stone-600 bg-stone-100"
                                     >
-                                        {entry.minutes} mins
-                                    </span>{' '}
-                                    at{' '}
-                                    <span className="text-stone-600" suppressHydrationWarning>{entry.start_at}</span>
+                                        {entry.minutes}mins
+                                    </span>
+                                    {/* at{' '}
+                                    <span className="text-stone-600" suppressHydrationWarning>{entry.start_at}</span> */}
                                 </span>
 
                                 {/* tail */}
@@ -97,16 +105,11 @@ export const StintList = ({ stints, loading, isRunning, currentId }: { stints?: 
                     </div>
                 );
             })}
-            {isRunning &&
-                <div
-                    className=" absolute bottom-0 h-4 z-100"
-                    style={{ left: `${((minutesBetween(new Date(new Date().setHours(0, 0, 0, 0)).getTime(), Date.now()) / (24 * 60)) * 100)-0.1}%`, width: `2px` }}
-                >
-                    <div
-                        className="absolute bottom-0 inset-x-0 h-[2px] z-100 rounded-full bg-rose-500 animate-pulse"
-                    />
+            {isRunning && startAt != null && (
+                <div className="absolute bottom-0 h-4 z-[100] " style={{ left: `${liveLeft}%`, width: `max(${liveWidth}%, 2px)` }}>
+                    <div className="absolute bottom-0 inset-x-0 h-[2px] rounded-full bg-rose-500 animate-pulse" />
                 </div>
-            }
+            )}
         </div>
     );
 };

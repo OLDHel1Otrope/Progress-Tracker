@@ -2,9 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
 
-// GET /api/stints            -> the user's stints for today (in their timezone)
-// GET /api/stints?date=YYYY-MM-DD -> same, for that local date
-// Add this export to the same file as your POST handler.
 export async function GET(req: NextRequest) {
   const user = await getSessionUser();
   if (!user) {

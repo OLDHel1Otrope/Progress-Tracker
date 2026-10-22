@@ -130,7 +130,7 @@ export default function GoalItem({
     ${isDragging
                     ? "opacity-60 bg-stone-700/60"
                     : goalCompleted
-                        ? "bg-stone-700/30"
+                        ? "bg-stone-800/40"
                         : expanded
                             ? "bg-stone-800/40"
                             : "bg-stone-800/30"
