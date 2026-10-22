@@ -31,19 +31,19 @@ export async function GET(req: NextRequest) {
       x AS (
         SELECT
           s.id, s.goal_id, s.is_sprint, s.description,
-          (s.end_at IS NULL)                  AS running,
-          GREATEST(s.start_at, b.day_start)   AS c_start,
-          COALESCE(s.end_at, now())           AS raw_end,
+          GREATEST(s.start_at, b.day_start) AS c_start,
+          s.end_at                          AS raw_end,
           b.tz, b.local_date, b.day_start, b.day_end
         FROM strints s
         CROSS JOIN b
         WHERE s.user_id = $1
           AND s.archived_at IS NULL
+          AND s.end_at IS NOT NULL
           AND s.start_at < b.day_end
-          AND COALESCE(s.end_at, now()) > b.day_start
+          AND s.end_at > b.day_start
       )
       SELECT
-        id, goal_id, is_sprint, description, running,
+        id, goal_id, is_sprint, description,
         to_char(local_date, 'YYYY-MM-DD')                       AS date,
         tz                                                       AS timezone,
         to_char(c_start AT TIME ZONE tz, 'HH24:MI')              AS start,
@@ -67,7 +67,6 @@ export async function GET(req: NextRequest) {
         is_sprint: r.is_sprint,
         description: r.description,
         // assessment: r.assessment,
-        running: r.running,
         start_at: r.start, // "00:00" if it began on a previous day
         end_at: r.end,     // "23:59" if it ends after this day
         startH, startM, endH, endM,
