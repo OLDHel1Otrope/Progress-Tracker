@@ -252,7 +252,7 @@ export const PomodoroTimer = () => {
     //     }
     // };
 
-    console.log({stint})
+    console.log({ stint })
 
     const handleReset = () => {
         if (view === 'pomodoro') {
@@ -363,7 +363,7 @@ export const PomodoroTimer = () => {
                     const leftPosition = (i / 24) * 100;
 
                     // Every 6 hours (index 0, 6, 12, 18), make the background darker
-                    const bgClass = i % 6 === 0 ? "bg-stone-600/30" : "bg-stone-600/10";
+                    const bgClass = i % 6 === 0 && i !== 0 ? "bg-stone-600/30" : "bg-stone-600/10";
 
                     return (
                         <div
@@ -481,7 +481,7 @@ export const PomodoroTimer = () => {
                 </div>
             </div>
             <div className='absolute bottom-0  w-full'>
-                <StintList stints={todayStrintData?.data?.stints || []} loading={todayStrintData.isLoading} isRunning={stint.status == 'running'} currentId={addStrintMutation?.data?.id || ''}/>
+                <StintList stints={todayStrintData?.data?.stints || []} loading={todayStrintData.isLoading} isRunning={stint.status == 'running'} currentId={addStrintMutation?.data?.id || ''} />
             </div>
         </div>
     );
