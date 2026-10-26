@@ -49,6 +49,8 @@ function getCalendarDays(month: number, year: number) {
   return days;
 }
 
+const sampleApiData = [9, 6, 12, 5, 11, 8, 13, 7, 10, 6, 9, 13, 5, 8, 12, 7, 11, 9, 6, 10, 13, 5, 8, 7, 12, 9, 11, 6, 10, 8, 13]
+
 export default function CalendarPage() {
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth());
@@ -89,7 +91,7 @@ export default function CalendarPage() {
     <>
       <div className="p-7 flex ml-40 justify-center pointer-events-auto">
         <div className="w-full max-w-6xl bg-gradient-to-br from-stone-900/70 to-stone-900/80 rounded-3xl p-6 border border-stone-700/30 backdrop-blur-lg shadow-[inset_0_0_15px_rgba(0,0,0,0.5)] text-stone-300">        {/* Header */}
-          <div className="mb-6">
+          <div className="mb-0">
             <div className="flex items-center gap-2">
               <h2 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-300">
                 {monthLabel}
@@ -138,16 +140,29 @@ export default function CalendarPage() {
                   }
                 }}
                 key={index}
-                className={`h-32 p-3 text-sm cursor-pointer transition-all duration-200 ease-out  flex flex-col
-                ${day.isCurrentMonth
-                    ? "bg-stone-700/40 text-stone-100 hover:bg-stone-600/50 hover:scale-[1.01] hover:shadow-[0_0_0_1px_rgba(255,255,255,0.15),0_10px_30px_rgba(0,0,0,0.4)]"
+                className={`group relative rounded-lg overflow-hidden h-32 p-3 text-sm cursor-pointer transition-all duration-200 ease-out flex flex-col
+      ${day.isCurrentMonth
+                    ? "bg-stone-700/40 text-stone-100 hover:bg-stone-100/90 hover:scale-[2.0] hover:z-[999] hover:shadow-[0_0_0_1px_rgba(255,255,255,0.15),0_10px_30px_rgba(0,0,0,0.4)]"
                     : "bg-stone-800/30 text-stone-500"
-                  }
-              `}
+                  }`}
               >
-                <div className="flex justify-between items-start ">
+                <div className="flex h-full justify-end items-end italic text-stone-500 ">
                   <span>{day.label}</span>
                 </div>
+                {day.isCurrentMonth && (
+                  <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden pointer-events-none select-none">
+                    <span
+                      className="text-[14rem] leading-none font-semibold 
+        text-stone-100/5 group-hover:text-stone-800/25
+        [-webkit-text-stroke:0px_rgba(255,255,255,0.35)]
+        group-hover:[-webkit-text-stroke-color:rgba(255,255,255,0.12)]
+        origin-center group-hover:scale-50
+        transition-all duration-0 ease-out"
+                    >
+                      {sampleApiData[day.label - 1]}
+                    </span>
+                  </div>
+                )}
 
                 {day.isCurrentMonth && (
                   <div className="mt-auto">
@@ -158,22 +173,22 @@ export default function CalendarPage() {
                           {/* {parseFloat(day?.stats?.completion_percentage)} */}
 
                         </span>
-                        <span className={`font-semibold ${parseFloat(day?.stats?.completion_percentage) ==100
+                        {/* <span className={`font-semibold ${parseFloat(day?.stats?.completion_percentage) == 100
                           ? 'text-stone-300'
                           : 'text-stone-400'
                           }`}>
                           {parseFloat(day?.stats?.completion_percentage)}%
-                        </span>
+                        </span> */}
                       </div>
                       {/* Progress bar */}
-                      <div className="w-full h-1.5 bg-stone-800/60 rounded-full overflow-hidden">
+                      {/* <div className="w-full h-1.5 bg-stone-800/60 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-stone-500 to-stone-400 rounded-full transition-all duration-300"
                           style={{
                             width: `${parseFloat(day?.stats?.completion_percentage)}%`
                           }}
                         />
-                      </div>
+                      </div> */}
                     </div>
 
                   </div>
@@ -183,6 +198,7 @@ export default function CalendarPage() {
           </div>
         </div>
         <div className="w-30 ml-6 mt-6 text-stone-500 italic">
+          Sample data, maintainence in progress.<br></br>
           Monthly report will be here.
         </div>
       </div>
